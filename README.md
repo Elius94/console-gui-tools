@@ -19,11 +19,30 @@ Install with:
 npm i console-gui-tools
 ```
 
+## Options
+The library has a few options that can be set in the constructor.
+
+### options.title
+The title of the application. It will be displayed in the top of the screen.
+
+### options.logsPageSize
+The number of lines that will be displayed in the logs page.
+
+### options.changeLayoutKey
+The key that will be used to change the layout. (To switch between the two pages, logs and main page)
+
+### options.layoutBorder
+To enable the border of the layout and the title.
+
 Example of usage:
 ```js
 // Import module with ES6 syntax
 import { ConsoleManager, OptionPopup, InputPopup } from '../index.js'
-const GUI = new ConsoleManager()
+const GUI = new ConsoleManager({
+    title: 'TCP Simulator', // Title of the console
+    logsPageSize: 12, // Number of lines to show in logs page
+    changeLayoutKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
+})
 
 // Creating a main page updater:
 const updateConsole = async() => {
@@ -69,9 +88,6 @@ const updateConsole = async() => {
 
 // And manage the keypress event from the library
 GUI.on("keypressed", (key) => {
-    if (key.ctrl && key.name === 'c') {
-        closeApp()
-    }
     switch (key.name) {
         case 'space':
             if (valueEmitter) {
@@ -82,28 +98,28 @@ GUI.on("keypressed", (key) => {
             }
             break
         case 'm':
-            new OptionPopup("popupSelectMode", "Select simulation mode", modeList, mode).show().once("confirm", (_mode) => {
+            new OptionPopup("popupSelectMode", "Select simulation mode", modeList, mode).show().on("confirm", (_mode) => {
                 mode = _mode
                 GUI.warn(`NEW MODE: ${mode}`)
                 drawGui()
             })
             break
         case 's':
-            new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().once("confirm", (_period) => {
+            new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
                 period = _period
                 GUI.warn(`NEW PERIOD: ${period}`)
                 drawGui()
             })
             break
         case 'h':
-            new InputPopup("popupTypeMax", "Type max value", max, true).show().once("confirm", (_max) => {
+            new InputPopup("popupTypeMax", "Type max value", max, true).show().on("confirm", (_max) => {
                 max = _max
                 GUI.warn(`NEW MAX VALUE: ${max}`)
                 drawGui()
             })
             break
         case 'l':
-            new InputPopup("popupTypeMin", "Type min value", min, true).show().once("confirm", (_min) => {
+            new InputPopup("popupTypeMin", "Type min value", min, true).show().on("confirm", (_min) => {
                 min = _min
                 GUI.warn(`NEW MIN VALUE: ${min}`)
                 drawGui()
@@ -115,7 +131,6 @@ GUI.on("keypressed", (key) => {
         default:
             break
     }
-    drawGui()
 })
 
 const drawGui = () => {
@@ -126,13 +141,20 @@ const drawGui = () => {
 
 ## To create an option popup (select)
 ```js
-new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().once("confirm", (_period) => {
+new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
     period = _period
     GUI.warn(`NEW PERIOD: ${period}`)
     drawGui()
 })
 ```
-The response is triggered via EventEmitter using "once" (not "on")
+### Class OptionPopup:
+constructor(id, title, options, selected)
+ - id: string
+ - title: string
+ - options: Array<string | number>
+ - selected: string | number
+
+The response is triggered via EventEmitter using "on"
 The result is this:
 
 ![image](https://user-images.githubusercontent.com/14907987/162258068-97fb5fd0-3546-430b-9a90-14dae6b72542.png)
@@ -141,13 +163,31 @@ Pressing enter it will close the popup and set the new value:
 
 ![image](https://user-images.githubusercontent.com/14907987/162258174-7b5bd516-608b-4e03-a549-502cffc4b0a2.png)
 
-You can also use it to set a numeric threshold:
+## To create an input popup (numeric or string)
+```js
+new InputPopup("popupTypeMax", "Type max value", max, true).show().on("confirm", (_max) => {
+    max = _max
+    GUI.warn(`NEW MAX VALUE: ${max}`)
+    drawGui()
+})
+```
+
+### Class InputPopup:
+constructor(id, title, value, isNumeric)
+ - id: string
+ - title: string
+ - value: string | number
+ - isNumeric: boolean
+
+You can use it for example to set a numeric threshold:
 
 ![image](https://user-images.githubusercontent.com/14907987/161997181-07993f9a-6ad2-4c77-a834-2bbc4ed53a1e.png)
 
 Only numbers are allowed.
 
 ![image](https://user-images.githubusercontent.com/14907987/161997601-522eef0c-b3a8-47b8-b174-6cb12266fb1c.png)
+
+All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
 
 ## Console.log and other logging tools
 To log you have to use the following functions:
@@ -159,5 +199,9 @@ GUI.error(`NEW MIN VALUE: ${min}`)
 GUI.info(`NEW MIN VALUE: ${min}`)
 ```
 And they written to the bottom of the page.
+You can switch to the log view by pressing the "changeLayoutKey" key or combination:
+
+The maximum number of lines is set to 10 by default but you can change it by setting the option "logsPageSize".
+When the logs exceed the limit, you can scroll up and down with up and down arrows (if you are in the log view).
 
 This library is in development now. New componets will come asap.

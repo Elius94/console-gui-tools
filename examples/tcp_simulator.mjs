@@ -11,13 +11,16 @@ let period = 100
 let mode = 'random'
 
 const periodList = [10, 100, 250, 500, 1000, 2000, 5000, 10000]
-
 const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
 import { ConsoleManager, OptionPopup, InputPopup } from '../index.js'
-const GUI = new ConsoleManager()
+const GUI = new ConsoleManager({
+    title: 'TCP Simulator', // Title of the console
+    logsPageSize: 12, // Number of lines to show in logs page
+    changeLayoutKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
+})
 
 let connectedClients = 0
     // The number of TCP message sent since start
@@ -138,10 +141,11 @@ const updateConsole = async() => {
     GUI.setHomePage(screen)
 }
 
+GUI.on("exit", () => {
+    closeApp()
+})
+
 GUI.on("keypressed", (key) => {
-    if (key.ctrl && key.name === 'c') {
-        closeApp()
-    }
     switch (key.name) {
         case 'space':
             if (valueEmitter) {
@@ -152,28 +156,28 @@ GUI.on("keypressed", (key) => {
             }
             break
         case 'm':
-            new OptionPopup("popupSelectMode", "Select simulation mode", modeList, mode).show().once("confirm", (_mode) => {
+            new OptionPopup("popupSelectMode", "Select simulation mode", modeList, mode).show().on("confirm", (_mode) => {
                 mode = _mode
                 GUI.warn(`NEW MODE: ${mode}`)
                 drawGui()
             })
             break
         case 's':
-            new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().once("confirm", (_period) => {
+            new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
                 period = _period
                 GUI.warn(`NEW PERIOD: ${period}`)
                 drawGui()
             })
             break
         case 'h':
-            new InputPopup("popupTypeMax", "Type max value", max, true).show().once("confirm", (_max) => {
+            new InputPopup("popupTypeMax", "Type max value", max, true).show().on("confirm", (_max) => {
                 max = _max
                 GUI.warn(`NEW MAX VALUE: ${max}`)
                 drawGui()
             })
             break
         case 'l':
-            new InputPopup("popupTypeMin", "Type min value", min, true).show().once("confirm", (_min) => {
+            new InputPopup("popupTypeMin", "Type min value", min, true).show().on("confirm", (_min) => {
                 min = _min
                 GUI.warn(`NEW MIN VALUE: ${min}`)
                 drawGui()
@@ -185,7 +189,6 @@ GUI.on("keypressed", (key) => {
         default:
             break
     }
-    drawGui()
 })
 
 const drawGui = () => {
