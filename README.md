@@ -3,12 +3,15 @@
 
 [![npm version](https://badge.fury.io/js/console-gui-tools.svg)](https://npmjs.com/package/console-gui-tools) [![npm](https://img.shields.io/npm/dt/console-gui-tools)](https://npmjs.com/package/console-gui-tools) ![npm bundle size](https://img.shields.io/bundlephobia/min/console-gui-tools) ![GitHub](https://img.shields.io/github/license/elius94/console-gui-tools)
 
-# users-session-manager
+# console-gui-tools
 A simple Node.js library to create Console Apps like wizard (or maybe if you like old style colored screen or something like "teletext" programs 😂)
 Apart from jokes, it is a library that allows you to create a screen divided into a part with everything you want to see (such as variable values) and another in which the logs run.
 Moreover in this way the application is managed by the input event "keypressed" to which each key corresponds to a bindable command.
 For example, to change variables you can open popups with an option selector or with a textbox.
 It's in embryonic phase, any suggestion will be constructive :D
+
+![Animation](https://user-images.githubusercontent.com/14907987/162479866-e53f0634-8e96-4c23-9f32-ee920b7cdf2f.gif)
+
 
  [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=elius94&repo=console-gui-tools&theme=github_dark&show_icons=true)](https://github.com/Elius94/console-gui-tools) [![https://nodei.co/npm/console-gui-tools.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/console-gui-tools.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/console-gui-tools)
 
@@ -157,11 +160,9 @@ constructor(id, title, options, selected)
 The response is triggered via EventEmitter using "on"
 The result is this:
 
-![image](https://user-images.githubusercontent.com/14907987/162258068-97fb5fd0-3546-430b-9a90-14dae6b72542.png)
+![Animation](https://user-images.githubusercontent.com/14907987/162480195-b08b4a0b-5d10-4122-8bff-9210295aac1f.gif)
 
-Pressing enter it will close the popup and set the new value:
-
-![image](https://user-images.githubusercontent.com/14907987/162258174-7b5bd516-608b-4e03-a549-502cffc4b0a2.png)
+Pressing enter it will close the popup and set the new value
 
 ## To create an input popup (numeric or string)
 ```js
@@ -181,12 +182,9 @@ constructor(id, title, value, isNumeric)
 
 You can use it for example to set a numeric threshold:
 
-![image](https://user-images.githubusercontent.com/14907987/161997181-07993f9a-6ad2-4c77-a834-2bbc4ed53a1e.png)
+![Animation](https://user-images.githubusercontent.com/14907987/162480554-3e29513b-13d1-4d3f-bd16-09cba30db358.gif)
 
-Only numbers are allowed.
-
-![image](https://user-images.githubusercontent.com/14907987/161997601-522eef0c-b3a8-47b8-b174-6cb12266fb1c.png)
-
+If you set isNumeric to true, only numbers are allowed.
 All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
 
 ## Console.log and other logging tools
@@ -199,9 +197,13 @@ GUI.error(`NEW MIN VALUE: ${min}`)
 GUI.info(`NEW MIN VALUE: ${min}`)
 ```
 And they written to the bottom of the page.
-You can switch to the log view by pressing the "changeLayoutKey" key or combination:
 
+![Animation](https://user-images.githubusercontent.com/14907987/162482192-042d88e5-f810-4523-8f0d-1d87a573d1b1.gif)
+
+You can switch to the log view by pressing the "changeLayoutKey" key or combination:
 The maximum number of lines is set to 10 by default but you can change it by setting the option "logsPageSize".
 When the logs exceed the limit, you can scroll up and down with up and down arrows (if you are in the log view).
+
+![Animation](https://user-images.githubusercontent.com/14907987/162482410-bfe26922-88f5-46bd-8659-059fcc698cf8.gif)
 
 This library is in development now. New componets will come asap.
