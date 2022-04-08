@@ -18,7 +18,7 @@ const clientManager = new EventEmitter()
 import { ConsoleManager, OptionPopup, InputPopup } from '../index.js'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
-    logsPageSize: 12, // Number of lines to show in logs page
+    logsPageSize: 8, // Number of lines to show in logs page
     changeLayoutKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
 })
 
@@ -46,7 +46,8 @@ const server = net.createServer(socket => {
 let lastErr = ""
 
 server.on('error', err => {
-    lastErr = chalk.bgRed("Error: ") + chalk.white(` ${err.message}`);
+    lastErr = chalk.red("Error: ") + chalk.white(` ${err.message}`);
+    GUI.error(lastErr)
 })
 
 let min = 9

@@ -22,7 +22,7 @@ class ConsoleManager extends EventEmitter {
             this.applicationTitle = ""
             if (options) {
                 if (options.logsPageSize) {
-                    this.guiLogsRowsPerPage = options.rowsPerPage
+                    this.guiLogsRowsPerPage = options.logsPageSize
                 }
                 if (options.layoutBorder) {
                     this.layoutBorder = options.layoutBorder
@@ -152,25 +152,28 @@ class ConsoleManager extends EventEmitter {
     // Add Log Functions to the console
     log(message) {
         this.stdOut.push(chalk.white(message))
-        this.updateLogsConsole()
+        this.updateLogsConsole(true)
     }
 
     error(message) {
         this.stdOut.push(chalk.red(message))
-        this.updateLogsConsole()
+        this.updateLogsConsole(true)
     }
 
     warn(message) {
         this.stdOut.push(chalk.yellow(message))
-        this.updateLogsConsole()
+        this.updateLogsConsole(true)
     }
 
     info(message) {
         this.stdOut.push(chalk.blue(message))
-        this.updateLogsConsole()
+        this.updateLogsConsole(true)
     }
 
-    updateLogsConsole() {
+    updateLogsConsole(resetCursor) {
+        if (resetCursor) {
+            this.logScrollIndex = 0
+        }
         if (this.stdOut.length > this.guiLogsRowsPerPage) {
             this.layout.setPage2(this.stdOut.slice(this.stdOut.length - this.logScrollIndex - this.guiLogsRowsPerPage, this.stdOut.length - this.logScrollIndex).join('\n'))
             this.refresh()
