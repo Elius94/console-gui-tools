@@ -10,7 +10,7 @@ let period = 100
 
 let mode = 'random'
 
-const periodList = [10, 100, 250, 500, 1000, 2000, 5000, 10000]
+const periodList = [10, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 30000, 60000, 120000, 300000, 600000, 900000, 1800000, 3600000]
 const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
