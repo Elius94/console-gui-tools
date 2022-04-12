@@ -261,6 +261,8 @@ class OptionPopup extends EventEmitter {
         this.options = options
         this.selected = selected
         this.visible = visible
+        this.marginTop = 4
+        this.startIndex = 0
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `OptionPopup ${this.id} already exists.`
@@ -270,13 +272,27 @@ class OptionPopup extends EventEmitter {
         this.CM.registerWiget(this)
     }
 
+    adaptOptions() {
+        return this.options.slice(this.startIndex, this.startIndex + this.CM.Terminal.rows - this.marginTop - 4)
+    }
+
     keyListner(str, key) {
         switch (key.name) {
             case 'down':
                 this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length])
+                if (this.CM.Terminal.rows - this.marginTop - 4 < this.options.length) {
+                    if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
+                        this.startIndex++
+                    }
+                } else {
+                    this.startIndex = 0
+                }
                 break
             case 'up':
                 this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length])
+                if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
+                    this.startIndex--
+                }
                 break
             case 'return':
                 {
@@ -373,13 +389,13 @@ class OptionPopup extends EventEmitter {
         footer += "┘\n"
 
         let content = ""
-        this.options.forEach((option, index) => {
+        this.adaptOptions().forEach((option, index) => {
             content += `│${option === this.selected ? "<" : " "} ${option}${option === this.selected ? " >" : "  "}${" ".repeat(windowWidth - option.toString().length - 4)}│\n`
         })
 
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
-            this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)), 4 + index)
+            this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)), this.marginTop + index)
             this.CM.Terminal.write(line)
         })
         return this
