@@ -279,7 +279,7 @@ class OptionPopup extends EventEmitter {
     keyListner(str, key) {
         switch (key.name) {
             case 'down':
-                this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length])
+                this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length], false)
                 if (this.CM.Terminal.rows - this.marginTop - 4 < this.options.length) {
                     if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
                         this.startIndex++
@@ -289,7 +289,7 @@ class OptionPopup extends EventEmitter {
                 }
                 break
             case 'up':
-                this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length])
+                this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length], false)
                 if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
                     this.startIndex--
                 }
@@ -328,7 +328,7 @@ class OptionPopup extends EventEmitter {
         return this.selected
     }
 
-    setSelected(selected) {
+    setSelected(selected, refresh = true) {
         this.selected = selected
         this.CM.refresh()
         return this
@@ -369,6 +369,10 @@ class OptionPopup extends EventEmitter {
     }
 
     draw() {
+        // Change start index if selected is not in the adaptOptions return array
+        if (this.adaptOptions().indexOf(this.selected) === -1) {
+            this.startIndex = this.options.indexOf(this.selected) - this.adaptOptions().length + 1 > 0 ? this.options.indexOf(this.selected) - this.adaptOptions().length + 1 : 0
+        }
         const offset = 2
         const maxOptionsLength = this.options.map((o) => o.toString()).reduce((max, option) => Math.max(max, option.length), 0)
         const windowWidth = maxOptionsLength > this.title.length ? maxOptionsLength + (2 * offset) : this.title.length + (2 * offset)
