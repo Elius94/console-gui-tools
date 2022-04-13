@@ -415,6 +415,7 @@ class InputPopup extends EventEmitter {
         this.value = value
         this.numeric = numeric
         this.visible = visible
+        this.marginTop = 4
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `InputPopup ${this.id} already exists.`
@@ -591,10 +592,10 @@ class InputPopup extends EventEmitter {
 
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
-            this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)), 4 + index)
+            this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)), this.marginTop + index)
             this.CM.Terminal.write(line)
         })
-        this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)) + 2 + this.value.toString().length, 4 + 3)
+        this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)) + 2 + this.value.toString().length + 1, this.marginTop + 3)
         return this
     }
 }
