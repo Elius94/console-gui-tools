@@ -10,6 +10,67 @@ class ConsoleManager extends EventEmitter {
         this.Input = process.stdin;
         if (!ConsoleManager.instance) {
             ConsoleManager.instance = this
+            this.Screen = { // TODO: farlo diventare una classe
+                width: this.Terminal.columns,
+                height: this.Terminal.rows,
+                legacy: false,
+                buffer: [],
+                cursor: {
+                    x: 0,
+                    y: 0
+                },
+                maxY: 0,
+                currentY: 0,
+                startWrite: () => {
+                    this.Screen.currentY = 0
+                },
+                endWrite: () => {
+                    if (this.Screen.currentY > this.Screen.maxY) {
+                        this.Screen.maxY = this.Screen.currentY
+                    }
+                },
+                write: (str) => {
+                    if (this.Screen.legacy) {
+                        this.Terminal.write(str)
+                    } else {
+                        this.Screen.currentY++
+                            // Write the string to the buffer at Y, X position,
+                            // if X is > 0, and at that Y there's no string, we need to add an empty string to the buffer
+                            this.Terminal.write(str) //TODO: REMOVE THIS
+                    }
+                },
+                cursorTo: (x, y) => {
+                    if (this.Screen.legacy) {
+                        this.Terminal.cursorTo(x, y)
+                    } else {
+                        this.Screen.cursor.x = x
+                        this.Screen.cursor.y = y
+                        if (this.Screen.currentY < y) {
+                            this.Screen.currentY = y
+                        } else if (this.Screen.currentY > y) {
+                            this.Screen.currentY = y
+                        }
+                        this.Terminal.cursorTo(x, y) // TODO: add setCursorPosition
+                    }
+                },
+                update: () => {
+                    if (this.Screen.legacy) {
+                        console.clear()
+                    } else {
+                        this.Screen.cursorTo(0, 0)
+                    }
+                    this.Screen.width = this.Terminal.columns
+                    this.Screen.height = this.Terminal.rows
+                    this.Screen.buffer = []
+                },
+                clear: () => {
+                    if (!this.Screen.legacy) {
+                        this.Screen.cursorTo(0, this.Screen.maxY)
+                        this.Terminal.clearScreenDown()
+                        this.Screen.maxY = 0
+                    }
+                }
+            }
             this.widgetsCollection = []
             this.stdOut = []
             this.eventListenersContainer = {}
@@ -141,12 +202,13 @@ class ConsoleManager extends EventEmitter {
 
     // Draw the console on the screen
     refresh() {
-        console.clear()
+        this.Screen.update()
         this.layout.draw()
         for (let widget in this.widgetsCollection) {
             if (this.widgetsCollection[widget].isVisible())
                 this.widgetsCollection[widget].draw()
         }
+        this.Screen.clear()
     }
 
     // Add Log Functions to the console
@@ -224,32 +286,33 @@ class DoubleLayout {
 
     drawLine(line, index) {
         const unformattedLine = this.CM.removeColors(line)
-        const _line = unformattedLine.length > this.CM.Terminal.columns - 2 ? this.CM.truncate(unformattedLine, this.CM.Terminal.columns - 10, false) : line
-        const renderedLine = `${this.selected === index ? chalk.cyan("│") : chalk.white("│")}${_line}${" ".repeat(this.CM.Terminal.columns - this.CM.removeColors(_line).length - 2)}${this.selected === index ? chalk.cyan("│") : chalk.white("│")}`
-        this.CM.Terminal.write(`${renderedLine}\n`)
+        const _line = unformattedLine.length > this.CM.Screen.width - 2 ? this.CM.truncate(unformattedLine, this.CM.Screen.width - 10, false) : line
+        const renderedLine = `${this.selected === index ? chalk.cyan("│") : chalk.white("│")}${_line}${" ".repeat(this.CM.Screen.width - this.CM.removeColors(_line).length - 2)}${this.selected === index ? chalk.cyan("│") : chalk.white("│")}`
+        this.CM.Screen.write(`${renderedLine}\n`)
     }
 
     draw() {
+        this.CM.Screen.startWrite()
         if (this.border) { // Draw pages with borders 
-            this.CM.Terminal.write(this.selected === 0 ? chalk.cyan(`┌─${this.applicationTitle}${"─".repeat(this.CM.Terminal.columns - this.applicationTitle.length - 3)}┐\n`) : chalk.white(`┌─${this.applicationTitle}${"─".repeat(this.CM.Terminal.columns - this.applicationTitle.length - 3)}┐\n`))
+            this.CM.Screen.write(this.selected === 0 ? chalk.cyan(`┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐\n`) : chalk.white(`┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐\n`))
             this.page1.split("\n").forEach(line => {
                 this.drawLine(line, 0)
             })
-            this.CM.Terminal.write(chalk.cyan(`├${this.logPageTitle}${"─".repeat(this.CM.Terminal.columns - this.logPageTitle.length - 2)}┤\n`))
+            this.CM.Screen.write(chalk.cyan(`├${this.logPageTitle}${"─".repeat(this.CM.Screen.width - this.logPageTitle.length - 2)}┤\n`))
             this.page2.split("\n").forEach(line => {
                 this.drawLine(line, 1)
             })
-            this.CM.Terminal.write(this.selected === 1 ? chalk.cyan(`└${"─".repeat(this.CM.Terminal.columns - 2)}┘\n`) : chalk.white(`└${"─".repeat(this.CM.Terminal.columns - 2)}┘\n`))
+            this.CM.Screen.write(this.selected === 1 ? chalk.cyan(`└${"─".repeat(this.CM.Screen.width - 2)}┘\n`) : chalk.white(`└${"─".repeat(this.CM.Screen.width - 2)}┘\n`))
         } else { // Draw pages without borders
             this.page1.split("\n").forEach(line => {
-                this.CM.Terminal.write(`${line}\n`)
+                this.CM.Screen.write(`${line}\n`)
             })
             this.page2.split("\n").forEach(line => {
-                this.CM.Terminal.write(`${line}\n`)
+                this.CM.Screen.write(`${line}\n`)
             })
         }
+        this.CM.Screen.endWrite()
     }
-
 }
 
 class OptionPopup extends EventEmitter {
@@ -273,14 +336,14 @@ class OptionPopup extends EventEmitter {
     }
 
     adaptOptions() {
-        return this.options.slice(this.startIndex, this.startIndex + this.CM.Terminal.rows - this.marginTop - 4)
+        return this.options.slice(this.startIndex, this.startIndex + this.CM.Screen.height - this.marginTop - 6)
     }
 
     keyListner(str, key) {
         switch (key.name) {
             case 'down':
                 this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length], false)
-                if (this.CM.Terminal.rows - this.marginTop - 4 < this.options.length) {
+                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
                     if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
                         this.startIndex++
                     }
@@ -369,7 +432,8 @@ class OptionPopup extends EventEmitter {
     }
 
     draw() {
-        // Change start index if selected is not in the adaptOptions return array
+        this.CM.Screen.startWrite()
+            // Change start index if selected is not in the adaptOptions return array
         if (this.adaptOptions().indexOf(this.selected) === -1) {
             this.startIndex = this.options.indexOf(this.selected) - this.adaptOptions().length + 1 > 0 ? this.options.indexOf(this.selected) - this.adaptOptions().length + 1 : 0
         }
@@ -399,9 +463,10 @@ class OptionPopup extends EventEmitter {
 
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
-            this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Terminal.write(line)
+            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
+            this.CM.Screen.write(line)
         })
+        this.CM.Screen.endWrite()
         return this
     }
 }
@@ -569,6 +634,7 @@ class InputPopup extends EventEmitter {
     }
 
     draw() {
+        this.CM.Screen.startWrite()
         const offset = 2
         const windowWidth = this.title.length > this.value.toString().length ? this.title.length + (2 * offset) : this.value.toString().length + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
@@ -588,14 +654,14 @@ class InputPopup extends EventEmitter {
 
         let content = ""
             // Draw an input field
-        content += `│${"> "}${this.value}${" ".repeat(windowWidth - this.value.toString().length - 2)}│\n`
+        content += `│${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}│\n`
 
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
-            this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Terminal.write(line)
+            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
+            this.CM.Screen.write(line)
         })
-        this.CM.Terminal.cursorTo(Math.round((this.CM.Terminal.columns / 2) - (windowWidth / 2)) + 2 + this.value.toString().length + 1, this.marginTop + 3)
+        this.CM.Screen.endWrite()
         return this
     }
 }
