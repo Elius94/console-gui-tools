@@ -3,6 +3,62 @@ import chalk from 'chalk';
 import readline from 'readline';
 chalk.level = 1
 
+class Screen {
+    constructor(_legacy, _Terminal) {
+        this.legacy = _legacy
+        this.Terminal = _Terminal
+        this.width = this.Terminal.columns
+        this.height = this.Terminal.rows
+        this.legacy = false
+        this.maxY = 0
+        this.currentY = 0
+    }
+    startWrite() {
+        this.currentY = 0
+    }
+    endWrite() {
+        if (this.currentY > this.maxY) {
+            this.maxY = this.currentY
+        }
+    }
+    write(str) {
+        if (this.legacy) {
+            this.Terminal.write(str)
+        } else {
+            this.currentY++
+                this.Terminal.write(str)
+        }
+    }
+    cursorTo(x, y) {
+        if (this.legacy) {
+            this.Terminal.cursorTo(x, y)
+        } else {
+            if (this.currentY < y) {
+                this.currentY = y
+            } else if (this.currentY > y) {
+                this.currentY = y
+            }
+            this.Terminal.cursorTo(x, y)
+        }
+    }
+    update() {
+        if (this.legacy) {
+            console.clear()
+        } else {
+            this.cursorTo(0, 0)
+        }
+        this.width = this.Terminal.columns
+        this.height = this.Terminal.rows
+    }
+    clear() {
+        if (!this.legacy) {
+            this.cursorTo(0, this.maxY)
+            this.Terminal.clearScreenDown()
+            this.maxY = 0
+        }
+    }
+}
+
 class ConsoleManager extends EventEmitter {
     constructor(options) {
         super()
@@ -10,67 +66,7 @@ class ConsoleManager extends EventEmitter {
         this.Input = process.stdin;
         if (!ConsoleManager.instance) {
             ConsoleManager.instance = this
-            this.Screen = { // TODO: farlo diventare una classe
-                width: this.Terminal.columns,
-                height: this.Terminal.rows,
-                legacy: false,
-                buffer: [],
-                cursor: {
-                    x: 0,
-                    y: 0
-                },
-                maxY: 0,
-                currentY: 0,
-                startWrite: () => {
-                    this.Screen.currentY = 0
-                },
-                endWrite: () => {
-                    if (this.Screen.currentY > this.Screen.maxY) {
-                        this.Screen.maxY = this.Screen.currentY
-                    }
-                },
-                write: (str) => {
-                    if (this.Screen.legacy) {
-                        this.Terminal.write(str)
-                    } else {
-                        this.Screen.currentY++
-                            // Write the string to the buffer at Y, X position,
-                            // if X is > 0, and at that Y there's no string, we need to add an empty string to the buffer
-                            this.Terminal.write(str) //TODO: REMOVE THIS
-                    }
-                },
-                cursorTo: (x, y) => {
-                    if (this.Screen.legacy) {
-                        this.Terminal.cursorTo(x, y)
-                    } else {
-                        this.Screen.cursor.x = x
-                        this.Screen.cursor.y = y
-                        if (this.Screen.currentY < y) {
-                            this.Screen.currentY = y
-                        } else if (this.Screen.currentY > y) {
-                            this.Screen.currentY = y
-                        }
-                        this.Terminal.cursorTo(x, y) // TODO: add setCursorPosition
-                    }
-                },
-                update: () => {
-                    if (this.Screen.legacy) {
-                        console.clear()
-                    } else {
-                        this.Screen.cursorTo(0, 0)
-                    }
-                    this.Screen.width = this.Terminal.columns
-                    this.Screen.height = this.Terminal.rows
-                    this.Screen.buffer = []
-                },
-                clear: () => {
-                    if (!this.Screen.legacy) {
-                        this.Screen.cursorTo(0, this.Screen.maxY)
-                        this.Terminal.clearScreenDown()
-                        this.Screen.maxY = 0
-                    }
-                }
-            }
+            this.Screen = new Screen(false, this.Terminal)
             this.widgetsCollection = []
             this.stdOut = []
             this.eventListenersContainer = {}
