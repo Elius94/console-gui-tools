@@ -9,7 +9,7 @@ class Screen {
         this.Terminal = _Terminal
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
-        this.legacy = false
+            //this.legacy = false
         this.maxY = 0
         this.currentY = 0
     }
