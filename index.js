@@ -3,13 +3,69 @@ import chalk from 'chalk';
 import readline from 'readline';
 chalk.level = 1
 
+class PageBuilder {
+    constructor() {
+        this.content = []
+    }
+
+    addRow() {
+        // each argument is an object like {text: string, color: string}
+        let row = ''
+        let styleIndex = []
+        for (let i = 0; i < arguments.length; i++) {
+            let arg = arguments[i]
+            row += arg.text
+            styleIndex.push(
+                arg.color ? arg.color : undefined,
+                arg.bg ? arg.bg : undefined,
+                arg.italic ? arg.italic : undefined,
+                arg.bold ? arg.bold : undefined, [row.length, row.length + arg.text.length]
+            )
+        }
+        this.content.push({ row, styleIndex })
+    }
+
+    addSpacer(height = 1) {
+        if (height > 0) {
+            for (let i = 0; i < height; i++) {
+                this.addRow({ text: '', color: '' })
+            }
+        }
+    }
+
+    getContent() {
+        return this.content
+    }
+
+    getRow(index) {
+        return this.content[index].row
+    }
+
+    getStyleIndex(index) {
+        return this.content[index].styleIndex
+    }
+
+    getPageHeight() {
+        return this.content.length
+    }
+
+    getPageWidth() {
+        let max = 0
+        for (let i = 0; i < this.content.length; i++) {
+            if (this.content[i].row.length > max) {
+                max = this.content[i].row.length
+            }
+        }
+        return max
+    }
+}
+
 class Screen {
     constructor(_legacy, _Terminal) {
         this.legacy = _legacy
         this.Terminal = _Terminal
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
-            //this.legacy = false
         this.maxY = 0
         this.currentY = 0
     }
@@ -68,11 +124,11 @@ class ConsoleManager extends EventEmitter {
             ConsoleManager.instance = this
             this.Screen = new Screen(false, this.Terminal)
             this.widgetsCollection = []
-            this.stdOut = []
+            this.stdOut = new PageBuilder()
             this.eventListenersContainer = {}
             this.guiLogsPage = 0 // 0 = last
             this.guiLogsRowsPerPage = 10
-            this.homePage = ""
+            this.homePage = new PageBuilder()
             this.layoutBorder = true
             this.changeLayoutKey = "ctrl+l"
             this.logScrollIndex = 0
@@ -158,8 +214,8 @@ class ConsoleManager extends EventEmitter {
                             return
                         } else if (key.name === 'up') {
                             this.logScrollIndex++
-                                if (this.logScrollIndex > this.stdOut.length - this.guiLogsRowsPerPage)
-                                    this.logScrollIndex = this.stdOut.length - this.guiLogsRowsPerPage
+                                if (this.logScrollIndex > this.stdOut.getPageHeight() - this.guiLogsRowsPerPage)
+                                    this.logScrollIndex = this.stdOut.getPageHeight() - this.guiLogsRowsPerPage
                             this.updateLogsConsole()
                             return
                         }
@@ -209,22 +265,22 @@ class ConsoleManager extends EventEmitter {
 
     // Add Log Functions to the console
     log(message) {
-        this.stdOut.push(chalk.white(message))
+        this.stdOut.addRow({ text: message, color: 'white' })
         this.updateLogsConsole(true)
     }
 
     error(message) {
-        this.stdOut.push(chalk.red(message))
+        this.stdOut.addRow({ text: message, color: 'red' })
         this.updateLogsConsole(true)
     }
 
     warn(message) {
-        this.stdOut.push(chalk.yellow(message))
+        this.stdOut.addRow({ text: message, color: 'yellow' })
         this.updateLogsConsole(true)
     }
 
     info(message) {
-        this.stdOut.push(chalk.blue(message))
+        this.stdOut.addRow({ text: message, color: 'blue' })
         this.updateLogsConsole(true)
     }
 
@@ -259,8 +315,8 @@ class DoubleLayout {
         this.CM = new ConsoleManager()
         this.border = border
         this.selected = selected
-        this.page1 = ""
-        this.page2 = ""
+        this.page1 = new PageBuilder()
+        this.page2 = new PageBuilder()
         this.logPageTitle = "─LOGS"
         this.applicationTitle = this.CM.applicationTitle
     }
@@ -663,6 +719,7 @@ class InputPopup extends EventEmitter {
 }
 
 export {
+    PageBuilder,
     ConsoleManager,
     OptionPopup,
     InputPopup

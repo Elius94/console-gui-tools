@@ -15,7 +15,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup } from '../index.js'
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder } from '../index.js'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
@@ -102,44 +102,46 @@ let window = "HOME"
  *
  */
 const updateConsole = async() => {
-    let screen = ""
-    screen += chalk.yellow(`TCP server simulator app! Welcome...`) + `\n`
-    screen += chalk.green(`TCP Server listening on ${HOST}:${PORT}`) + `\n`
-    screen += chalk.green(`Connected clients: `) + chalk.white(`${connectedClients}\n`)
-    screen += chalk.magenta(`TCP Messages sent: `) + chalk.white(`${tcpCounter}`) + `\n\n`
+    const p = new PageBuilder()
+    p.addRow({ text: `TCP server simulator app! Welcome...`, color: 'yellow' })
+    p.addRow({ text: `TCP Server listening on ${HOST}:${PORT}`, color: 'green' })
+    p.addRow({ text: `Connected clients: `, color: 'green' }, { text: `${connectedClients}`, color: 'white' })
+    p.addRow({ text: `TCP messages sent: `, color: 'green' }, { text: `${tcpCounter}`, color: 'white' })
 
     // Print if simulator is running or not
     if (!valueEmitter) {
-        screen += chalk.red(`Simulator is not running! `) + chalk.white(`press 'space' to start`) + `\n`
+        p.addRow({ text: `Simulator is not running! `, color: 'red' }, { text: `press 'space' to start`, color: 'white' })
     } else {
-        screen += chalk.green(`Simulator is running! `) + chalk.white(`press 'space' to stop`) + `\n`
+        p.addRow({ text: `Simulator is running! `, color: 'green' }, { text: `press 'space' to stop`, color: 'white' })
     }
+
     // Print mode:
-    screen += chalk.cyan(`Mode:`) + chalk.white(` ${mode}`) + `\n`;
-    // Print message frequency:
-    screen += chalk.cyan(`Message period:`) + chalk.white(` ${period} ms`) + `\n`;
-    // Print Min and Max
-    screen += chalk.cyan(`Min:`) + chalk.white(` ${min}`) + `\n`;
-    screen += chalk.cyan(`Max:`) + chalk.white(` ${max}`) + `\n`;
-    // Print current values:
-    screen += chalk.cyan(`Values:`) + chalk.white(` ${values.map(v => v.toFixed(4)).join('   ')}`) + `\n`;
+    p.addRow({ text: `Mode: `, color: 'cyan' }, { text: `${mode}`, color: 'white' })
+        // Print message frequency:
+    p.addRow({ text: `Message period: `, color: 'cyan' }, { text: `${period} ms`, color: 'white' })
+        // Print Min and Max
+    p.addRow({ text: `Min: `, color: 'cyan' }, { text: `${min}`, color: 'white' })
+    p.addRow({ text: `Max: `, color: 'cyan' }, { text: `${max}`, color: 'white' })
+        // Print current values:
+    p.addRow({ text: `Values: `, color: 'cyan' }, { text: ` ${values.map(v => v.toFixed(4)).join('   ')}`, color: 'white' })
 
     // Spacer
-    screen += `\n\n`;
+    p.addSpacer()
 
     if (lastErr.length > 0) {
-        screen += lastErr + `\n\n`
+        p.addRow({ text: lastErr, color: 'red' })
+        p.addSpacer(2)
     }
 
-    screen += chalk.bgBlack(`Commands:`) + `\n`;
-    screen += `  ${chalk.bold('space')}   - ${chalk.italic('Start/stop simulator')}\n`;
-    screen += `  ${chalk.bold('m')}       - ${chalk.italic('Select simulation mode')}\n`;
-    screen += `  ${chalk.bold('s')}       - ${chalk.italic('Select message period')}\n`;
-    screen += `  ${chalk.bold('h')}       - ${chalk.italic('Set max value')}\n`;
-    screen += `  ${chalk.bold('l')}       - ${chalk.italic('Set min value')}\n`;
-    screen += `  ${chalk.bold('q')}       - ${chalk.italic('Quit')}\n`;
+    p.addRow({ text: "Commands:", color: 'white', bg: 'black' })
+    p.addRow({ text: `  'space'`, color: 'gray', bold: true }, { text: `   - Start/stop simulator`, color: 'white', italic: true })
+    p.addRow({ text: `  'm'`, color: 'gray', bold: true }, { text: `       - Select simulation mode`, color: 'white', italic: true })
+    p.addRow({ text: `  's'`, color: 'gray', bold: true }, { text: `       - Select message period`, color: 'white', italic: true })
+    p.addRow({ text: `  'h'`, color: 'gray', bold: true }, { text: `       - Set max value`, color: 'white', italic: true })
+    p.addRow({ text: `  'l'`, color: 'gray', bold: true }, { text: `       - Set min value`, color: 'white', italic: true })
+    p.addRow({ text: `  'q'`, color: 'gray', bold: true }, { text: `       - Quit`, color: 'white', italic: true })
 
-    GUI.setHomePage(screen)
+    GUI.setHomePage(p)
 }
 
 GUI.on("exit", () => {
