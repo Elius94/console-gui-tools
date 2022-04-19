@@ -157,6 +157,10 @@ class Screen {
             this.maxY = 0
         }
     }
+
+    replaceAt(index, replacement) {
+        return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+    }
 }
 
 class ConsoleManager extends EventEmitter {
@@ -381,7 +385,7 @@ class DoubleLayout {
         line.forEach(element => {
             unformattedLine += element.text
         })
-        let newLine = line
+        let newLine = [...line] // Shallow copy
         newLine.unshift({ text: "│", style: { color: this.selected === index ? "cyan" : "white" } })
         newLine.push({ text: `${" ".repeat(this.CM.Screen.width - unformattedLine.length - 2)}`, style: { color: "" } })
         newLine.push({ text: "│", style: { color: this.selected === index ? "cyan" : "white" } })
@@ -561,7 +565,7 @@ class OptionPopup extends EventEmitter {
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write(line)
+            this.CM.Screen.write({ text: line, style: { color: 'white' } })
         })
         this.CM.Screen.endWrite()
         return this
@@ -756,7 +760,7 @@ class InputPopup extends EventEmitter {
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write(line)
+            this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         this.CM.Screen.endWrite()
         return this
