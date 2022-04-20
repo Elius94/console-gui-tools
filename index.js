@@ -22,7 +22,13 @@ class PageBuilder {
                     color: arg.color ? arg.color : undefined,
                     bg: arg.bg ? arg.bg : undefined,
                     italic: arg.italic ? arg.italic : undefined,
-                    bold: arg.bold ? arg.bold : undefined
+                    bold: arg.bold ? arg.bold : undefined,
+                    dim: arg.dim ? arg.dim : undefined,
+                    underline: arg.underline ? arg.underline : undefined,
+                    inverse: arg.inverse ? arg.inverse : undefined,
+                    hidden: arg.hidden ? arg.hidden : undefined,
+                    strikethrough: arg.strikethrough ? arg.strikethrough : undefined,
+                    overline: arg.overline ? arg.overline : undefined,
                 }
             })
         }
@@ -77,89 +83,131 @@ class PageBuilder {
 }
 
 class Screen {
-    constructor(_legacy, _Terminal) {
-        this.legacy = _legacy
+    constructor(_Terminal) {
         this.Terminal = _Terminal
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
-        this.maxY = 0
-        this.currentY = 0
         this.buffer = []
         this.cursor = { x: 0, y: 0 }
     }
-    startWrite() {
-        this.currentY = 0
-    }
-    endWrite() {
-        if (this.currentY > this.maxY) {
-            this.maxY = this.currentY
-        }
-    }
+
     write() {
-        if (this.legacy) {
-            this.Terminal.write(arguments[0])
-        } else {
-            this.currentY++
-                let row = ""
-            let styleIndex = []
-            for (let i = 0; i < arguments.length; i++) {
-                let arg = arguments[i]
-                if (arg.text) {
-                    let style = arg.style
-                    style.index = [row.length, row.length + arg.text.length]
-                    styleIndex.push(style)
-                    row += arg.text
-                }
+        this.currentY++
+            let row = ""
+        let newStyleIndex = []
+        for (let i = 0; i < arguments.length; i++) {
+            let arg = arguments[i]
+            if (arg.text) {
+                let style = arg.style
+                style.index = [row.length, row.length + arg.text.length]
+                newStyleIndex.push(style)
+                row += arg.text
             }
-            this.buffer[this.cursor.y] = { text: row, styleIndex }
+        }
+        const currentStyleIndex = this.buffer[this.cursor.y].styleIndex
+            // Now recalculate the styleIndex for the current row mixing the old one with the new one
+            // Create a new styleIndex merging the old one with the new one
+        let mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
+
+        if (this.cursor.y < this.buffer.length - 1) {
+            this.buffer[this.cursor.y].styleIndex = mergedStyleIndex
+            this.buffer[this.cursor.y].text = this.replaceAt(this.buffer[this.cursor.y].text, this.cursor.x, row)
             this.cursorTo(0, this.cursor.y + 1)
         }
     }
+
     cursorTo(x, y) {
-        if (this.legacy) {
-            this.Terminal.cursorTo(x, y)
-        } else {
-            this.cursor.x = x
-            this.cursor.y = y
-            this.Terminal.cursorTo(x, y)
-        }
+        this.cursor.x = x
+        this.cursor.y = y
     }
+
+    moveCursor(x, y) {
+        this.Terminal.cursorTo(x, y)
+    }
+
     update() {
-        if (this.legacy) {
-            console.clear()
-        } else {
-            this.cursorTo(0, 0)
-        }
+        this.cursorTo(0, 0)
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
         this.buffer = []
         for (let i = 0; i < this.Terminal.rows; i++) {
-            this.buffer[i] = { text: " ".repeat(this.Terminal.columns), styleIndex: [{ color: '', bg: '', italic: false, bold: false, index: [] }] }
-        }
-    }
-    clear() {
-        if (!this.legacy) {
-            this.buffer.forEach((row, i) => {
-                this.Terminal.cursorTo(0, i)
-                let outString = ""
-                    // convert styleIndex to chalk functions and apply them to the row text
-                row.styleIndex.forEach(style => {
-                    let color = style.color ? chalk[style.color] : (_in) => _in
-                    let bg = style.bg ? chalk[style.bg] : (_in) => _in
-                    let italic = style.italic ? chalk.italic : (_in) => _in
-                    let bold = style.bold ? chalk.bold : (_in) => _in
-                    outString += color(bg(italic(bold(row.text.substring(style.index[0], style.index[1])))))
-                })
-                this.Terminal.write(outString)
-            })
-            this.cursorTo(0, this.maxY)
-            this.Terminal.clearScreenDown()
-            this.maxY = 0
+            this.buffer[i] = { text: " ".repeat(this.Terminal.columns), styleIndex: [{ color: 'gray', bg: '', italic: false, bold: false, index: [0, this.Terminal.columns] }] }
         }
     }
 
-    replaceAt(index, replacement) {
-        return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+    print() {
+        this.buffer.forEach((row, i) => {
+            this.Terminal.cursorTo(0, i)
+            let outString = ""
+                // convert styleIndex to chalk functions and apply them to the row text
+            row.styleIndex.forEach(style => {
+                let color = style.color ? chalk[style.color] : (_in) => _in
+                let bg = style.bg ? chalk[style.bg] : (_in) => _in
+                let italic = style.italic ? chalk.italic : (_in) => _in
+                let bold = style.bold ? chalk.bold : (_in) => _in
+                let dim = style.dim ? chalk.dim : (_in) => _in
+                let underline = style.underline ? chalk.underline : (_in) => _in
+                let overline = style.overline ? chalk.overline : (_in) => _in
+                let inverse = style.inverse ? chalk.inverse : (_in) => _in
+                let hidden = style.hidden ? chalk.hidden : (_in) => _in
+                let strikethrough = style.strikethrough ? chalk.strikethrough : (_in) => _in
+                outString += color(bg(italic(bold(dim(underline(overline(inverse(hidden(strikethrough(row.text.substring(style.index[0], style.index[1])))))))))))
+            })
+            this.Terminal.write(outString)
+        })
+        this.Terminal.clearScreenDown()
+    }
+
+    replaceAt(str, index, replacement) {
+        return str.substring(0, index) + replacement + str.substring(index + replacement.length);
+    }
+
+    mergeStyles(_new, _current, _offset, _newSize) {
+        let new_ = [..._new]
+        let current = [..._current]
+        let offset = _offset
+        let newSize = _newSize
+        let merged = []
+        current.forEach(style => {
+                if (style.index[0] < offset && style.index[1] < offset) {
+                    merged.push(style)
+                    return
+                } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + newSize) {
+                    merged.push({...style, index: [style.index[0], offset - 1] })
+                    return
+                } else if (style.index[0] < offset && style.index[1] > offset + newSize) {
+                    merged.push({...style, index: [style.index[0], offset - 1] })
+                    merged.push({...style, index: [offset + newSize + 1, style.index[1]] })
+                    return
+                } else if (style.index[0] >= offset && style.index[1] <= offset + newSize) {
+                    // Do nothing
+                    return
+                } else if (style.index[0] >= offset && style.index[0] <= offset + newSize && style.index[1] > offset + newSize) {
+                    merged.push({...style, index: [offset + newSize + 1, style.index[1]] })
+                    return
+                } else if (style.index[0] > offset + newSize && style.index[1] > offset + newSize) {
+                    merged.push(style)
+                    return
+                }
+                console.log("I shouldn't be here!")
+            })
+            // Then add the new style to the merged array
+        new_.forEach((newStyle, i) => {
+                merged.push({...newStyle, index: [newStyle.index[0] + offset, newStyle.index[1] + offset] })
+            })
+            // Sort the merged array by index[0]
+        merged.sort(this.sortByIndex)
+        return merged
+    }
+
+    sortByIndex(a, b) {
+        if (a.index[0] < b.index[0]) {
+            return -1
+        } else if (a.index[0] > b.index[0]) {
+            return 1
+        } else {
+            return 0
+        }
     }
 }
 
@@ -170,7 +218,7 @@ class ConsoleManager extends EventEmitter {
         this.Input = process.stdin;
         if (!ConsoleManager.instance) {
             ConsoleManager.instance = this
-            this.Screen = new Screen(false, this.Terminal)
+            this.Screen = new Screen(this.Terminal)
             this.widgetsCollection = []
             this.eventListenersContainer = {}
             this.stdOut = new PageBuilder()
@@ -305,7 +353,7 @@ class ConsoleManager extends EventEmitter {
             if (this.widgetsCollection[widget].isVisible())
                 this.widgetsCollection[widget].draw()
         }
-        this.Screen.clear()
+        this.Screen.print()
     }
 
     // Add Log Functions to the console
@@ -393,7 +441,6 @@ class DoubleLayout {
     }
 
     draw() {
-        this.CM.Screen.startWrite()
         if (this.border) { // Draw pages with borders 
             this.CM.Screen.write(this.selected === 0 ? { text: `┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐`, style: { color: 'cyan' } } : { text: `┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐`, style: { color: 'white' } })
             this.page1.getContent().forEach(line => {
@@ -412,7 +459,6 @@ class DoubleLayout {
                 this.CM.Screen.write({ text: `${line}`, style: { color: 'white' } })
             })
         }
-        this.CM.Screen.endWrite()
     }
 }
 
@@ -533,8 +579,7 @@ class OptionPopup extends EventEmitter {
     }
 
     draw() {
-        this.CM.Screen.startWrite()
-            // Change start index if selected is not in the adaptOptions return array
+        // Change start index if selected is not in the adaptOptions return array
         if (this.adaptOptions().indexOf(this.selected) === -1) {
             this.startIndex = this.options.indexOf(this.selected) - this.adaptOptions().length + 1 > 0 ? this.options.indexOf(this.selected) - this.adaptOptions().length + 1 : 0
         }
@@ -565,9 +610,8 @@ class OptionPopup extends EventEmitter {
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write({ text: line, style: { color: 'white' } })
+            this.CM.Screen.write({ text: line, style: { color: 'blue' } })
         })
-        this.CM.Screen.endWrite()
         return this
     }
 }
@@ -735,7 +779,6 @@ class InputPopup extends EventEmitter {
     }
 
     draw() {
-        this.CM.Screen.startWrite()
         const offset = 2
         const windowWidth = this.title.length > this.value.toString().length ? this.title.length + (2 * offset) : this.value.toString().length + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
@@ -762,7 +805,6 @@ class InputPopup extends EventEmitter {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
-        this.CM.Screen.endWrite()
         return this
     }
 }

@@ -106,7 +106,7 @@ const updateConsole = async() => {
     p.addRow({ text: `TCP server simulator app! Welcome...`, color: 'yellow' })
     p.addRow({ text: `TCP Server listening on ${HOST}:${PORT}`, color: 'green' })
     p.addRow({ text: `Connected clients: `, color: 'green' }, { text: `${connectedClients}`, color: 'white' })
-    p.addRow({ text: `TCP messages sent: `, color: 'green' }, { text: `${tcpCounter}`, color: 'white' })
+    p.addRow({ text: `TCP messages sent: `, color: 'green', bg: 'bgRed', bold: true, italic: true, underline: true }, { text: `${tcpCounter}`, color: 'white' })
 
     // Print if simulator is running or not
     if (!valueEmitter) {
