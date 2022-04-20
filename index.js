@@ -4,9 +4,8 @@ import readline from 'readline';
 chalk.level = 1
 
 class PageBuilder {
-    constructor() {
-        this.visualizedPage = 0 // 0 = last
-        this.rowsPerPage = 50
+    constructor(rowsPerPage = 100) {
+        this.rowsPerPage = rowsPerPage
         this.scrollIndex = 0
         this.content = []
     }
@@ -44,7 +43,11 @@ class PageBuilder {
     }
 
     getContent() {
-        return this.content.slice(this.getPageHeight() - this.scrollIndex - this.rowsPerPage, this.getPageHeight() - this.scrollIndex)
+        if (this.getPageHeight() > this.rowsPerPage) {
+            return this.content.slice(this.getPageHeight() - this.scrollIndex - this.rowsPerPage, this.getPageHeight() - this.scrollIndex)
+        } else {
+            return this.content
+        }
     }
 
     getPageHeight() {
@@ -82,8 +85,9 @@ class PageBuilder {
     }
 }
 
-class Screen {
+class Screen extends EventEmitter {
     constructor(_Terminal) {
+        super()
         this.Terminal = _Terminal
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
@@ -173,26 +177,26 @@ class Screen {
                     merged.push(style)
                     return
                 } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + newSize) {
-                    merged.push({...style, index: [style.index[0], offset - 1] })
+                    merged.push({...style, index: [style.index[0], offset] })
                     return
                 } else if (style.index[0] < offset && style.index[1] > offset + newSize) {
-                    merged.push({...style, index: [style.index[0], offset - 1] })
-                    merged.push({...style, index: [offset + newSize + 1, style.index[1]] })
+                    merged.push({...style, index: [style.index[0], offset] })
+                    merged.push({...style, index: [offset + newSize, style.index[1]] })
                     return
                 } else if (style.index[0] >= offset && style.index[1] <= offset + newSize) {
                     // Do nothing
                     return
                 } else if (style.index[0] >= offset && style.index[0] <= offset + newSize && style.index[1] > offset + newSize) {
-                    merged.push({...style, index: [offset + newSize + 1, style.index[1]] })
+                    merged.push({...style, index: [offset + newSize, style.index[1]] })
                     return
                 } else if (style.index[0] > offset + newSize && style.index[1] > offset + newSize) {
                     merged.push(style)
                     return
                 }
-                console.log("I shouldn't be here!")
+                this.emit("error", new Error("mergeStyles: This should never happen"))
             })
             // Then add the new style to the merged array
-        new_.forEach((newStyle, i) => {
+        new_.forEach(newStyle => {
                 merged.push({...newStyle, index: [newStyle.index[0] + offset, newStyle.index[1] + offset] })
             })
             // Sort the merged array by index[0]
@@ -227,11 +231,11 @@ class ConsoleManager extends EventEmitter {
             this.changeLayoutKey = "ctrl+l"
             this.applicationTitle = ""
             this.changeLayoutkeys = this.changeLayoutKey.split('+')
-            this.logsPageSize = 10
+            this.logPageSize = 10
 
             if (options) {
-                if (options.logsPageSize) {
-                    this.logsPageSize = options.logsPageSize
+                if (options.logPageSize) {
+                    this.logPageSize = options.logPageSize
                 }
                 if (options.layoutBorder) {
                     this.layoutBorder = options.layoutBorder
@@ -245,7 +249,7 @@ class ConsoleManager extends EventEmitter {
             }
 
             this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutBorder, 0)
-            this.layout.page2.setRowsPerPage(this.logsPageSize)
+            this.layout.page2.setRowsPerPage(this.logPageSize)
             this.addGenericListeners()
 
             // I use readline to manage the keypress event
@@ -255,20 +259,12 @@ class ConsoleManager extends EventEmitter {
         return ConsoleManager.instance
     }
 
-    setGuiLogsPage(page) {
-        this.guiLogsPage = page
+    getLogPageSize() {
+        return this.logPageSize
     }
 
-    getGuiLogsPage() {
-        return this.guiLogsPage
-    }
-
-    getGuiLogsRowsPerPage() {
-        return this.guiLogsRowsPerPage
-    }
-
-    setGuiLogsRowsPerPage(rows) {
-        this.guiLogsRowsPerPage = rows
+    setLogPageSize(rows) {
+        this.logPageSize = rows
     }
 
     addGenericListeners() {
@@ -379,21 +375,18 @@ class ConsoleManager extends EventEmitter {
 
     updateLogsConsole(resetCursor) {
         if (resetCursor) {
-            this.layout.page2.scrollIndex = 0
+            this.layout.page2.setScrollIndex(0)
         }
         this.refresh()
     }
 
+    // TODO: Add Truncate to the screen.write function
     truncate(str, n, useWordBoundary) {
         if (str.length <= n) { return str; }
         const subString = str.substr(0, n - 1); // the original check
         return (useWordBoundary ?
             subString.substr(0, subString.lastIndexOf(" ")) :
             subString) + "…";
-    }
-
-    removeColors(str) {
-        return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
     }
 }
 
@@ -610,7 +603,7 @@ class OptionPopup extends EventEmitter {
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write({ text: line, style: { color: 'blue' } })
+            this.CM.Screen.write({ text: line, style: { color: 'white' } })
         })
         return this
     }

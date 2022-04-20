@@ -1,6 +1,3 @@
-// For colors in the console
-import chalk from 'chalk';
-chalk.level = 1
 import net from 'net';
 import EventEmitter from 'events';
 
@@ -35,10 +32,10 @@ const server = net.createServer(socket => {
         tcpCounter++;
     })
     socket.on("error", function(err) {
-        lastErr = chalk.bgRed("Error: ") + ` ${err.stack}`;
+        lastErr = `Error:  ${err.stack}`;
     });
     socket.on('end', function() {
-        lastErr = chalk.bgRed("Error: ") + ` Client disconnected!`;
+        lastErr = `Error: Client disconnected!`;
         connectedClients--;
     });
 }).listen(PORT, HOST);
@@ -46,7 +43,7 @@ const server = net.createServer(socket => {
 let lastErr = ""
 
 server.on('error', err => {
-    lastErr = chalk.red("Error: ") + chalk.white(` ${err.message}`);
+    lastErr = `Error: ${err.message}`;
     GUI.error(lastErr)
 })
 
@@ -105,8 +102,8 @@ const updateConsole = async() => {
     const p = new PageBuilder()
     p.addRow({ text: `TCP server simulator app! Welcome...`, color: 'yellow' })
     p.addRow({ text: `TCP Server listening on ${HOST}:${PORT}`, color: 'green' })
-    p.addRow({ text: `Connected clients: `, color: 'green' }, { text: `${connectedClients}`, color: 'white' })
-    p.addRow({ text: `TCP messages sent: `, color: 'green', bg: 'bgRed', bold: true, italic: true, underline: true }, { text: `${tcpCounter}`, color: 'white' })
+    p.addRow({ text: `Connected clients:`, color: 'green' }, { text: ` ${connectedClients}`, color: 'white' })
+    p.addRow({ text: `TCP messages sent:`, color: 'green', bg: 'bgRed', bold: true, italic: true, underline: true }, { text: ` ${tcpCounter}`, color: 'white' })
 
     // Print if simulator is running or not
     if (!valueEmitter) {
