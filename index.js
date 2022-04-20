@@ -3,58 +3,214 @@ import chalk from 'chalk';
 import readline from 'readline';
 chalk.level = 1
 
-class Screen {
-    constructor(_legacy, _Terminal) {
-        this.legacy = _legacy
+class PageBuilder {
+    constructor(rowsPerPage = 100) {
+        this.rowsPerPage = rowsPerPage
+        this.scrollIndex = 0
+        this.content = []
+    }
+
+    addRow() {
+        // each argument is an object like {text: string, color: string}
+        let _row = []
+        for (let i = 0; i < arguments.length; i++) {
+            const arg = arguments[i]
+            _row.push({
+                text: arg.text,
+                style: {
+                    color: arg.color ? arg.color : undefined,
+                    bg: arg.bg ? arg.bg : undefined,
+                    italic: arg.italic ? arg.italic : undefined,
+                    bold: arg.bold ? arg.bold : undefined,
+                    dim: arg.dim ? arg.dim : undefined,
+                    underline: arg.underline ? arg.underline : undefined,
+                    inverse: arg.inverse ? arg.inverse : undefined,
+                    hidden: arg.hidden ? arg.hidden : undefined,
+                    strikethrough: arg.strikethrough ? arg.strikethrough : undefined,
+                    overline: arg.overline ? arg.overline : undefined,
+                }
+            })
+        }
+        this.content.push(_row)
+    }
+
+    addSpacer(height = 1) {
+        if (height > 0) {
+            for (let i = 0; i < height; i++) {
+                this.addRow({ text: '', color: '' })
+            }
+        }
+    }
+
+    getContent() {
+        if (this.getPageHeight() > this.rowsPerPage) {
+            return this.content.slice(this.getPageHeight() - this.scrollIndex - this.rowsPerPage, this.getPageHeight() - this.scrollIndex)
+        } else {
+            return this.content
+        }
+    }
+
+    getPageHeight() {
+        return this.content.length
+    }
+
+    getPageWidth() {
+        let max = 0
+        for (let i = 0; i < this.content.length; i++) {
+            if (this.content[i].text.length > max) {
+                max = this.content[i].text.length
+            }
+        }
+        return max
+    }
+
+    setScrollIndex(index) {
+        this.scrollIndex = index
+    }
+
+    setRowsPerPage(rpp) {
+        this.rowsPerPage = rpp
+    }
+
+    increaseScrollIndex() {
+        if (this.scrollIndex < this.getPageHeight() - this.rowsPerPage) {
+            this.scrollIndex++
+        }
+    }
+
+    decreaseScrollIndex() {
+        if (this.scrollIndex > 0) {
+            this.scrollIndex--
+        }
+    }
+}
+
+class Screen extends EventEmitter {
+    constructor(_Terminal) {
+        super()
         this.Terminal = _Terminal
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
-            //this.legacy = false
-        this.maxY = 0
-        this.currentY = 0
+        this.buffer = []
+        this.cursor = { x: 0, y: 0 }
     }
-    startWrite() {
-        this.currentY = 0
-    }
-    endWrite() {
-        if (this.currentY > this.maxY) {
-            this.maxY = this.currentY
-        }
-    }
-    write(str) {
-        if (this.legacy) {
-            this.Terminal.write(str)
-        } else {
-            this.currentY++
-                this.Terminal.write(str)
-        }
-    }
-    cursorTo(x, y) {
-        if (this.legacy) {
-            this.Terminal.cursorTo(x, y)
-        } else {
-            if (this.currentY < y) {
-                this.currentY = y
-            } else if (this.currentY > y) {
-                this.currentY = y
+
+    write() {
+        this.currentY++
+            let row = ""
+        let newStyleIndex = []
+        for (let i = 0; i < arguments.length; i++) {
+            let arg = arguments[i]
+            if (arg.text) {
+                let style = arg.style
+                style.index = [row.length, row.length + arg.text.length]
+                newStyleIndex.push(style)
+                row += arg.text
             }
-            this.Terminal.cursorTo(x, y)
+        }
+        const currentStyleIndex = this.buffer[this.cursor.y].styleIndex
+            // Now recalculate the styleIndex for the current row mixing the old one with the new one
+            // Create a new styleIndex merging the old one with the new one
+        let mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
+
+        if (this.cursor.y < this.buffer.length - 1) {
+            this.buffer[this.cursor.y].styleIndex = mergedStyleIndex
+            this.buffer[this.cursor.y].text = this.replaceAt(this.buffer[this.cursor.y].text, this.cursor.x, row)
+            this.cursorTo(0, this.cursor.y + 1)
         }
     }
+
+    cursorTo(x, y) {
+        this.cursor.x = x
+        this.cursor.y = y
+    }
+
+    moveCursor(x, y) {
+        this.Terminal.cursorTo(x, y)
+    }
+
     update() {
-        if (this.legacy) {
-            console.clear()
-        } else {
-            this.cursorTo(0, 0)
-        }
+        this.cursorTo(0, 0)
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
+        this.buffer = []
+        for (let i = 0; i < this.Terminal.rows; i++) {
+            this.buffer[i] = { text: " ".repeat(this.Terminal.columns), styleIndex: [{ color: 'gray', bg: '', italic: false, bold: false, index: [0, this.Terminal.columns] }] }
+        }
     }
-    clear() {
-        if (!this.legacy) {
-            this.cursorTo(0, this.maxY)
-            this.Terminal.clearScreenDown()
-            this.maxY = 0
+
+    print() {
+        this.buffer.forEach((row, i) => {
+            this.Terminal.cursorTo(0, i)
+            let outString = ""
+                // convert styleIndex to chalk functions and apply them to the row text
+            row.styleIndex.forEach(style => {
+                let color = style.color ? chalk[style.color] : (_in) => _in
+                let bg = style.bg ? chalk[style.bg] : (_in) => _in
+                let italic = style.italic ? chalk.italic : (_in) => _in
+                let bold = style.bold ? chalk.bold : (_in) => _in
+                let dim = style.dim ? chalk.dim : (_in) => _in
+                let underline = style.underline ? chalk.underline : (_in) => _in
+                let overline = style.overline ? chalk.overline : (_in) => _in
+                let inverse = style.inverse ? chalk.inverse : (_in) => _in
+                let hidden = style.hidden ? chalk.hidden : (_in) => _in
+                let strikethrough = style.strikethrough ? chalk.strikethrough : (_in) => _in
+                outString += color(bg(italic(bold(dim(underline(overline(inverse(hidden(strikethrough(row.text.substring(style.index[0], style.index[1])))))))))))
+            })
+            this.Terminal.write(outString)
+        })
+        this.Terminal.clearScreenDown()
+    }
+
+    replaceAt(str, index, replacement) {
+        return str.substring(0, index) + replacement + str.substring(index + replacement.length);
+    }
+
+    mergeStyles(_new, _current, _offset, _newSize) {
+        let new_ = [..._new]
+        let current = [..._current]
+        let offset = _offset
+        let newSize = _newSize
+        let merged = []
+        current.forEach(style => {
+                if (style.index[0] < offset && style.index[1] < offset) {
+                    merged.push(style)
+                    return
+                } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + newSize) {
+                    merged.push({...style, index: [style.index[0], offset] })
+                    return
+                } else if (style.index[0] < offset && style.index[1] > offset + newSize) {
+                    merged.push({...style, index: [style.index[0], offset] })
+                    merged.push({...style, index: [offset + newSize, style.index[1]] })
+                    return
+                } else if (style.index[0] >= offset && style.index[1] <= offset + newSize) {
+                    // Do nothing
+                    return
+                } else if (style.index[0] >= offset && style.index[0] <= offset + newSize && style.index[1] > offset + newSize) {
+                    merged.push({...style, index: [offset + newSize, style.index[1]] })
+                    return
+                } else if (style.index[0] > offset + newSize && style.index[1] > offset + newSize) {
+                    merged.push(style)
+                    return
+                }
+                this.emit("error", new Error("mergeStyles: This should never happen"))
+            })
+            // Then add the new style to the merged array
+        new_.forEach(newStyle => {
+                merged.push({...newStyle, index: [newStyle.index[0] + offset, newStyle.index[1] + offset] })
+            })
+            // Sort the merged array by index[0]
+        merged.sort(this.sortByIndex)
+        return merged
+    }
+
+    sortByIndex(a, b) {
+        if (a.index[0] < b.index[0]) {
+            return -1
+        } else if (a.index[0] > b.index[0]) {
+            return 1
+        } else {
+            return 0
         }
     }
 }
@@ -66,20 +222,20 @@ class ConsoleManager extends EventEmitter {
         this.Input = process.stdin;
         if (!ConsoleManager.instance) {
             ConsoleManager.instance = this
-            this.Screen = new Screen(false, this.Terminal)
+            this.Screen = new Screen(this.Terminal)
             this.widgetsCollection = []
-            this.stdOut = []
             this.eventListenersContainer = {}
-            this.guiLogsPage = 0 // 0 = last
-            this.guiLogsRowsPerPage = 10
-            this.homePage = ""
+            this.stdOut = new PageBuilder()
+            this.homePage = new PageBuilder()
             this.layoutBorder = true
             this.changeLayoutKey = "ctrl+l"
-            this.logScrollIndex = 0
             this.applicationTitle = ""
+            this.changeLayoutkeys = this.changeLayoutKey.split('+')
+            this.logPageSize = 10
+
             if (options) {
-                if (options.logsPageSize) {
-                    this.guiLogsRowsPerPage = options.logsPageSize
+                if (options.logPageSize) {
+                    this.logPageSize = options.logPageSize
                 }
                 if (options.layoutBorder) {
                     this.layoutBorder = options.layoutBorder
@@ -91,9 +247,10 @@ class ConsoleManager extends EventEmitter {
                     this.applicationTitle = options.title
                 }
             }
-            this.changeLayoutkeys = this.changeLayoutKey.split('+')
+
+            this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutBorder, 0)
+            this.layout.page2.setRowsPerPage(this.logPageSize)
             this.addGenericListeners()
-            this.layout = new DoubleLayout(this.layoutBorder, 0)
 
             // I use readline to manage the keypress event
             readline.emitKeypressEvents(this.Input);
@@ -102,20 +259,12 @@ class ConsoleManager extends EventEmitter {
         return ConsoleManager.instance
     }
 
-    setGuiLogsPage(page) {
-        this.guiLogsPage = page
+    getLogPageSize() {
+        return this.logPageSize
     }
 
-    getGuiLogsPage() {
-        return this.guiLogsPage
-    }
-
-    getGuiLogsRowsPerPage() {
-        return this.guiLogsRowsPerPage
-    }
-
-    setGuiLogsRowsPerPage(rows) {
-        this.guiLogsRowsPerPage = rows
+    setLogPageSize(rows) {
+        this.logPageSize = rows
     }
 
     addGenericListeners() {
@@ -151,16 +300,12 @@ class ConsoleManager extends EventEmitter {
                 if (Object.keys(this.widgetsCollection).length === 0) {
                     if (this.layout.getSelected() === 1) {
                         if (key.name === 'down') {
-                            this.logScrollIndex--
-                                if (this.logScrollIndex < 0)
-                                    this.logScrollIndex = 0
-                            this.updateLogsConsole()
+                            this.layout.page2.decreaseScrollIndex()
+                            this.refresh()
                             return
                         } else if (key.name === 'up') {
-                            this.logScrollIndex++
-                                if (this.logScrollIndex > this.stdOut.length - this.guiLogsRowsPerPage)
-                                    this.logScrollIndex = this.stdOut.length - this.guiLogsRowsPerPage
-                            this.updateLogsConsole()
+                            this.layout.page2.increaseScrollIndex()
+                            this.refresh()
                             return
                         }
                     }
@@ -204,41 +349,35 @@ class ConsoleManager extends EventEmitter {
             if (this.widgetsCollection[widget].isVisible())
                 this.widgetsCollection[widget].draw()
         }
-        this.Screen.clear()
+        this.Screen.print()
     }
 
     // Add Log Functions to the console
     log(message) {
-        this.stdOut.push(chalk.white(message))
+        this.stdOut.addRow({ text: message, color: 'white' })
         this.updateLogsConsole(true)
     }
 
     error(message) {
-        this.stdOut.push(chalk.red(message))
+        this.stdOut.addRow({ text: message, color: 'red' })
         this.updateLogsConsole(true)
     }
 
     warn(message) {
-        this.stdOut.push(chalk.yellow(message))
+        this.stdOut.addRow({ text: message, color: 'yellow' })
         this.updateLogsConsole(true)
     }
 
     info(message) {
-        this.stdOut.push(chalk.blue(message))
+        this.stdOut.addRow({ text: message, color: 'blue' })
         this.updateLogsConsole(true)
     }
 
     updateLogsConsole(resetCursor) {
         if (resetCursor) {
-            this.logScrollIndex = 0
+            this.layout.page2.setScrollIndex(0)
         }
-        if (this.stdOut.length > this.guiLogsRowsPerPage) {
-            this.layout.setPage2(this.stdOut.slice(this.stdOut.length - this.logScrollIndex - this.guiLogsRowsPerPage, this.stdOut.length - this.logScrollIndex).join('\n'))
-            this.refresh()
-        } else {
-            this.layout.setPage2(this.stdOut.join('\n'))
-            this.refresh()
-        }
+        this.refresh()
     }
 
     truncate(str, n, useWordBoundary) {
@@ -248,30 +387,31 @@ class ConsoleManager extends EventEmitter {
             subString.substr(0, subString.lastIndexOf(" ")) :
             subString) + "…";
     }
-
-    removeColors(str) {
-        return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
-    }
 }
 
 class DoubleLayout {
-    constructor(border = true, selected = 0) {
+    constructor(page1, page2, border = true, selected = 0) {
         this.CM = new ConsoleManager()
         this.border = border
         this.selected = selected
-        this.page1 = ""
-        this.page2 = ""
-        this.logPageTitle = "─LOGS"
+        this.page1 = page1
+        this.page2 = page2
+        this.page2Title = "─LOGS"
         this.applicationTitle = this.CM.applicationTitle
     }
 
     setPage1(page) { this.page1 = page }
+
     setPage2(page) { this.page2 = page }
+
     setBorder(border) { this.border = border }
+
     setSelected(selected) { this.selected = selected }
+
     getSelected() {
         return this.selected
     }
+
     changeLayout() {
         if (this.selected == 0) {
             this.selected = 1
@@ -281,33 +421,58 @@ class DoubleLayout {
     }
 
     drawLine(line, index) {
-        const unformattedLine = this.CM.removeColors(line)
-        const _line = unformattedLine.length > this.CM.Screen.width - 2 ? this.CM.truncate(unformattedLine, this.CM.Screen.width - 10, false) : line
-        const renderedLine = `${this.selected === index ? chalk.cyan("│") : chalk.white("│")}${_line}${" ".repeat(this.CM.Screen.width - this.CM.removeColors(_line).length - 2)}${this.selected === index ? chalk.cyan("│") : chalk.white("│")}`
-        this.CM.Screen.write(`${renderedLine}\n`)
-    }
-
-    draw() {
-        this.CM.Screen.startWrite()
-        if (this.border) { // Draw pages with borders 
-            this.CM.Screen.write(this.selected === 0 ? chalk.cyan(`┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐\n`) : chalk.white(`┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐\n`))
-            this.page1.split("\n").forEach(line => {
-                this.drawLine(line, 0)
-            })
-            this.CM.Screen.write(chalk.cyan(`├${this.logPageTitle}${"─".repeat(this.CM.Screen.width - this.logPageTitle.length - 2)}┤\n`))
-            this.page2.split("\n").forEach(line => {
-                this.drawLine(line, 1)
-            })
-            this.CM.Screen.write(this.selected === 1 ? chalk.cyan(`└${"─".repeat(this.CM.Screen.width - 2)}┘\n`) : chalk.white(`└${"─".repeat(this.CM.Screen.width - 2)}┘\n`))
-        } else { // Draw pages without borders
-            this.page1.split("\n").forEach(line => {
-                this.CM.Screen.write(`${line}\n`)
-            })
-            this.page2.split("\n").forEach(line => {
-                this.CM.Screen.write(`${line}\n`)
+        let unformattedLine = ""
+        let newLine = [...line]
+        line.forEach(element => {
+            unformattedLine += element.text
+        })
+        if (unformattedLine.length > this.CM.Screen.width - 2) { // Need to truncate
+            const offset = 2
+            newLine = JSON.parse(JSON.stringify(line)) // Shallow copy because I don't want to modify the values but not the original
+            let diff = unformattedLine.length - this.CM.Screen.width
+                // remove truncated text
+            for (let i = newLine.length - 1; i >= 0; i--) {
+                if (newLine[i].text.length > diff + offset) {
+                    newLine[i].text = this.CM.truncate(newLine[i].text, (newLine[i].text.length - diff) - offset, true)
+                    break
+                } else {
+                    diff -= newLine[i].text.length
+                    newLine.splice(i, 1)
+                }
+            }
+            // Update unformatted line
+            unformattedLine = ""
+            newLine.forEach(element => {
+                unformattedLine += element.text
             })
         }
-        this.CM.Screen.endWrite()
+        newLine.unshift({ text: "│", style: { color: this.selected === index ? "cyan" : "white" } })
+        if (unformattedLine.length <= this.CM.Screen.width - 2) {
+            newLine.push({ text: `${" ".repeat((this.CM.Screen.width - unformattedLine.length) - 2)}`, style: { color: "" } })
+        }
+        newLine.push({ text: "│", style: { color: this.selected === index ? "cyan" : "white" } })
+        this.CM.Screen.write(...newLine)
+    }
+
+    draw() { //TODO: Trim also the application title
+        if (this.border) { // Draw pages with borders
+            this.CM.Screen.write(this.selected === 0 ? { text: `┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐`, style: { color: 'cyan' } } : { text: `┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐`, style: { color: 'white' } })
+            this.page1.getContent().forEach(line => {
+                this.drawLine(line, 0)
+            })
+            this.CM.Screen.write({ text: `├${this.page2Title}${"─".repeat(this.CM.Screen.width - this.page2Title.length - 2)}┤`, style: { color: 'cyan' } })
+            this.page2.getContent().forEach(line => {
+                this.drawLine(line, 1)
+            })
+            this.CM.Screen.write(this.selected === 1 ? { text: `└${"─".repeat(this.CM.Screen.width - 2)}┘`, style: { color: 'cyan' } } : { text: `└${"─".repeat(this.CM.Screen.width - 2)}┘`, style: { color: 'white' } })
+        } else { // Draw pages without borders
+            this.page1.getContent().forEach(line => {
+                this.CM.Screen.write({ text: `${line}`, style: { color: 'white' } })
+            })
+            this.page2.getContent().forEach(line => {
+                this.CM.Screen.write({ text: `${line}`, style: { color: 'white' } })
+            })
+        }
     }
 }
 
@@ -428,8 +593,7 @@ class OptionPopup extends EventEmitter {
     }
 
     draw() {
-        this.CM.Screen.startWrite()
-            // Change start index if selected is not in the adaptOptions return array
+        // Change start index if selected is not in the adaptOptions return array
         if (this.adaptOptions().indexOf(this.selected) === -1) {
             this.startIndex = this.options.indexOf(this.selected) - this.adaptOptions().length + 1 > 0 ? this.options.indexOf(this.selected) - this.adaptOptions().length + 1 : 0
         }
@@ -460,9 +624,8 @@ class OptionPopup extends EventEmitter {
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write(line)
+            this.CM.Screen.write({ text: line, style: { color: 'white' } })
         })
-        this.CM.Screen.endWrite()
         return this
     }
 }
@@ -630,7 +793,6 @@ class InputPopup extends EventEmitter {
     }
 
     draw() {
-        this.CM.Screen.startWrite()
         const offset = 2
         const windowWidth = this.title.length > this.value.toString().length ? this.title.length + (2 * offset) : this.value.toString().length + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
@@ -655,14 +817,14 @@ class InputPopup extends EventEmitter {
         const windowDesign = `${header}${content}${footer}`
         windowDesign.split('\n').forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write(line)
+            this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
-        this.CM.Screen.endWrite()
         return this
     }
 }
 
 export {
+    PageBuilder,
     ConsoleManager,
     OptionPopup,
     InputPopup
