@@ -380,7 +380,6 @@ class ConsoleManager extends EventEmitter {
         this.refresh()
     }
 
-    // TODO: Add Truncate to the screen.write function
     truncate(str, n, useWordBoundary) {
         if (str.length <= n) { return str; }
         const subString = str.substr(0, n - 1); // the original check
@@ -423,18 +422,40 @@ class DoubleLayout {
 
     drawLine(line, index) {
         let unformattedLine = ""
+        let newLine = [...line]
         line.forEach(element => {
             unformattedLine += element.text
         })
-        let newLine = [...line] // Shallow copy
+        if (unformattedLine.length > this.CM.Screen.width - 2) { // Need to truncate
+            const offset = 2
+            newLine = JSON.parse(JSON.stringify(line)) // Shallow copy because I don't want to modify the values but not the original
+            let diff = unformattedLine.length - this.CM.Screen.width
+                // remove truncated text
+            for (let i = newLine.length - 1; i >= 0; i--) {
+                if (newLine[i].text.length > diff + offset) {
+                    newLine[i].text = this.CM.truncate(newLine[i].text, (newLine[i].text.length - diff) - offset, true)
+                    break
+                } else {
+                    diff -= newLine[i].text.length
+                    newLine.splice(i, 1)
+                }
+            }
+            // Update unformatted line
+            unformattedLine = ""
+            newLine.forEach(element => {
+                unformattedLine += element.text
+            })
+        }
         newLine.unshift({ text: "│", style: { color: this.selected === index ? "cyan" : "white" } })
-        newLine.push({ text: `${" ".repeat(this.CM.Screen.width - unformattedLine.length - 2)}`, style: { color: "" } })
+        if (unformattedLine.length <= this.CM.Screen.width - 2) {
+            newLine.push({ text: `${" ".repeat((this.CM.Screen.width - unformattedLine.length) - 2)}`, style: { color: "" } })
+        }
         newLine.push({ text: "│", style: { color: this.selected === index ? "cyan" : "white" } })
         this.CM.Screen.write(...newLine)
     }
 
-    draw() {
-        if (this.border) { // Draw pages with borders 
+    draw() { //TODO: Trim also the application title
+        if (this.border) { // Draw pages with borders
             this.CM.Screen.write(this.selected === 0 ? { text: `┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐`, style: { color: 'cyan' } } : { text: `┌─${this.applicationTitle}${"─".repeat(this.CM.Screen.width - this.applicationTitle.length - 3)}┐`, style: { color: 'white' } })
             this.page1.getContent().forEach(line => {
                 this.drawLine(line, 0)
