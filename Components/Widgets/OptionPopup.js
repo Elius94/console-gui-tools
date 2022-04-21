@@ -68,6 +68,30 @@ export class OptionPopup extends EventEmitter {
                     this.startIndex--
                 }
                 break
+            case 'pagedown':
+                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                    this.setSelected(this.options[(this.options.indexOf(this.selected) + this.adaptOptions().length) % this.options.length], false)
+                    if (this.startIndex + this.adaptOptions().length < this.options.length) {
+                        this.startIndex += this.adaptOptions().length
+                    } else {
+                        this.startIndex = 0
+                    }
+                } else {
+                    return
+                }
+                break
+            case 'pageup':
+                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                    this.setSelected(this.options[(this.options.indexOf(this.selected) - this.adaptOptions().length + this.options.length) % this.options.length], false)
+                    if (this.startIndex > this.adaptOptions().length) {
+                        this.startIndex -= this.adaptOptions().length
+                    } else {
+                        this.startIndex = 0
+                    }
+                } else {
+                    return
+                }
+                break
             case 'return':
                 {
                     this.emit(`confirm`, this.selected)
