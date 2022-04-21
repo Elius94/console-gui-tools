@@ -418,3 +418,11 @@ the instance of ConsoleManager (singleton)
 the instance of ConsoleManager (singleton)
 
 **Kind**: global constant
+
+# Other documentation
+
+[ConsoleManager](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/DOCS.md).
+
+[Components](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/README.md)
+
+[Layouts](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/Layout/README.md)
