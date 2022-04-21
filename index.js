@@ -127,33 +127,72 @@ class ConsoleManager extends EventEmitter {
         })
     }
 
+    /**
+     * @function setKeyListener(id, manageFunction)
+     * @description This function is used to set a key listener for a specific widget. The event listener is stored in the eventListenersContainer object.
+     * @param {string} id - The id of the widget.
+     * @param {function} manageFunction - The function to call when the key is pressed.
+     * @memberof ConsoleManager
+     * @example CM.setKeyListener('inputPopup', popup.keyListener)
+     */
     setKeyListener(id, manageFunction) {
         this.eventListenersContainer[id] = manageFunction
         this.Input.addListener('keypress', this.eventListenersContainer[id])
     }
 
+    /**
+     * @function removeKeyListener(id)
+     * @description This function is used to remove a key listener for a specific widget. The event listener is removed from the eventListenersContainer object.
+     * @param {string} id - The id of the widget.
+     * @memberof ConsoleManager
+     * @example CM.removeKeyListener('inputPopup')
+     */
     removeKeyListener(id) {
         this.Input.removeListener('keypress', this.eventListenersContainer[id])
         delete this.eventListenersContainer[id]
     }
 
+    /**
+     * @function registerWidget(widget)
+     * @description This function is used to register a widget. The widget is stored in the widgetsCollection object. That is called by the widgets in show().
+     * @param {Widget} widget - The widget to register.
+     * @memberof ConsoleManager
+     */
     registerWiget(widget) {
         this.widgetsCollection[widget.id] = widget
     }
 
+    /**
+     * @function unregisterWidget(id)
+     * @description This function is used to unregister a widget. The widget is removed from the widgetsCollection object. That is called by the widgets in hide().
+     * @param {string} id - The id of the widget.
+     * @memberof ConsoleManager
+     */
     unRegisterWidget(widget) {
         if (this.widgetsCollection[widget.id]) {
             delete this.widgetsCollection[widget.id]
         }
     }
 
+    /**
+     * @function setHomePage(page)
+     * @description This function is used to set the home page. It also refresh the screen.
+     * @param {PageBuilder} page - The page to set as home page.
+     * @memberof ConsoleManager
+     * @example CM.setHomePage(p)
+     */
     setHomePage(page) {
         this.homePage = page
         this.layout.setPage1(this.homePage)
         this.refresh()
     }
 
-    // Draw the console on the screen
+    /**
+     * @function refresh()
+     * @description This function is used to refresh the screen. It do the following sequence: Clear the screen, draw layout, draw widgets and finally print the screen to the stdOut.
+     * @memberof ConsoleManager
+     * @example CM.refresh()
+     */
     refresh() {
         this.Screen.update()
         this.layout.draw()
@@ -164,27 +203,60 @@ class ConsoleManager extends EventEmitter {
         this.Screen.print()
     }
 
-    // Add Log Functions to the console
+    /** 
+     * @function log(message)
+     * @description This function is used to log a message. It is used to log messages in the log page. Don't add colors to the message.
+     * @param {string} message - The message to log.
+     * @memberof ConsoleManager
+     * @example CM.log("Hello world")
+     */
     log(message) {
         this.stdOut.addRow({ text: message, color: 'white' })
         this.updateLogsConsole(true)
     }
 
+    /** 
+     * @function error(message)
+     * @description This function is used to log an error message. It is used to log red messages in the log page. Don't add colors to the message.
+     * @param {string} message - The message to log.
+     * @memberof ConsoleManager
+     * @example CM.error("Anomaly detected")
+     */
     error(message) {
         this.stdOut.addRow({ text: message, color: 'red' })
         this.updateLogsConsole(true)
     }
 
+    /** 
+     * @function warn(message)
+     * @description This function is used to log a warning message. It is used to log yellow messages in the log page. Don't add colors to the message.
+     * @param {string} message - The message to log.
+     * @memberof ConsoleManager
+     * @example CM.warn("Anomaly detected")
+     */
     warn(message) {
         this.stdOut.addRow({ text: message, color: 'yellow' })
         this.updateLogsConsole(true)
     }
 
+    /** 
+     * @function warn(message)
+     * @description This function is used to log an info message. It is used to log blue messages in the log page. Don't add colors to the message.
+     * @param {string} message - The message to log.
+     * @memberof ConsoleManager
+     * @example CM.info("Anomaly detected")
+     */
     info(message) {
         this.stdOut.addRow({ text: message, color: 'blue' })
         this.updateLogsConsole(true)
     }
 
+    /**
+     * @function updateLogsConsole(reset)
+     * @description This function is used to update the logs console. It is called by the log functions.
+     * @param {boolean} reset - If true, the log scroll index is resetted.
+     * @memberof ConsoleManager
+     */
     updateLogsConsole(resetCursor) {
         if (resetCursor) {
             this.layout.page2.setScrollIndex(0)
@@ -192,6 +264,16 @@ class ConsoleManager extends EventEmitter {
         this.refresh()
     }
 
+    // TODO: move to utils.js
+    /**
+     * @function truncate(str, n, useWordBoundary)
+     * @description This function is used to truncate a string adding ... at the end.
+     * @param {string} str - The string to truncate.
+     * @param {number} n - The number of characters to keep.
+     * @param {boolean} useWordBoundary - If true, the truncation will be done at the end of the word.
+     * @memberof ConsoleManager
+     * @example CM.truncate("Hello world", 5, true) // "Hello..."
+     */
     truncate(str, n, useWordBoundary) {
         if (str.length <= n) { return str; }
         const subString = str.substr(0, n - 1); // the original check
