@@ -13,6 +13,7 @@ const modeList = ["random", "linear"]
 const clientManager = new EventEmitter()
 
 import { ConsoleManager, OptionPopup, InputPopup, PageBuilder } from '../index.js'
+import ButtonPopup from '../components/Widgets/ButtonPopup.js';
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
@@ -164,9 +165,15 @@ GUI.on("keypressed", (key) => {
             break
         case 's':
             new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
-                period = _period
-                GUI.warn(`NEW PERIOD: ${period}`)
-                drawGui()
+                new ButtonPopup("popupConfirmPeriod", "Confirm period", `Period set to ${period} ms, apply?`, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
+                    if (answer === "Yes") {
+                        period = _period
+                        GUI.warn(`NEW PERIOD: ${period}`)
+                    } else if (answer === "?") {
+                        GUI.info(`Choose ok to confirm period`)
+                    }
+                    drawGui()
+                })
             })
             break
         case 'h':

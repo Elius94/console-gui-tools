@@ -27,5 +27,8 @@
     "homepage": "https://github.com/Elius94/console-gui-tools#readme",
     "dependencies": {
         "chalk": "^5.0.1"
+    },
+    "devDependencies": {
+        "jsdoc-to-markdown": "^7.1.1"
     }
 }
