@@ -251,3 +251,10 @@ The layout instance
 
 **Kind**: global constant
 
+# Other documentation
+
+[Components](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/README.md#L348).
+
+[Widgets](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/Widgets/README.md#L305)
+
+[Layouts](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/Layout/README.md)

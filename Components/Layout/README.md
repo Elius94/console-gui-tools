@@ -151,3 +151,11 @@ The title of page2.
 The application title.
 
 **Kind**: global constant
+
+# Other documentation
+
+[ConsoleManager](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/DOCS.md).
+
+[Components](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/README.md)
+
+[Widgets](https://github.com/Elius94/console-gui-tools/blob/dc6094cbc9a9a0f70bc7877804261af129a0748c/Components/Widgets/README.md)
