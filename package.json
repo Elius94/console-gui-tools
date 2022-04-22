@@ -1,7 +1,7 @@
 {
     "name": "console-gui-tools",
-    "version": "1.1.7",
-    "description": "A simple library to draw option menu or other popup inputs and layout on Node.js console.",
+    "version": "1.1.8",
+    "description": "A simple library to draw option menu, text popup or other widgets and layout on a Node.js console.",
     "main": "src/ConsoleGui.js",
     "type": "module",
     "scripts": {
@@ -17,7 +17,12 @@
         "gui",
         "menu",
         "popup",
-        "layout"
+        "layout",
+        "node",
+        "node.js",
+        "curses",
+        "ncurses",
+        "tui"
     ],
     "author": "Elia Lazzari",
     "license": "SEE LICENSE IN LICENSE",
