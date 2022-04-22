@@ -74,7 +74,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function addGenericListeners()
      * @description This function is used to make the ConsoleManager handle the key events when no widgets are showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @memberof ConsoleManager
@@ -128,7 +127,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function setKeyListener(id, manageFunction)
      * @description This function is used to set a key listener for a specific widget. The event listener is stored in the eventListenersContainer object.
      * @param {string} id - The id of the widget.
      * @param {function} manageFunction - The function to call when the key is pressed.
@@ -141,7 +139,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function removeKeyListener(id)
      * @description This function is used to remove a key listener for a specific widget. The event listener is removed from the eventListenersContainer object.
      * @param {string} id - The id of the widget.
      * @memberof ConsoleManager
@@ -153,7 +150,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function registerWidget(widget)
      * @description This function is used to register a widget. The widget is stored in the widgetsCollection object. That is called by the widgets in show().
      * @param {Widget} widget - The widget to register.
      * @memberof ConsoleManager
@@ -163,7 +159,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function unregisterWidget(id)
      * @description This function is used to unregister a widget. The widget is removed from the widgetsCollection object. That is called by the widgets in hide().
      * @param {string} id - The id of the widget.
      * @memberof ConsoleManager
@@ -175,7 +170,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function setHomePage(page)
      * @description This function is used to set the home page. It also refresh the screen.
      * @param {PageBuilder} page - The page to set as home page.
      * @memberof ConsoleManager
@@ -188,7 +182,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function refresh()
      * @description This function is used to refresh the screen. It do the following sequence: Clear the screen, draw layout, draw widgets and finally print the screen to the stdOut.
      * @memberof ConsoleManager
      * @example CM.refresh()
@@ -203,8 +196,7 @@ class ConsoleManager extends EventEmitter {
         this.Screen.print()
     }
 
-    /** 
-     * @function log(message)
+    /**
      * @description This function is used to log a message. It is used to log messages in the log page. Don't add colors to the message.
      * @param {string} message - The message to log.
      * @memberof ConsoleManager
@@ -216,7 +208,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /** 
-     * @function error(message)
      * @description This function is used to log an error message. It is used to log red messages in the log page. Don't add colors to the message.
      * @param {string} message - The message to log.
      * @memberof ConsoleManager
@@ -227,8 +218,7 @@ class ConsoleManager extends EventEmitter {
         this.updateLogsConsole(true)
     }
 
-    /** 
-     * @function warn(message)
+    /**
      * @description This function is used to log a warning message. It is used to log yellow messages in the log page. Don't add colors to the message.
      * @param {string} message - The message to log.
      * @memberof ConsoleManager
@@ -239,8 +229,7 @@ class ConsoleManager extends EventEmitter {
         this.updateLogsConsole(true)
     }
 
-    /** 
-     * @function warn(message)
+    /**
      * @description This function is used to log an info message. It is used to log blue messages in the log page. Don't add colors to the message.
      * @param {string} message - The message to log.
      * @memberof ConsoleManager
@@ -252,7 +241,6 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @function updateLogsConsole(reset)
      * @description This function is used to update the logs console. It is called by the log functions.
      * @param {boolean} reset - If true, the log scroll index is resetted.
      * @memberof ConsoleManager
@@ -266,7 +254,6 @@ class ConsoleManager extends EventEmitter {
 
     // TODO: move to utils.js
     /**
-     * @function truncate(str, n, useWordBoundary)
      * @description This function is used to truncate a string adding ... at the end.
      * @param {string} str - The string to truncate.
      * @param {number} n - The number of characters to keep.

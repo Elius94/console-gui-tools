@@ -38,7 +38,6 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @function keyListnerNumeric(str, key)
      * @description This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @param {string} str - The string of the input.
@@ -101,7 +100,6 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @function keyListnerText(str, key)
      * @description This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @param {string} str - The string of the input.

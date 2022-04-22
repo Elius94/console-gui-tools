@@ -43,7 +43,6 @@ export class OptionPopup extends EventEmitter {
     }
 
     /**
-     * @function keyListner(str, key)
      * @description This function is used to make the ConsoleManager handle the key events when the popup is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @param {string} str - The string of the input.

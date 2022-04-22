@@ -13,15 +13,6 @@
 </dd>
 </dl>
 
-## Functions
-
-<dl>
-<dt><a href="#OptionPopup.keyListner(str, key)"> key)(str, key)</a></dt>
-<dd><p>This function is used to make the ConsoleManager handle the key events when the popup is showed.
-Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
-</dd>
-</dl>
-
 <a name="OptionPopup"></a>
 
 ## OptionPopup ⇐ <code>EventEmitter</code>
@@ -30,6 +21,7 @@ Inside this function are defined all the keys that can be pressed and the action
 
 * [OptionPopup](#OptionPopup) ⇐ <code>EventEmitter</code>
     * [new OptionPopup(id, title, options, selected, visible)](#new_OptionPopup_new)
+    * [.keyListner(str, key)](#OptionPopup+keyListner)
     * [.getSelected()](#OptionPopup+getSelected) ⇒ <code>string</code> \| <code>number</code>
     * [.setSelected(selected)](#OptionPopup+setSelected) ⇒ [<code>OptionPopup</code>](#OptionPopup)
     * [.show()](#OptionPopup+show) ⇒ [<code>OptionPopup</code>](#OptionPopup)
@@ -57,6 +49,18 @@ This class is used to create a popup with a list of selectable options. Emits t
 ```js
 const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
 ```
+<a name="OptionPopup+keyListner"></a>
+
+### optionPopup.keyListner(str, key)
+This function is used to make the ConsoleManager handle the key events when the popup is showed.Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
+
+**Kind**: instance method of [<code>OptionPopup</code>](#OptionPopup)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | The string of the input. |
+| key | <code>Object</code> | The key object. |
+
 <a name="OptionPopup+getSelected"></a>
 
 ### optionPopup.getSelected() ⇒ <code>string</code> \| <code>number</code>

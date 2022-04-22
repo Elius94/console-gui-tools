@@ -13,19 +13,6 @@
 </dd>
 </dl>
 
-## Functions
-
-<dl>
-<dt><a href="#InputPopup.keyListnerNumeric(str, key)"> key)(str, key)</a></dt>
-<dd><p>This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
-Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
-</dd>
-<dt><a href="#InputPopup.keyListnerText(str, key)"> key)(str, key)</a></dt>
-<dd><p>This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
-Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
-</dd>
-</dl>
-
 <a name="InputPopup"></a>
 
 ## InputPopup ⇐ <code>EventEmitter</code>
@@ -34,6 +21,8 @@ Inside this function are defined all the keys that can be pressed and the action
 
 * [InputPopup](#InputPopup) ⇐ <code>EventEmitter</code>
     * [new InputPopup(id, title, value, numeric, visible)](#new_InputPopup_new)
+    * [.keyListnerNumeric(str, key)](#InputPopup+keyListnerNumeric)
+    * [.keyListnerText(str, key)](#InputPopup+keyListnerText)
     * [.getValue()](#InputPopup+getValue) ⇒ <code>string</code> \| <code>number</code>
     * [.setValue(newValue)](#InputPopup+setValue) ⇒ [<code>InputPopup</code>](#InputPopup)
     * [.show()](#InputPopup+show) ⇒ [<code>InputPopup</code>](#InputPopup)
@@ -61,6 +50,30 @@ This class is used to create a popup with a text or numeric input. Emits the fo
 ```js
 const popup = new InputPopup("popup1", "Choose the number", selectedNumber, true).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
 ```
+<a name="InputPopup+keyListnerNumeric"></a>
+
+### inputPopup.keyListnerNumeric(str, key)
+This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
+
+**Kind**: instance method of [<code>InputPopup</code>](#InputPopup)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | The string of the input. |
+| key | <code>Object</code> | The key object. |
+
+<a name="InputPopup+keyListnerText"></a>
+
+### inputPopup.keyListnerText(str, key)
+This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
+
+**Kind**: instance method of [<code>InputPopup</code>](#InputPopup)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | The string of the input. |
+| key | <code>Object</code> | The key object. |
+
 <a name="InputPopup+getValue"></a>
 
 ### inputPopup.getValue() ⇒ <code>string</code> \| <code>number</code>

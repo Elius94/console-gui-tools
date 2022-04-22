@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const dmd = require("dmd");
 
+const docsFolder = "docs"
+
 // This is where the root plugin folder is, relative to this script
 const pluginsRootDir = ["src", "src/components", "src/components/layout", "src/components/widgets"];
 
@@ -27,8 +29,8 @@ const plugins = allFiles.map((plugin) => ({
 }));
 
 // create docs directory if it doesn't exist
-if (!fs.existsSync(path.join(__dirname, "docs"))) {
-    fs.mkdirSync(path.join(__dirname, "docs"));
+if (!fs.existsSync(path.join(__dirname, docsFolder))) {
+    fs.mkdirSync(path.join(__dirname, docsFolder));
 }
 
 // Go through plugin folders and generate an .md file for each folder
@@ -38,5 +40,14 @@ plugins.forEach(({ pluginPath, pluginName }) => {
     const templateData = jsdoc2md.getTemplateDataSync({ files: pluginPath });
     const output = dmd(templateData);
 
-    fs.writeFileSync(path.join(__dirname, "docs", `${pluginName}.md`), output);
+    fs.writeFileSync(path.join(__dirname, docsFolder, `${pluginName}.md`), output);
 });
+
+// Create a DOCS.md file that contains a list of all the plugins and their links to their docs
+const header = `# DOCS\n\nTo view the documentation for a specific component or class, click on the links below.\n\n`;
+
+const links = plugins.map(({ pluginName }) => {
+    return `* [${pluginName}](${docsFolder}/${pluginName}.md)\n`;
+});
+
+fs.writeFileSync(path.join(__dirname, "DOCS.md"), header + links.join(""));

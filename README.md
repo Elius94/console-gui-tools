@@ -207,3 +207,14 @@ When the logs exceed the limit, you can scroll up and down with up and down arro
 ![Animation](https://user-images.githubusercontent.com/14907987/162482410-bfe26922-88f5-46bd-8659-059fcc698cf8.gif)
 
 This library is in development now. New componets will come asap.
+
+
+## License and copyright
+
+MIT License Copyright (c) 2022 [Elia Lazzari](https://github.com/Elius94)
+
+## Code Documentation
+
+To see the code documentation, please click on the following link:
+
+[Code documentation](DOCS.md)

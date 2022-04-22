@@ -13,15 +13,6 @@
 </dd>
 </dl>
 
-## Functions
-
-<dl>
-<dt><a href="#ButtonPopup.keyListner(str, key)"> key)(str, key)</a></dt>
-<dd><p>This function is used to make the ConsoleManager handle the key events when the popup is showed.
-Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
-</dd>
-</dl>
-
 <a name="ButtonPopup"></a>
 
 ## ButtonPopup ⇐ <code>EventEmitter</code>
@@ -30,6 +21,7 @@ Inside this function are defined all the keys that can be pressed and the action
 
 * [ButtonPopup](#ButtonPopup) ⇐ <code>EventEmitter</code>
     * [new ButtonPopup(id, title, message, buttons, visible)](#new_ButtonPopup_new)
+    * [.keyListner(str, key)](#ButtonPopup+keyListner)
     * [.show()](#ButtonPopup+show) ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
     * [.hide()](#ButtonPopup+hide) ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
     * [.isVisible()](#ButtonPopup+isVisible) ⇒ <code>boolean</code>
@@ -55,6 +47,18 @@ This class is used to create a popup with That asks for a confirm. Emits the fo
 ```js
 const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
 ```
+<a name="ButtonPopup+keyListner"></a>
+
+### buttonPopup.keyListner(str, key)
+This function is used to make the ConsoleManager handle the key events when the popup is showed.Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
+
+**Kind**: instance method of [<code>ButtonPopup</code>](#ButtonPopup)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | The string of the input. |
+| key | <code>Object</code> | The key object. |
+
 <a name="ButtonPopup+show"></a>
 
 ### buttonPopup.show() ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
