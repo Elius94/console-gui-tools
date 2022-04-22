@@ -1,8 +1,8 @@
 import { EventEmitter } from "events"
 import readline from 'readline';
-import { PageBuilder, Screen } from './Components/index.js';
-import { DoubleLayout } from "./components/Layout/index.js";
-import { InputPopup, OptionPopup } from "./components/Widgets/index.js";
+import { PageBuilder, Screen } from './components/index.js';
+import { DoubleLayout } from "./components/layout/index.js";
+import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup } from "./components/widgets/index.js";
 
 /**
  * @class ConsoleManager
@@ -287,5 +287,7 @@ export {
     PageBuilder,
     ConsoleManager,
     OptionPopup,
-    InputPopup
+    InputPopup,
+    ConfirmPopup,
+    ButtonPopup
 }

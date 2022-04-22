@@ -1,0 +1,15 @@
+{
+    "source": {
+        "includePattern": ".+\\.js$",
+        "excludePattern": ".+\\.test.js"
+    },
+    "plugins": ["plugins/markdown", "node_modules/jsdoc-babel"],
+    "babel": {
+        "extensions": ["js"],
+        "ignore": ["**/*.test.js"],
+        "babelrc": false,
+        "presets": [
+            ["@babel/preset-env", { "targets": { "node": true } }]
+        ]
+    }
+}

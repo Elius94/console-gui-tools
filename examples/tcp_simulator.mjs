@@ -12,8 +12,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder } from '../index.js'
-import ButtonPopup from '../components/Widgets/ButtonPopup.js';
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup } from '../src/ConsoleGui.js'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page

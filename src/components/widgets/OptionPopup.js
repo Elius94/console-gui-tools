@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { ConsoleManager } from "../../index.js"
+import { ConsoleManager } from "../../ConsoleGui.js"
 
 /**
  * @class OptionPopup
