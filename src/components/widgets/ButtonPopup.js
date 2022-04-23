@@ -267,12 +267,12 @@ export class ButtonPopup extends EventEmitter {
                             this.CM.error("Error in ButtonPopup draw function")
                         }
                         if (colIndex === row.length - 1) {
-                            content += " ".repeat(emptySpace / 2) + "│\n"
+                            content += " ".repeat(!emptySpace % 2 ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
                         } else {
                             content += " ".repeat(spaceBetweenButtons)
                         }
                     } else if (colIndex === row.length) {
-                        content += " ".repeat(emptySpace / 2) + "│\n"
+                        content += " ".repeat(!emptySpace % 2 ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
                     }
                 })
             }

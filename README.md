@@ -10,7 +10,7 @@ Moreover in this way the application is managed by the input event "keypressed" 
 For example, to change variables you can open popups with an option selector or with a textbox.
 It's in embryonic phase, any suggestion will be constructive :D
 
-![Animation](https://user-images.githubusercontent.com/14907987/164765317-062c0fe9-7af3-4aa5-a96e-9407a9245341.gif)
+![Animation](https://user-images.githubusercontent.com/14907987/164886106-b9c1e295-f4bf-4cc3-9065-365e1141dfd9.gif)
 
 
  [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=elius94&repo=console-gui-tools&theme=github_dark&show_icons=true)](https://github.com/Elius94/console-gui-tools) [![https://nodei.co/npm/console-gui-tools.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/console-gui-tools.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/console-gui-tools)

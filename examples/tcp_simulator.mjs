@@ -164,7 +164,7 @@ GUI.on("keypressed", (key) => {
             break
         case 's':
             new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
-                new ButtonPopup("popupConfirmPeriod", "Confirm period", `Period set to ${period} ms, apply?`, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
+                new ButtonPopup("popupConfirmPeriod", "Confirm period", `Period set to ${_period} ms, apply?`, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
                     if (answer === "Yes") {
                         period = _period
                         GUI.warn(`NEW PERIOD: ${period}`)
