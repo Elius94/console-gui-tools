@@ -2,7 +2,7 @@ import { EventEmitter } from "events"
 import readline from 'readline';
 import { PageBuilder, Screen } from './components/index.js';
 import { DoubleLayout } from "./components/layout/index.js";
-import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup } from "./components/widgets/index.js";
+import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup } from "./components/widgets/index.js";
 
 /**
  * @class ConsoleManager
@@ -263,9 +263,9 @@ class ConsoleManager extends EventEmitter {
      */
     truncate(str, n, useWordBoundary) {
         if (str.length <= n) { return str; }
-        const subString = str.substr(0, n - 1); // the original check
+        const subString = str.substring(0, n - 1); // the original check
         return (useWordBoundary ?
-            subString.substr(0, subString.lastIndexOf(" ")) :
+            subString.substring(0, subString.lastIndexOf(" ")) :
             subString) + "…";
     }
 }
@@ -276,5 +276,6 @@ export {
     OptionPopup,
     InputPopup,
     ConfirmPopup,
-    ButtonPopup
+    ButtonPopup,
+    CustomPopup
 }
