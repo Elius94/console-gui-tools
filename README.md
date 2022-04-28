@@ -156,7 +156,7 @@ const drawGui = () => {
 
 ## How to draw the application page?
 
-## NEW DRAWING ALGORYTM
+### NEW DRAWING ALGORYTM
 
 ![Animation](https://user-images.githubusercontent.com/14907987/164305847-ea699cba-bb40-46a2-88ea-01496d73b8b1.gif)
 
@@ -320,6 +320,34 @@ constructor(id, title)
 You can use it for example to confirm before quit the app:
 
 ![Animation](https://user-images.githubusercontent.com/14907987/164768797-3f538673-78da-4f67-b2c3-be1319f2fb95.gif)
+
+## To create a Custom Content Popup (Free content inside)
+```js
+const p = new PageBuilder(5) // Add a scroll limit so it will be scrollable with up and down
+p.addRow({ text: `Example of a custom popup content!`, color: 'yellow' })
+p.addRow({ text: `This is a custom popup!`, color: 'green' })
+p.addRow({ text: `It can be used to show a message,`, color: 'green' })
+p.addRow({ text: `or to show variables.`, color: 'green' })
+p.addRow({ text: `TCP Message sent: `, color: 'green' }, { text: `${tcpCounter}`, color: 'white' })
+p.addRow({ text: `Connected clients: `, color: 'green' }, { text: `${connectedClients}`, color: 'white' })
+p.addRow({ text: `Mode: `, color: 'green' }, { text: `${mode}`, color: 'white' })
+p.addRow({ text: `Message period: `, color: 'green' }, { text: `${period} ms`, color: 'white' })
+new CustomPopup("popupCustom1", "See that values", p, 32).show()
+```
+
+### Class CustomPopup:
+constructor(id, title, content, width)
+ - id: string
+ - title: string
+ - content: PageBuilder
+ - width: number
+
+You can use it for example to snow some custo text or values.
+If you declare it as a global variable, you can update it anytime.
+In the next steps I will add a new kind of components: InPageComponents, that will be added as a child of a PageBuilder class.
+That means that they allows to build a custom popup widget with components inside.
+
+![Animation](https://user-images.githubusercontent.com/14907987/165717880-db959165-8c43-4780-b76c-190172de25d5.gif)
  
 All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
 
