@@ -22,24 +22,24 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  */
 export class ButtonPopup extends EventEmitter {
     constructor(id, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
-        super()
-            /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager()
-        this.id = id
-        this.title = title
-        this.message = message
-        this.buttons = buttons
-        this.selected = 0 // The selected option
-        this.visible = visible
-        this.marginTop = 4
-        this.startIndex = 0
+        super();
+        /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+        this.CM = new ConsoleManager();
+        this.id = id;
+        this.title = title;
+        this.message = message;
+        this.buttons = buttons;
+        this.selected = 0; // The selected option
+        this.visible = visible;
+        this.marginTop = 4;
+        this.startIndex = 0;
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this)
-            const message = `ButtonPopup ${this.id} already exists.`
-            this.CM.error(message)
-            throw new Error(message)
+            this.CM.unRegisterWidget(this);
+            const message = `ButtonPopup ${this.id} already exists.`;
+            this.CM.error(message);
+            throw new Error(message);
         }
-        this.CM.registerWiget(this)
+        this.CM.registerWiget(this);
     }
 
     boxChars = {

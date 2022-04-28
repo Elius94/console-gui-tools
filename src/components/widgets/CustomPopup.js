@@ -23,22 +23,22 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  */
 export class CustomPopup extends EventEmitter {
     constructor(id, title, content, width, visible = false) {
-        super()
-            /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager()
-        this.id = id
-        this.title = title
-        this.content = content
-        this.width = width
-        this.visible = visible
-        this.marginTop = 4
+        super();
+        /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+        this.CM = new ConsoleManager();
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.width = width;
+        this.visible = visible;
+        this.marginTop = 4;
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this)
-            const message = `CustomPopup ${this.id} already exists.`
-            this.CM.error(message)
-            throw new Error(message)
+            this.CM.unRegisterWidget(this);
+            const message = `CustomPopup ${this.id} already exists.`;
+            this.CM.error(message);
+            throw new Error(message);
         }
-        this.CM.registerWiget(this)
+        this.CM.registerWiget(this);
     }
 
     /**

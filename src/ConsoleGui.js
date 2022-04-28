@@ -21,42 +21,50 @@ class ConsoleManager extends EventEmitter {
         this.Terminal = process.stdout;
         this.Input = process.stdin;
         if (!ConsoleManager.instance) {
-            ConsoleManager.instance = this
-                /** @const {Screen} Screen - The screen instance */
-            this.Screen = new Screen(this.Terminal)
-            this.widgetsCollection = []
-            this.eventListenersContainer = {}
-                /** @const {PageBuilder} stdOut - The logs page */
-            this.stdOut = new PageBuilder()
-                /** @const {PageBuilder} homePage - The main application */
+            ConsoleManager.instance = this;
+
+            /** @const {Screen} Screen - The screen instance */
+            this.Screen = new Screen(this.Terminal);
+            this.Screen.on("error", (err) => {
+                this.error(err)
+            })
+
+            this.widgetsCollection = [];
+            this.eventListenersContainer = {};
+
+            /** @const {PageBuilder} stdOut - The logs page */
+            this.stdOut = new PageBuilder();
+
+            /** @const {PageBuilder} homePage - The main application */
             this.homePage = new PageBuilder()
-            this.layoutBorder = true
+
+            this.layoutBorder = true;
 
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
-            this.changeLayoutKey = "ctrl+l"
-            this.applicationTitle = ""
-            this.changeLayoutkeys = this.changeLayoutKey.split('+')
-            this.logPageSize = 10
+            this.changeLayoutKey = "ctrl+l";
+            this.applicationTitle = "";
+            this.changeLayoutkeys = this.changeLayoutKey.split('+');
+            this.logPageSize = 10;
 
             if (options) {
                 if (options.logPageSize) {
-                    this.logPageSize = options.logPageSize
+                    this.logPageSize = options.logPageSize;
                 }
                 if (options.layoutBorder) {
-                    this.layoutBorder = options.layoutBorder
+                    this.layoutBorder = options.layoutBorder;
                 }
                 if (options.changeLayoutKey) {
-                    this.changeLayoutKey = options.changeLayoutKey
+                    this.changeLayoutKey = options.changeLayoutKey;
                 }
                 if (options.title) {
-                    this.applicationTitle = options.title
+                    this.applicationTitle = options.title;
                 }
             }
 
             /** @const {DoubleLayout} layout - The layout instance */
-            this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutBorder, 0)
-            this.layout.page2.setRowsPerPage(this.logPageSize)
-            this.addGenericListeners()
+            this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutBorder, 0);
+            this.layout.page2.setRowsPerPage(this.logPageSize);
+            this.addGenericListeners();
 
             // I use readline to manage the keypress event
             readline.emitKeypressEvents(this.Input);
