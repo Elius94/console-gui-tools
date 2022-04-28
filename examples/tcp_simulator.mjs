@@ -12,7 +12,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup } from '../src/ConsoleGui.js'
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup } from '../src/ConsoleGui.js'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
@@ -188,6 +188,18 @@ GUI.on("keypressed", (key) => {
                 GUI.warn(`NEW MIN VALUE: ${min}`)
                 drawGui()
             })
+            break
+        case '1':
+            const p = new PageBuilder(5) // Add a scroll limit so it will be scrollable with up and down
+            p.addRow({ text: `Example of a custom popup content!`, color: 'yellow' })
+            p.addRow({ text: `This is a custom popup!`, color: 'green' })
+            p.addRow({ text: `It can be used to show a message,`, color: 'green' })
+            p.addRow({ text: `or to show variables.`, color: 'green' })
+            p.addRow({ text: `TCP Message sent: `, color: 'green' }, { text: `${tcpCounter}`, color: 'white' })
+            p.addRow({ text: `Connected clients: `, color: 'green' }, { text: `${connectedClients}`, color: 'white' })
+            p.addRow({ text: `Mode: `, color: 'green' }, { text: `${mode}`, color: 'white' })
+            p.addRow({ text: `Message period: `, color: 'green' }, { text: `${period} ms`, color: 'white' })
+            new CustomPopup("popupCustom1", "See that values", p, 32).show()
             break
         case 'q':
             new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())

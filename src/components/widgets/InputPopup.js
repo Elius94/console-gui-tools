@@ -136,6 +136,14 @@ export class InputPopup extends EventEmitter {
                     delete this
                 }
                 break
+            case 'q':
+                {
+                    this.CM.emit('exit')
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
             default:
                 break
         }
@@ -210,7 +218,7 @@ export class InputPopup extends EventEmitter {
         if (this.numeric) {
             this.CM.setKeyListener(this.id, this.keyListnerNumeric.bind(this))
         } else {
-            this.CM.setKeyListener(this.id)
+            this.CM.setKeyListener(this.id, this.keyListnerText.bind(this))
         }
         return this
     }
@@ -225,7 +233,7 @@ export class InputPopup extends EventEmitter {
         if (this.numeric) {
             this.CM.removeKeyListener(this.id, this.keyListnerNumeric.bind(this))
         } else {
-            this.CM.removeKeyListener(this.id)
+            this.CM.removeKeyListener(this.id, this.keyListnerText.bind(this))
         }
         return this
     }
