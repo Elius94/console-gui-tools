@@ -5,6 +5,7 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @class OptionPopup
  * @extends EventEmitter
  * @description This class is used to create a popup with a list of selectable options. 
+ * ![OptionPopup](https://user-images.githubusercontent.com/14907987/165752387-2eac4936-1b5d-462e-9353-562d04f1b4fe.gif)
  * Emits the following events: 
  * - "confirm" when the user confirm the option
  * - "cancel" when the user cancel the option

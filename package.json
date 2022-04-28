@@ -6,7 +6,8 @@
     "type": "module",
     "scripts": {
         "test": "node ./examples/tcp_simulator.mjs",
-        "start": "node src/ConsoleGui.js"
+        "start": "node src/ConsoleGui.js",
+        "docsgen": "node ./docgen.cjs"
     },
     "repository": {
         "type": "git",

@@ -4,6 +4,7 @@ import ButtonPopup from "./ButtonPopup.js"
  * @class ConfirmPopup
  * @extends ButtonPopup
  * @description This class is an overload of ButtonPopup that is used to create a popup with That asks for a confirm [Yes, No]. 
+ * ![ConfirmPopup](https://user-images.githubusercontent.com/14907987/165752226-b76b157f-4935-4248-a5cc-3b21d087cb04.gif)
  * Emits the following events: 
  * - "confirm" when the user confirm
  * - "cancel" when the user cancel

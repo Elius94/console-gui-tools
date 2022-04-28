@@ -8,6 +8,6 @@ To view the documentation for a specific component or class, click on the links 
 * [DoubleLayout](docs/DoubleLayout.md)
 * [ButtonPopup](docs/ButtonPopup.md)
 * [ConfirmPopup](docs/ConfirmPopup.md)
-* [CustomPopup](docs/CustomPopup.md) <font color="red">(New!)</font>
+* [CustomPopup](docs/CustomPopup.md)
 * [InputPopup](docs/InputPopup.md)
 * [OptionPopup](docs/OptionPopup.md)

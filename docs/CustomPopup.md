@@ -36,7 +36,7 @@
 <a name="new_CustomPopup_new"></a>
 
 ### new CustomPopup(id, title, content, width, visible)
-This class is used to create a popup with a free content built with PageBuilder class. Emits the following events: - "confirm" when the user confirm- "cancel" when the user cancel- "exit" when the user exit- "data" when the user send custom event - the data is an object with the data and the event name
+This class is used to create a popup with a free content built with PageBuilder class. ![Animation](https://user-images.githubusercontent.com/14907987/165736767-d60f857f-3945-4b95-aa4f-292b6a41f789.gif)Emits the following events: - "confirm" when the user confirm- "cancel" when the user cancel- "exit" when the user exit- "data" when the user send custom event - the data is an object with the data and the event name
 
 
 | Param | Type | Description |
@@ -49,7 +49,7 @@ This class is used to create a popup with a free content built with PageBuilder 
 
 **Example**  
 ```js
-const popup = new CustomPopup("popup1", "Choose the number", selectedNumber, true).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
+const popup = new CustomPopup("popup1", "See that values", new PageBuilder()).show()
 ```
 <a name="CustomPopup+keyListner"></a>
 

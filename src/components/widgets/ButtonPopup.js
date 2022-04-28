@@ -5,6 +5,7 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @class ButtonPopup
  * @extends EventEmitter
  * @description This class is used to create a popup with That asks for a confirm. 
+ * ![ButtonPopup](https://user-images.githubusercontent.com/14907987/165752116-b796f41a-e4fe-45db-8c90-5d97318bd17a.gif)
  * Emits the following events: 
  * - "confirm" when the user confirm
  * - "cancel" when the user cancel

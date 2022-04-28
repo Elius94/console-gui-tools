@@ -35,7 +35,7 @@
 <a name="new_InputPopup_new"></a>
 
 ### new InputPopup(id, title, value, numeric, visible)
-This class is used to create a popup with a text or numeric input. Emits the following events: - "confirm" when the user confirm the input- "cancel" when the user cancel the input- "exit" when the user exit the input
+This class is used to create a popup with a text or numeric input. ![InputPopup](https://user-images.githubusercontent.com/14907987/165752281-e836b862-a54a-48d5-b4e7-954374d6509f.gif)Emits the following events: - "confirm" when the user confirm the input- "cancel" when the user cancel the input- "exit" when the user exit the input
 
 
 | Param | Type | Description |
