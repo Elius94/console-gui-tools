@@ -5,7 +5,9 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @class CustomPopup
  * @extends EventEmitter
  * @description This class is used to create a popup with a free content built with PageBuilder class. 
+ * 
  * ![Animation](https://user-images.githubusercontent.com/14907987/165736767-d60f857f-3945-4b95-aa4f-292b6a41f789.gif)
+ * 
  * Emits the following events: 
  * - "confirm" when the user confirm
  * - "cancel" when the user cancel
