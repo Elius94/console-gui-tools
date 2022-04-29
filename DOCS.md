@@ -9,5 +9,6 @@ To view the documentation for a specific component or class, click on the links 
 * [ButtonPopup](docs/ButtonPopup.md)
 * [ConfirmPopup](docs/ConfirmPopup.md)
 * [CustomPopup](docs/CustomPopup.md)
+* [FileManagerPopup](docs/FileManagerPopup.md)
 * [InputPopup](docs/InputPopup.md)
 * [OptionPopup](docs/OptionPopup.md)

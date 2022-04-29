@@ -12,7 +12,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup } from '../src/ConsoleGui.js'
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileManagerPopup } from '../src/ConsoleGui.js'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
@@ -200,6 +200,9 @@ GUI.on("keypressed", (key) => {
             p.addRow({ text: `Mode: `, color: 'green' }, { text: `${mode}`, color: 'white' })
             p.addRow({ text: `Message period: `, color: 'green' }, { text: `${period} ms`, color: 'white' })
             new CustomPopup("popupCustom1", "See that values", p, 32).show()
+            break
+        case 'f':
+            new FileManagerPopup("popupFileManager", "File Manager", "./").show()
             break
         case 'q':
             new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
