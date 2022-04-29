@@ -4,13 +4,13 @@ import fs from "fs"
 import path from "path"
 
 /**
- * @class FileManagerPopup
+ * @class FileSelectorPopup
  * @extends EventEmitter
  * @description This class is used to create a popup with a file input to select a file or a directory.
  * It will run a promise with fs.readdir to get the list of files and directories.
  * The user can select a file or a directory and the popup will be closed. 
  * 
- * ![FileManagerPopup](https://user-images.githubusercontent.com/14907987/165938464-c1426102-b598-42bb-8597-6337f0bcb009.gif)
+ * ![FileSelectorPopup](https://user-images.githubusercontent.com/14907987/165938464-c1426102-b598-42bb-8597-6337f0bcb009.gif)
  * 
  * Emits the following events: 
  * - "confirm" when the user confirm the file or directory selection. The file or directory path is passed as parameter like this: {path: "path/to/file", name: "file.ext"}
@@ -20,13 +20,13 @@ import path from "path"
  * @param {string} title - The title of the popup.
  * @param {string} basePath - The main path of the popup.
 re case sensitive.
- * @param {boolean} [limitToPath=false] - If true, the user * @param {boolean} [selectDirectory=false] - If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key.
+ * @param {boolean} [limitToPath=false] - If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key.
  * @param {Array<string>} [allowedExtensions=[]] - The allowed extensions. If not set, all extensions are allowed. The extensions a can only select files in the path. If false, the user can select files in the path and parent directories.
  * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
  * 
- * @example const popup = new FileManagerPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
+ * @example const popup = new FileSelectorPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
  */
-export class FileManagerPopup extends EventEmitter {
+export class FileSelectorPopup extends EventEmitter {
     constructor(id, title, basePath, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
         super();
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
@@ -44,7 +44,7 @@ export class FileManagerPopup extends EventEmitter {
         this.selected = { text: `../`, name: "../", type: "dir", path: path.join(basePath, "../") };
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this);
-            const message = `FileManagerPopup ${this.id} already exists.`;
+            const message = `FileSelectorPopup ${this.id} already exists.`;
             this.CM.error(message);
             throw new Error(message);
         }
@@ -59,7 +59,7 @@ export class FileManagerPopup extends EventEmitter {
      * [{text: "📄 file.ext", name: "file.ext", type: "file", path: "path/to/file.ext"}, {text: "📁 dir/", name: "dir", type: "dir", path: "path/to/dir"}]
      * @param {string} path - The path to load the list.
      * @returns {Promise<Array<object>>} The list of files and directories.
-     * @memberof FileManagerPopup
+     * @memberof FileSelectorPopup
      */
     listDir(dir) {
         return new Promise((resolve, reject) => {
@@ -92,7 +92,7 @@ export class FileManagerPopup extends EventEmitter {
     /**
      * @description This function calls the updateList function and store the result to this.options, it also refresh the list of files and directories.
      * @param {string} path - The path to load the list.
-     * @memberof FileManagerPopup
+     * @memberof FileSelectorPopup
      */
     updateList(_path) {
         if (this.limitToPath) {
@@ -117,7 +117,7 @@ export class FileManagerPopup extends EventEmitter {
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @param {string} str - The string of the input.
      * @param {Object} key - The key object.
-     * @memberof FileManagerPopup
+     * @memberof FileSelectorPopup
      */
     keyListner(str, key) {
         const ind = this.options.indexOf(this.selected)
@@ -213,7 +213,7 @@ export class FileManagerPopup extends EventEmitter {
     /**
      * @description This function is used to get the selected option.
      * @returns {string | number} The selected value of the popup.
-     * @memberof FileManagerPopup
+     * @memberof FileSelectorPopup
      */
     getSelected() {
         return this.selected
@@ -222,8 +222,8 @@ export class FileManagerPopup extends EventEmitter {
     /**
      * @description This function is used to change the selection of the popup. It also refresh the ConsoleManager.
      * @param {string | number} selected - The new value of the selection.
-     * @memberof FileManagerPopup
-     * @returns {FileManagerPopup} The instance of the FileManagerPopup.
+     * @memberof FileSelectorPopup
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      */
     setSelected(selected, refresh = true) {
         this.selected = selected
@@ -233,8 +233,8 @@ export class FileManagerPopup extends EventEmitter {
 
     /**
      * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
-     * @returns {FileManagerPopup} The instance of the FileManagerPopup.
-     * @memberof FileManagerPopup
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
+     * @memberof FileSelectorPopup
      */
     show() {
         if (!this.visible) {
@@ -247,8 +247,8 @@ export class FileManagerPopup extends EventEmitter {
 
     /**
      * @description This function is used to hide the popup. It also unregister the key events and refresh the ConsoleManager.
-     * @returns {FileManagerPopup} The instance of the FileManagerPopup.
-     * @memberof FileManagerPopup
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
+     * @memberof FileSelectorPopup
      */
     hide() {
         if (this.visible) {
@@ -262,16 +262,16 @@ export class FileManagerPopup extends EventEmitter {
     /**
      * @description This function is used to get the visibility of the popup.
      * @returns {boolean} The visibility of the popup.
-     * @memberof FileManagerPopup
+     * @memberof FileSelectorPopup
      */
     isVisible() {
         return this.visible
     }
 
     /**
-     * @description This function is used to add the FileManagerPopup key listener callback to te ConsoleManager.
-     * @returns {FileManagerPopup} The instance of the FileManagerPopup.
-     * @memberof FileManagerPopup
+     * @description This function is used to add the FileSelectorPopup key listener callback to te ConsoleManager.
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
+     * @memberof FileSelectorPopup
      */
     manageInput() {
         // Add a command input listener to change mode
@@ -280,9 +280,9 @@ export class FileManagerPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to remove the FileManagerPopup key listener callback to te ConsoleManager.
-     * @returns {FileManagerPopup} The instance of the FileManagerPopup.
-     * @memberof FileManagerPopup
+     * @description This function is used to remove the FileSelectorPopup key listener callback to te ConsoleManager.
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
+     * @memberof FileSelectorPopup
      */
     unManageInput() {
         // Add a command input listener to change mode
@@ -291,9 +291,9 @@ export class FileManagerPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to draw the FileManagerPopup to the screen in the middle.
-     * @returns {FileManagerPopup} The instance of the FileManagerPopup.
-     * @memberof FileManagerPopup
+     * @description This function is used to draw the FileSelectorPopup to the screen in the middle.
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
+     * @memberof FileSelectorPopup
      */
     draw() {
         // Change start index if selected is not in the adaptOptions return array
@@ -335,4 +335,4 @@ export class FileManagerPopup extends EventEmitter {
     }
 }
 
-export default FileManagerPopup
+export default FileSelectorPopup

@@ -348,6 +348,31 @@ In the next steps I will add a new kind of components: InPageComponents, that wi
 That means that they allows to build a custom popup widget with components inside.
 
 ![Animation](https://user-images.githubusercontent.com/14907987/165717880-db959165-8c43-4780-b76c-190172de25d5.gif)
+
+
+## To create a File Selector popup
+```js
+new FileSelectorPopup("popupFileManager", "File Manager", "./").show().on("confirm", (file) => {
+    GUI.warn(`File selected: ${file}`)
+    drawGui()
+})
+```
+### Class FileSelectorPopup:
+constructor(id, title, content, width)
+ - id: <code>string</code>
+ - title: <code>string</code>
+ - basePath: <code>string</code> - _The main path of the popup. re case sensitive._
+ - limitToPath: <code>boolean</code> - _If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key._
+ - allowedExtensions: <code><code>Array&lt;string&gt;</code></code> - _The allowed extensions. If not set, all extensions are allowed. The extensions a can only select files in the path. If false, the user can select files in the path and parent directories._
+
+>This class is used to create a popup with a file input to select a file or a directory. It will run a promise with fs.readdir to get the list of files and directories. The user can select a file or a directory and the popup will be closed. 
+
+![FileSelectorPopup](https://user-images.githubusercontent.com/14907987/165938464-c1426102-b598-42bb-8597-6337f0bcb009.gif)
+
+Emits the following events: 
+- "confirm" when the user confirm the file or directory selection. The file or directory path is passed as parameter like this: {path: "path/to/file", name: "file.ext"}
+- "cancel" when the user cancel the file or directory selection.
+- "exit" when the user exit
  
 All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
 
