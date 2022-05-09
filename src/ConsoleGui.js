@@ -38,10 +38,18 @@ class ConsoleManager extends EventEmitter {
             /** @const {PageBuilder} homePage - The main application */
             this.homePage = new PageBuilder()
 
-            this.layoutBorder = true;
+            this.layoutOptions = {
+                showTitle: true,
+                boxed: true,
+                boxColor: 'cyan',
+                boxStyle: 'bold',
+                changeFocusKey: 'ctrl+l',
+                type: 'double',
+                direction: 'horizontal',
+            };
 
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
-            this.changeLayoutKey = "ctrl+l";
+            this.changeLayoutKey = this.layoutOptions.changeFocusKey;
             this.applicationTitle = "";
             this.changeLayoutkeys = this.changeLayoutKey.split('+');
             this.logPageSize = 10;
@@ -50,11 +58,11 @@ class ConsoleManager extends EventEmitter {
                 if (options.logPageSize) {
                     this.logPageSize = options.logPageSize;
                 }
-                if (options.layoutBorder) {
-                    this.layoutBorder = options.layoutBorder;
-                }
-                if (options.changeLayoutKey) {
-                    this.changeLayoutKey = options.changeLayoutKey;
+                if (typeof options.layoutOptions !== 'undefined') {
+                    this.layoutOptions = options.layoutOptions;
+                    if (options.layoutOptions.changeFocusKey) {
+                        this.changeLayoutKey = options.layoutOptions.changeFocusKey;
+                    }
                 }
                 if (options.title) {
                     this.applicationTitle = options.title;
@@ -62,7 +70,7 @@ class ConsoleManager extends EventEmitter {
             }
 
             /** @const {DoubleLayout} layout - The layout instance */
-            this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutBorder, 0);
+            this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutOptions, 0);
             this.layout.page2.setRowsPerPage(this.logPageSize);
             this.addGenericListeners();
 
