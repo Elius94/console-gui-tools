@@ -20,6 +20,7 @@ export class DoubleLayout {
         this.page2 = page2
 
         this.boxBold = this.options.boxStyle === "bold" ? true : false
+        this.proportions = this.options.pageRatio || [0.7, 0.3]
 
         /** @const {string} page2Title The title of page2. */
         this.page2Title = this.options.page2Title || "LOGS"
@@ -202,7 +203,7 @@ export class DoubleLayout {
                 })
             }
         } else { // Draw horizontally  
-            this.realWidth = [Math.round(this.CM.Screen.width * 0.8), Math.round(this.CM.Screen.width * 0.2)]
+            this.realWidth = [Math.round(this.CM.Screen.width * this.proportions[0]), Math.round(this.CM.Screen.width * this.proportions[1])]
             const maxPageHeight = Math.max(this.page1.getPageHeight(), this.page2.getPageHeight())
             const p1 = this.page1.getContent()
             const p2 = this.page2.getContent()

@@ -21,7 +21,7 @@ const GUI = new ConsoleManager({
         showTitle: true, // Set to false to hide title
         changeFocusKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
         type: 'double', // Set to 'double' to enable double layout
-        direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
+        direction: 'horizontal', // Set to 'horizontal' to enable horizontal layout
         boxColor: 'red',
         boxStyle: 'bold',
     },
