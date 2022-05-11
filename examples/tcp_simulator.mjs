@@ -17,11 +17,11 @@ const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
     layoutOptions: {
-        boxed: true, // Set to true to enable boxed layout
+        boxed: false, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title
         changeFocusKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
         type: 'double', // Set to 'double' to enable double layout
-        direction: 'horizontal', // Set to 'horizontal' to enable horizontal layout
+        direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
         boxColor: 'red',
         boxStyle: 'bold',
     },
