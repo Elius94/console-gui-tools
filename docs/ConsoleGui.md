@@ -11,10 +11,13 @@
 <dt><a href="#Screen">Screen</a> : <code><a href="#Screen">Screen</a></code></dt>
 <dd><p>The screen instance</p>
 </dd>
+<dt><a href="#logLocation">logLocation</a> : <code>number</code> | <code>&#x27;popup&#x27;</code></dt>
+<dd><p>Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string (&quot;popup&quot;) - to put them on a CustomPopup that can be displayed on the window.</p>
+</dd>
 <dt><a href="#stdOut">stdOut</a> : <code>PageBuilder</code></dt>
 <dd><p>The logs page</p>
 </dd>
-<dt><a href="#homePage">homePage</a> : <code>PageBuilder</code></dt>
+<dt><a href="#homePage">homePage</a> : <code>Array.&lt;PageBuilder&gt;</code></dt>
 <dd><p>The main application</p>
 </dd>
 <dt><a href="#changeLayoutKey">changeLayoutKey</a> : <code>string</code></dt>
@@ -38,8 +41,11 @@
     * [.removeKeyListener(id)](#ConsoleManager+removeKeyListener)
     * [.registerWiget(widget)](#ConsoleManager+registerWiget)
     * [.unRegisterWidget(id)](#ConsoleManager+unRegisterWidget)
-    * [.setHomePage(page)](#ConsoleManager+setHomePage)
+    * ~~[.setHomePage(page)](#ConsoleManager+setHomePage)~~
+    * [.setPage(page, [pageNumber], [title])](#ConsoleManager+setPage)
+    * [.setPages(pages)](#ConsoleManager+setPages)
     * [.refresh()](#ConsoleManager+refresh)
+    * [.showLogPopup()](#ConsoleManager+showLogPopup) ⇒
     * [.log(message)](#ConsoleManager+log)
     * [.error(message)](#ConsoleManager+error)
     * [.warn(message)](#ConsoleManager+warn)
@@ -122,7 +128,9 @@ This function is used to unregister a widget. The widget is removed from the wid
 
 <a name="ConsoleManager+setHomePage"></a>
 
-### consoleManager.setHomePage(page)
+### ~~consoleManager.setHomePage(page)~~
+***Deprecated***
+
 This function is used to set the home page. It also refresh the screen.
 
 **Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
@@ -135,6 +143,38 @@ This function is used to set the home page. It also refresh the screen.
 ```js
 CM.setHomePage(p)
 ```
+<a name="ConsoleManager+setPage"></a>
+
+### consoleManager.setPage(page, [pageNumber], [title])
+This function is used to set a page of layout. It also refresh the screen.
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| page | <code>PageBuilder</code> |  | The page to set as home page. |
+| [pageNumber] | <code>number</code> | <code>0</code> | The page number to set. 0 is the first page, 1 is the second page. |
+| [title] | <code>string</code> | <code>null</code> | The title of the page to overwrite the default title. Default is null. |
+
+**Example**  
+```js
+CM.setPage(p, 0)
+```
+<a name="ConsoleManager+setPages"></a>
+
+### consoleManager.setPages(pages)
+This function is used to set both pages of layout. It also refresh the screen.
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pages | <code>Array.&lt;PageBuilder&gt;</code> | The page to set as home page. |
+
+**Example**  
+```js
+CM.setPages([p1, p2], 0)
+```
 <a name="ConsoleManager+refresh"></a>
 
 ### consoleManager.refresh()
@@ -144,6 +184,17 @@ This function is used to refresh the screen. It do the following sequence: Clear
 **Example**  
 ```js
 CM.refresh()
+```
+<a name="ConsoleManager+showLogPopup"></a>
+
+### consoleManager.showLogPopup() ⇒
+This function is used to show a popup containing all the stdOut of the console.
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+**Returns**: the instance of the generated popup.  
+**Example**  
+```js
+CM.showLogPopup()
 ```
 <a name="ConsoleManager+log"></a>
 
@@ -239,6 +290,12 @@ CM.truncate("Hello world", 5, true) // "Hello..."
 The screen instance
 
 **Kind**: global constant  
+<a name="logLocation"></a>
+
+## logLocation : <code>number</code> \| <code>&#x27;popup&#x27;</code>
+Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window.
+
+**Kind**: global constant  
 <a name="stdOut"></a>
 
 ## stdOut : <code>PageBuilder</code>
@@ -247,7 +304,7 @@ The logs page
 **Kind**: global constant  
 <a name="homePage"></a>
 
-## homePage : <code>PageBuilder</code>
+## homePage : <code>Array.&lt;PageBuilder&gt;</code>
 The main application
 
 **Kind**: global constant  

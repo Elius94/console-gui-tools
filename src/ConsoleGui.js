@@ -32,29 +32,53 @@ class ConsoleManager extends EventEmitter {
             this.widgetsCollection = [];
             this.eventListenersContainer = {};
 
+            /** @const {number | 'popup'} logLocation - Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window. */
+            this.logLocation = 1;
+            this.logPageSize = 10;
+            this.logPageTitle = "LOGS";
+
             /** @const {PageBuilder} stdOut - The logs page */
             this.stdOut = new PageBuilder();
+            this.stdOut.setRowsPerPage(this.logPageSize);
 
-            /** @const {PageBuilder} homePage - The main application */
-            this.homePage = new PageBuilder()
+            /** @const {Array<PageBuilder>} homePage - The main application */
+            this.pages = [new PageBuilder(), new PageBuilder()];
 
-            this.layoutBorder = true;
+            this.layoutOptions = {
+                showTitle: true,
+                boxed: true,
+                boxColor: 'cyan',
+                boxStyle: 'bold',
+                changeFocusKey: 'ctrl+l',
+                direction: 'horizontal',
+            };
 
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
-            this.changeLayoutKey = "ctrl+l";
-            this.applicationTitle = "";
+            this.changeLayoutKey = this.layoutOptions.changeFocusKey;
             this.changeLayoutkeys = this.changeLayoutKey.split('+');
-            this.logPageSize = 10;
+            this.applicationTitle = "";
 
             if (options) {
+                if (options.logLocation !== undefined) {
+                    if (typeof options.logLocation === 'number') {
+                        this.logLocation = options.logLocation > 0 ? options.logLocation : 0;
+                    } else {
+                        if (options.logLocation === 'popup') {
+                            this.logLocation = 'popup';
+                            this.showLogKey = options.showLogKey || 'o';
+                        } else {
+                            this.logLocation = 1;
+                        }
+                    }
+                }
                 if (options.logPageSize) {
                     this.logPageSize = options.logPageSize;
                 }
-                if (options.layoutBorder) {
-                    this.layoutBorder = options.layoutBorder;
-                }
-                if (options.changeLayoutKey) {
-                    this.changeLayoutKey = options.changeLayoutKey;
+                if (typeof options.layoutOptions !== 'undefined') {
+                    this.layoutOptions = options.layoutOptions;
+                    if (options.layoutOptions.changeFocusKey) {
+                        this.changeLayoutKey = options.layoutOptions.changeFocusKey;
+                    }
                 }
                 if (options.title) {
                     this.applicationTitle = options.title;
@@ -62,8 +86,23 @@ class ConsoleManager extends EventEmitter {
             }
 
             /** @const {DoubleLayout} layout - The layout instance */
-            this.layout = new DoubleLayout(this.homePage, this.stdOut, this.layoutBorder, 0);
-            this.layout.page2.setRowsPerPage(this.logPageSize);
+            if (this.logLocation === 'popup') {
+                this.layout = new DoubleLayout(this.pages[0], this.pages[1], this.layoutOptions);
+            } else if (typeof this.logLocation === 'number') {
+                if (this.logLocation === 0) {
+                    this.layout = new DoubleLayout(this.stdOut, this.pages[0], this.layoutOptions);
+                    this.layout.page1Title = this.logPageTitle;
+                    this.layout.page2Title = this.applicationTitle;
+                } else {
+                    this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions);
+                    this.layout.page1Title = this.applicationTitle;
+                    this.layout.page2Title = this.logPageTitle;
+                }
+            } else {
+                this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions);
+                this.layout.page1Title = this.applicationTitle;
+                this.layout.page2Title = this.logPageTitle;
+            }
             this.addGenericListeners();
 
             // I use readline to manage the keypress event
@@ -107,6 +146,10 @@ class ConsoleManager extends EventEmitter {
                     change = true
             }
 
+            if (this.showLogKey && key.name === this.showLogKey) {
+                this.showLogPopup()
+            }
+
             if (change) {
                 this.layout.changeLayout()
                 this.refresh()
@@ -117,16 +160,22 @@ class ConsoleManager extends EventEmitter {
                 this.emit('exit')
             } else {
                 if (Object.keys(this.widgetsCollection).length === 0) {
-                    if (this.layout.getSelected() === 1) {
-                        if (key.name === 'down') {
+                    if (key.name === 'down') {
+                        if (this.layout.getSelected() === 0) {
+                            this.layout.page1.decreaseScrollIndex()
+                        } else {
                             this.layout.page2.decreaseScrollIndex()
-                            this.refresh()
-                            return
-                        } else if (key.name === 'up') {
-                            this.layout.page2.increaseScrollIndex()
-                            this.refresh()
-                            return
                         }
+                        this.refresh()
+                        return
+                    } else if (key.name === 'up') {
+                        if (this.layout.getSelected() === 0) {
+                            this.layout.page1.increaseScrollIndex()
+                        } else {
+                            this.layout.page2.increaseScrollIndex()
+                        }
+                        this.refresh()
+                        return
                     }
                     this.emit("keypressed", key)
                 }
@@ -182,10 +231,83 @@ class ConsoleManager extends EventEmitter {
      * @param {PageBuilder} page - The page to set as home page.
      * @memberof ConsoleManager
      * @example CM.setHomePage(p)
+     * @deprecated since version 1.1.12 - Use setPage or setPages instead
      */
     setHomePage(page) {
-        this.homePage = page
-        this.layout.setPage1(this.homePage)
+        this.pages[0] = page
+        if (this.logLocation === 'popup') {
+            this.layout.setPage1(page)
+        } else if (typeof this.logLocation === 'number') {
+            if (this.logLocation === 0) {
+                this.layout.setPage2(page)
+            } else {
+                this.layout.setPage1(page)
+            }
+        } else {
+            this.layout.setPage1(page)
+        }
+        this.refresh()
+    }
+
+    /**
+     * @description This function is used to set a page of layout. It also refresh the screen.
+     * @param {PageBuilder} page - The page to set as home page.
+     * @param {number} [pageNumber] - The page number to set. 0 is the first page, 1 is the second page.
+     * @param {string} [title] - The title of the page to overwrite the default title. Default is null.
+     * @memberof ConsoleManager
+     * @example CM.setPage(p, 0)
+     */
+    setPage(page, pageNumber = 0, title = null) {
+        this.pages[pageNumber] = page
+        if (this.logLocation === 'popup') {
+            if (pageNumber === 0) {
+                this.layout.setPage1(this.pages[pageNumber])
+                if (title) this.layout.page1Title = title
+            } else {
+                this.layout.setPage2(this.pages[pageNumber])
+                if (title) this.layout.page2Title = title
+            }
+        } else if (typeof this.logLocation === 'number') {
+            if (this.logLocation === 0) {
+                this.layout.setPage2(this.pages[pageNumber])
+                if (title) this.layout.page2Title = title
+            } else {
+                this.layout.setPage1(this.pages[pageNumber])
+                if (title) this.layout.page1Title = title
+            }
+        } else {
+            if (pageNumber === 0) {
+                this.layout.setPage1(this.pages[pageNumber])
+                if (title) this.layout.page1Title = title
+            } else {
+                this.layout.setPage2(this.pages[pageNumber])
+                if (title) this.layout.page2Title = title
+            }
+        }
+        this.refresh()
+    }
+
+    /**
+     * @description This function is used to set both pages of layout. It also refresh the screen.
+     * @param {Array<PageBuilder>} pages - The page to set as home page.
+     * @memberof ConsoleManager
+     * @example CM.setPages([p1, p2], 0)
+     */
+    setPages(pages) {
+        this.pages = pages
+        if (this.logLocation === 'popup') {
+            this.layout.setPage1(this.pages[0])
+            this.layout.setPage2(this.pages[1])
+        } else if (typeof this.logLocation === 'number') {
+            if (this.logLocation === 0) {
+                this.layout.setPage2(this.pages[0])
+            } else {
+                this.layout.setPage1(this.pages[0])
+            }
+        } else {
+            this.layout.setPage1(this.pages[0])
+            this.layout.setPage2(this.pages[1])
+        }
         this.refresh()
     }
 
@@ -202,6 +324,16 @@ class ConsoleManager extends EventEmitter {
                 this.widgetsCollection[widget].draw()
         }
         this.Screen.print()
+    }
+
+    /**
+     * @description This function is used to show a popup containing all the stdOut of the console.
+     * @memberof ConsoleManager
+     * @returns the instance of the generated popup.
+     * @example CM.showLogPopup()
+     */
+    showLogPopup() {
+        return new CustomPopup("logPopup", "Application Logs", this.stdOut, this.Screen.width - 12).show();
     }
 
     /**
@@ -255,7 +387,7 @@ class ConsoleManager extends EventEmitter {
      */
     updateLogsConsole(resetCursor) {
         if (resetCursor) {
-            this.layout.page2.setScrollIndex(0)
+            this.stdOut.setScrollIndex(0)
         }
         this.refresh()
     }

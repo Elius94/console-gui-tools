@@ -14,7 +14,7 @@
 <dt><a href="#page2Title">page2Title</a> : <code>string</code></dt>
 <dd><p>The title of page2.</p>
 </dd>
-<dt><a href="#applicationTitle">applicationTitle</a> : <code>string</code></dt>
+<dt><a href="#page1Title">page1Title</a> : <code>string</code></dt>
 <dd><p>The application title.</p>
 </dd>
 </dl>
@@ -25,7 +25,7 @@
 **Kind**: global class  
 
 * [DoubleLayout](#DoubleLayout)
-    * [new DoubleLayout(page1, page2, border, selected)](#new_DoubleLayout_new)
+    * [new DoubleLayout(page1, page2, options, selected)](#new_DoubleLayout_new)
     * [.setPage1(page)](#DoubleLayout+setPage1)
     * [.setPage2(page)](#DoubleLayout+setPage2)
     * [.setBorder(border)](#DoubleLayout+setBorder)
@@ -37,7 +37,7 @@
 
 <a name="new_DoubleLayout_new"></a>
 
-### new DoubleLayout(page1, page2, border, selected)
+### new DoubleLayout(page1, page2, options, selected)
 This class is a layout that has two pages.
 
 
@@ -45,7 +45,7 @@ This class is a layout that has two pages.
 | --- | --- | --- |
 | page1 | <code>PageBuilder</code> | The first page. |
 | page2 | <code>PageBuilder</code> | The second page. |
-| border | <code>boolean</code> | If the layout has a border. |
+| options | <code>boolean</code> | Layout options. |
 | selected | <code>number</code> | The selected page. |
 
 **Example**  
@@ -143,9 +143,9 @@ the instance of ConsoleManager (singleton)
 The title of page2.
 
 **Kind**: global constant  
-<a name="applicationTitle"></a>
+<a name="page1Title"></a>
 
-## applicationTitle : <code>string</code>
+## page1Title : <code>string</code>
 The application title.
 
 **Kind**: global constant  
