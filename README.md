@@ -31,11 +31,24 @@ The title of the application. It will be displayed in the top of the screen.
 ### options.logsPageSize
 The number of lines that will be displayed in the logs page.
 
-### options.changeLayoutKey
-The key that will be used to change the layout. (To switch between the two pages, logs and main page)
+### options.logLocation
+Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window.
 
-### options.layoutBorder
-To enable the border of the layout and the title.
+### options.showLogKey
+The key that will be used to show the logs popup if the logLocation is set to "popup".
+
+### options.layoutOptions
+The options that will be passed to the layout.
+```js
+const layoutOptions = {
+    boxed: true, // Set to true to enable boxed layout mode
+    showTitle: true, // Set to false to hide titles
+    changeFocusKey: 'ctrl+l', // The key or the combination that will change the focus between the two layouts
+    direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
+    boxColor: 'yellow', // The color of the box
+    boxStyle: 'bold', // The style of the box (bold)
+}
+```
 
 Example of usage:
 ```js
@@ -88,7 +101,7 @@ const updateConsole = async() => {
     p.addRow({ text: `  'l'`, color: 'gray', bold: true }, { text: `       - Set min value`, color: 'white', italic: true })
     p.addRow({ text: `  'q'`, color: 'gray', bold: true }, { text: `       - Quit`, color: 'white', italic: true })
 
-    GUI.setHomePage(p)
+    GUI.setPage(p)
 }
 
 GUI.on("exit", () => {
@@ -228,10 +241,10 @@ eg:
 p.addRow({ text: `TCP messages sent:`, color: 'green', bg: 'bgRed', bold: true, italic: true, underline: true }, { text: ` ${tcpCounter}`, color: 'white' })
 ```
 
-And so, we can add the PageBuilder to the home page
+And so, we can add the PageBuilder to the first page
 
 ```js
-GUI.setHomePage(p)
+GUI.setPage(p, 0)
 ```
 
 The new Screen class is used internally by the ConsoleManager.
