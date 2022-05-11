@@ -23,10 +23,10 @@ export class DoubleLayout {
         this.proportions = this.options.pageRatio || [0.7, 0.3]
 
         /** @const {string} page2Title The title of page2. */
-        this.page2Title = this.options.page2Title || "LOGS"
+        this.page2Title = this.options.page2Title || this.CM.logPageTitle
 
         /** @const {string} page1Title The application title. */
-        this.page1Title = this.CM.applicationTitle
+        this.page1Title = this.options.page1Title || this.CM.applicationTitle
     }
 
     /**
@@ -197,7 +197,7 @@ export class DoubleLayout {
                     this.drawLine(line, 0)
                 })
                 if (this.options.showTitle) {
-                    this.CM.Screen.write({ text: `${trimmedTitle[1]}`, style: { color: this.options.boxColor, bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${trimmedTitle[1]}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
                 this.page2.getContent().forEach(line => {
                     this.drawLine(line, 1)

@@ -16,13 +16,14 @@ import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, Conf
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
+    logLocation: 1, // Location of the logs page
     layoutOptions: {
-        boxed: false, // Set to true to enable boxed layout
+        boxed: true, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title
         changeFocusKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
         type: 'double', // Set to 'double' to enable double layout
         direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
-        boxColor: 'red',
+        boxColor: 'yellow',
         boxStyle: 'bold',
     },
 })
@@ -146,7 +147,7 @@ const updateConsole = async() => {
     p.addRow({ text: `  'l'`, color: 'gray', bold: true }, { text: `       - Set min value`, color: 'white', italic: true })
     p.addRow({ text: `  'q'`, color: 'gray', bold: true }, { text: `       - Quit`, color: 'white', italic: true })
 
-    GUI.setHomePage(p)
+    GUI.setPage(p, 0)
 }
 
 GUI.on("exit", () => {
