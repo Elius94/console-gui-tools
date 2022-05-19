@@ -1,7 +1,7 @@
 # console-gui-tools
  A simple library to draw option menu, text popup or other widgets and layout on a Node.js console.
-
-[![npm version](https://badge.fury.io/js/console-gui-tools.svg)](https://npmjs.com/package/console-gui-tools) [![npm](https://img.shields.io/bundlephobia/min/console-gui-tools) ![GitHub](https://img.shields.io/github/license/elius94/console-gui-tools)
+ 
+[![npm version](https://badge.fury.io/js/console-gui-tools.svg)](https://npmjs.com/package/console-gui-tools) [![npm](https://img.shields.io/npm/dt/console-gui-tools)](https://npmjs.com/package/console-gui-tools) ![GitHub](https://img.shields.io/github/license/elius94/console-gui-tools)
 
 # console-gui-tools
 A simple Node.js library to create Console Apps like a wizard (or maybe if you like old style colored screen or something like "teletext" programs 😂)
