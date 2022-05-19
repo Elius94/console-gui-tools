@@ -98,6 +98,16 @@ export class PageBuilder {
     }
 
     /**
+     * @description Returns the height of the viewed page. It excludes the rows that are not visible.
+     * @returns {number}
+     * @memberOf PageBuilder
+     * @example page.getViewedPageHeight() // returns the height of the page that is visible
+     */
+    getViewedPageHeight() {
+        return this.getContent().length
+    }
+
+    /**
      * @description Changes the index of the scroll bar.
      * @param {number} index - The index of the scroll bar.
      * @returns {void}

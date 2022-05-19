@@ -37,10 +37,6 @@ class ConsoleManager extends EventEmitter {
             this.logPageSize = 10;
             this.logPageTitle = "LOGS";
 
-            /** @const {PageBuilder} stdOut - The logs page */
-            this.stdOut = new PageBuilder();
-            this.stdOut.setRowsPerPage(this.logPageSize);
-
             /** @const {Array<PageBuilder>} homePage - The main application */
             this.pages = [new PageBuilder(), new PageBuilder()];
 
@@ -84,6 +80,10 @@ class ConsoleManager extends EventEmitter {
                     this.applicationTitle = options.title;
                 }
             }
+
+            /** @const {PageBuilder} stdOut - The logs page */
+            this.stdOut = new PageBuilder();
+            this.stdOut.setRowsPerPage(this.logPageSize);
 
             /** @const {DoubleLayout} layout - The layout instance */
             if (this.logLocation === 'popup') {
