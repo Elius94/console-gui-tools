@@ -10,6 +10,7 @@
         * [.addSpacer([count])](#PageBuilder+addSpacer) ⇒ <code>void</code>
         * [.getContent()](#PageBuilder+getContent) ⇒ <code>Array.&lt;Array.&lt;object&gt;&gt;</code>
         * [.getPageHeight()](#PageBuilder+getPageHeight) ⇒ <code>number</code>
+        * [.getViewedPageHeight()](#PageBuilder+getViewedPageHeight) ⇒ <code>number</code>
         * [.setScrollIndex(index)](#PageBuilder+setScrollIndex) ⇒ <code>void</code>
         * [.setRowsPerPage(rowsPerPage)](#PageBuilder+setRowsPerPage) ⇒ <code>void</code>
         * [.increaseScrollIndex()](#PageBuilder+increaseScrollIndex) ⇒ <code>void</code>
@@ -77,6 +78,16 @@ Returns the height of the page.
 **Example**  
 ```js
 page.getPageHeight()
+```
+<a name="PageBuilder+getViewedPageHeight"></a>
+
+### pageBuilder.getViewedPageHeight() ⇒ <code>number</code>
+Returns the height of the viewed page. It excludes the rows that are not visible.
+
+**Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
+**Example**  
+```js
+page.getViewedPageHeight() // returns the height of the page that is visible
 ```
 <a name="PageBuilder+setScrollIndex"></a>
 

@@ -14,14 +14,14 @@
 <dt><a href="#logLocation">logLocation</a> : <code>number</code> | <code>&#x27;popup&#x27;</code></dt>
 <dd><p>Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string (&quot;popup&quot;) - to put them on a CustomPopup that can be displayed on the window.</p>
 </dd>
-<dt><a href="#stdOut">stdOut</a> : <code>PageBuilder</code></dt>
-<dd><p>The logs page</p>
-</dd>
 <dt><a href="#homePage">homePage</a> : <code>Array.&lt;PageBuilder&gt;</code></dt>
 <dd><p>The main application</p>
 </dd>
 <dt><a href="#changeLayoutKey">changeLayoutKey</a> : <code>string</code></dt>
 <dd><p>The key or combination to switch the selected page</p>
+</dd>
+<dt><a href="#stdOut">stdOut</a> : <code>PageBuilder</code></dt>
+<dd><p>The logs page</p>
 </dd>
 <dt><a href="#layout">layout</a> : <code>DoubleLayout</code></dt>
 <dd><p>The layout instance</p>
@@ -296,12 +296,6 @@ The screen instance
 Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window.
 
 **Kind**: global constant  
-<a name="stdOut"></a>
-
-## stdOut : <code>PageBuilder</code>
-The logs page
-
-**Kind**: global constant  
 <a name="homePage"></a>
 
 ## homePage : <code>Array.&lt;PageBuilder&gt;</code>
@@ -312,6 +306,12 @@ The main application
 
 ## changeLayoutKey : <code>string</code>
 The key or combination to switch the selected page
+
+**Kind**: global constant  
+<a name="stdOut"></a>
+
+## stdOut : <code>PageBuilder</code>
+The logs page
 
 **Kind**: global constant  
 <a name="layout"></a>
