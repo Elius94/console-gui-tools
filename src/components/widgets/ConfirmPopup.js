@@ -24,50 +24,50 @@ export class ConfirmPopup extends ButtonPopup {
 
         super.keyListner = (str, key) => {
             switch (key.name) {
-                case 'left':
-                    if (this.selected > 0 && this.selected <= this.buttons.length) {
-                        this.selected--
+            case "left":
+                if (this.selected > 0 && this.selected <= this.buttons.length) {
+                    this.selected--
+                } else {
+                    return
+                }
+                break
+            case "right":
+                if (this.selected >= 0 && this.selected < this.buttons.length - 1) {
+                    this.selected++
+                } else {
+                    return
+                }
+                break
+            case "return":
+                {
+                    if (this.selected === 0) {
+                        this.emit("confirm")
                     } else {
-                        return
+                        this.emit("cancel")
                     }
-                    break
-                case 'right':
-                    if (this.selected >= 0 && this.selected < this.buttons.length - 1) {
-                        this.selected++
-                    } else {
-                        return
-                    }
-                    break
-                case 'return':
-                    {
-                        if (this.selected === 0) {
-                            this.emit("confirm")
-                        } else {
-                            this.emit("cancel")
-                        }
-                        this.CM.unRegisterWidget(this)
-                        this.hide()
-                        delete this
-                    }
-                    break
-                case 'escape':
-                    {
-                        this.emit(`cancel`)
-                        this.CM.unRegisterWidget(this)
-                        this.hide()
-                        delete this
-                    }
-                    break
-                case 'q':
-                    {
-                        this.CM.emit('exit')
-                        this.CM.unRegisterWidget(this)
-                        this.hide()
-                        delete this
-                    }
-                    break
-                default:
-                    break
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
+            case "escape":
+                {
+                    this.emit("cancel")
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
+            case "q":
+                {
+                    this.CM.emit("exit")
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
+            default:
+                break
             }
             this.CM.refresh()
         }

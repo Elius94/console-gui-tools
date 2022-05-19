@@ -120,7 +120,8 @@ export class DoubleLayout {
                         newLine[i] = JSON.parse(JSON.stringify(line[i]))
                     }
                     let diff = e.length - this.realWidth[i] + 1
-                        // remove truncated text
+
+                    // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
                         if (newLine[i][j].text.length > diff + offset) {
                             newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, true)

@@ -22,22 +22,22 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  */
 export class InputPopup extends EventEmitter {
     constructor(id, title, value, numeric, visible = false) {
-        super();
+        super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager();
-        this.id = id;
-        this.title = title;
-        this.value = value;
-        this.numeric = numeric;
-        this.visible = visible;
-        this.marginTop = 4;
+        this.CM = new ConsoleManager()
+        this.id = id
+        this.title = title
+        this.value = value
+        this.numeric = numeric
+        this.visible = visible
+        this.marginTop = 4
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this);
-            const message = `InputPopup ${this.id} already exists.`;
-            this.CM.error(message);
-            throw new Error(message);
+            this.CM.unRegisterWidget(this)
+            const message = `InputPopup ${this.id} already exists.`
+            this.CM.error(message)
+            throw new Error(message)
         }
-        this.CM.registerWiget(this);
+        this.CM.registerWiget(this)
     }
 
     /**
@@ -59,54 +59,54 @@ export class InputPopup extends EventEmitter {
                 this.value = Number(tmp)
             }
             // To change the sign I check for the keys "+" and "-"
-        } else if (key.sequence === '-') {
+        } else if (key.sequence === "-") {
             this.value = v * -1
-        } else if (key.sequence === '+') {
+        } else if (key.sequence === "+") {
             this.value = Math.abs(v)
-        } else if (key.sequence === '.' || key.sequence === ',') {
-            if (this.value.toString().indexOf('.') === -1) {
-                this.value = v + '.'
+        } else if (key.sequence === "." || key.sequence === ",") {
+            if (this.value.toString().indexOf(".") === -1) {
+                this.value = v + "."
             }
         } else {
             switch (key.name) {
-                case 'backspace':
-                    // If backspace is pressed I remove the last character from the typed value
-                    if (this.value.toString().length > 0) {
-                        if (this.value.toString().indexOf('.') === this.value.toString().length - 1) {
-                            this.value = v.toString()
-                        } else if (this.value.toString().indexOf('.') === this.value.toString().length - 2) {
-                            this.value = this.value.toString().slice(0, this.value.toString().length - 1)
-                        } else {
-                            this.value = Number(v.toString().slice(0, v.toString().length - 1))
-                        }
+            case "backspace":
+                // If backspace is pressed I remove the last character from the typed value
+                if (this.value.toString().length > 0) {
+                    if (this.value.toString().indexOf(".") === this.value.toString().length - 1) {
+                        this.value = v.toString()
+                    } else if (this.value.toString().indexOf(".") === this.value.toString().length - 2) {
+                        this.value = this.value.toString().slice(0, this.value.toString().length - 1)
+                    } else {
+                        this.value = Number(v.toString().slice(0, v.toString().length - 1))
                     }
-                    break
-                case 'return':
-                    {
-                        this.emit(`confirm`, Number(this.value))
-                        this.CM.unRegisterWidget(this)
-                        this.hide()
-                        delete this
-                    }
-                    break
-                case 'escape':
-                    {
-                        this.emit(`cancel`)
-                        this.CM.unRegisterWidget(this)
-                        this.hide()
-                        delete this
-                    }
-                    break
-                case 'q':
-                    {
-                        this.CM.emit('exit')
-                        this.CM.unRegisterWidget(this)
-                        this.hide()
-                        delete this
-                    }
-                    break
-                default:
-                    break
+                }
+                break
+            case "return":
+                {
+                    this.emit("confirm", Number(this.value))
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
+            case "escape":
+                {
+                    this.emit("cancel")
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
+            case "q":
+                {
+                    this.CM.emit("exit")
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    delete this
+                }
+                break
+            default:
+                break
             }
         }
         this.CM.refresh()
@@ -127,38 +127,38 @@ export class InputPopup extends EventEmitter {
             this.value = tmp
         }
         switch (key.name) {
-            case 'backspace':
-                // If backspace is pressed I remove the last character from the typed value
-                if (v.toString().length > 0) {
-                    this.value = v.toString().slice(0, v.toString().length - 1)
-                }
-                break
-            case 'return':
-                {
-                    this.emit(`confirm`, this.value)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'escape':
-                {
-                    this.emit(`cancel`)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'q':
-                {
-                    this.CM.emit('exit')
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            default:
-                break
+        case "backspace":
+            // If backspace is pressed I remove the last character from the typed value
+            if (v.toString().length > 0) {
+                this.value = v.toString().slice(0, v.toString().length - 1)
+            }
+            break
+        case "return":
+            {
+                this.emit("confirm", this.value)
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "escape":
+            {
+                this.emit("cancel")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "q":
+            {
+                this.CM.emit("exit")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        default:
+            break
         }
         this.CM.refresh()
     }
@@ -275,11 +275,11 @@ export class InputPopup extends EventEmitter {
         footer += "┘\n"
 
         let content = ""
-            // Draw an input field
+        // Draw an input field
         content += `│${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}│\n`
 
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split('\n').forEach((line, index) => {
+        windowDesign.split("\n").forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })

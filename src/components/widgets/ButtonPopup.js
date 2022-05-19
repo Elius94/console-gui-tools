@@ -22,24 +22,24 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  */
 export class ButtonPopup extends EventEmitter {
     constructor(id, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
-        super();
+        super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager();
-        this.id = id;
-        this.title = title;
-        this.message = message;
-        this.buttons = buttons;
-        this.selected = 0; // The selected option
-        this.visible = visible;
-        this.marginTop = 4;
-        this.startIndex = 0;
+        this.CM = new ConsoleManager()
+        this.id = id
+        this.title = title
+        this.message = message
+        this.buttons = buttons
+        this.selected = 0 // The selected option
+        this.visible = visible
+        this.marginTop = 4
+        this.startIndex = 0
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this);
-            const message = `ButtonPopup ${this.id} already exists.`;
-            this.CM.error(message);
-            throw new Error(message);
+            this.CM.unRegisterWidget(this)
+            const message = `ButtonPopup ${this.id} already exists.`
+            this.CM.error(message)
+            throw new Error(message)
         }
-        this.CM.registerWiget(this);
+        this.CM.registerWiget(this)
     }
 
     boxChars = {
@@ -70,46 +70,46 @@ export class ButtonPopup extends EventEmitter {
      */
     keyListner(str, key) {
         switch (key.name) {
-            case 'left':
-                if (this.selected > 0 && this.selected <= this.buttons.length) {
-                    this.selected--
-                } else {
-                    return
-                }
-                break
-            case 'right':
-                if (this.selected >= 0 && this.selected < this.buttons.length - 1) {
-                    this.selected++
-                } else {
-                    return
-                }
-                break
-            case 'return':
-                {
-                    this.emit(`confirm`, this.buttons[this.selected])
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'escape':
-                {
-                    this.emit(`cancel`)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'q':
-                {
-                    this.CM.emit('exit')
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            default:
-                break
+        case "left":
+            if (this.selected > 0 && this.selected <= this.buttons.length) {
+                this.selected--
+            } else {
+                return
+            }
+            break
+        case "right":
+            if (this.selected >= 0 && this.selected < this.buttons.length - 1) {
+                this.selected++
+            } else {
+                return
+            }
+            break
+        case "return":
+            {
+                this.emit("confirm", this.buttons[this.selected])
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "escape":
+            {
+                this.emit("cancel")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "q":
+            {
+                this.CM.emit("exit")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        default:
+            break
         }
         this.CM.refresh()
     }
@@ -187,9 +187,9 @@ export class ButtonPopup extends EventEmitter {
         let rowLength = 0
         let rows = 0
 
-        this.buttons.forEach((button, index) => {
+        this.buttons.forEach((button) => {
             const newButtonLength = button.length + (2 * borderSize) + spaceBetweenButtons
-                // Divide into rows and columns the buttons (balance the buttons number between rows and columns)
+            // Divide into rows and columns the buttons (balance the buttons number between rows and columns)
             if (rowLength + newButtonLength > this.CM.Screen.width - (2 * offset)) {
                 rows++
                 if (buttonGrid[rows]) {
@@ -217,7 +217,7 @@ export class ButtonPopup extends EventEmitter {
         if (title.length > this.CM.Screen.width - (2 * offset)) {
             title = this.CM.truncate(title, this.CM.Screen.width - (2 * offset), true)
         }
-        let msg = this.message ? `${this.message}` : ''
+        let msg = this.message ? `${this.message}` : ""
         if (msg.length > this.CM.Screen.width - (2 * offset)) {
             msg = this.CM.truncate(msg, this.CM.Screen.width - (2 * offset), true)
         }
@@ -284,9 +284,9 @@ export class ButtonPopup extends EventEmitter {
 
 
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split('\n').forEach((line, index) => {
+        windowDesign.split("\n").forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write({ text: line, style: { color: 'white' } })
+            this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         return this
     }

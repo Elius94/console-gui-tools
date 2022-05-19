@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import chalk from 'chalk';
+import chalk from "chalk"
 chalk.level = 1
 
 /**
@@ -16,12 +16,14 @@ export class Screen extends EventEmitter {
 
         /** @const {number} width - The width of the screen. */
         this.width = this.Terminal.columns
-            /** @const {number} height - The height of the screen. */
+
+        /** @const {number} height - The height of the screen. */
         this.height = this.Terminal.rows
 
         /** @const {Array} buffer - The screen buffer object. */
         this.buffer = []
-            /** @const {object} cursor - The cursor object. */
+
+        /** @const {object} cursor - The cursor object. */
         this.cursor = { x: 0, y: 0 }
     }
 
@@ -35,7 +37,8 @@ export class Screen extends EventEmitter {
      */
     write() {
         this.currentY++
-            let row = ""
+
+        let row = ""
         let newStyleIndex = []
         for (let i = 0; i < arguments.length; i++) {
             let arg = arguments[i]
@@ -48,8 +51,9 @@ export class Screen extends EventEmitter {
             }
         }
         const currentStyleIndex = this.buffer[this.cursor.y].styleIndex
-            // Now recalculate the styleIndex for the current row mixing the old one with the new one
-            // Create a new styleIndex merging the old one with the new one
+
+        // Now recalculate the styleIndex for the current row mixing the old one with the new one
+        // Create a new styleIndex merging the old one with the new one
         let mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
 
         if (this.cursor.y < this.buffer.length - 1) {
@@ -96,7 +100,7 @@ export class Screen extends EventEmitter {
         this.height = this.Terminal.rows
         this.buffer = []
         for (let i = 0; i < this.Terminal.rows; i++) {
-            this.buffer[i] = { text: " ".repeat(this.Terminal.columns), styleIndex: [{ color: 'gray', bg: '', italic: false, bold: false, index: [0, this.Terminal.columns] }] }
+            this.buffer[i] = { text: " ".repeat(this.Terminal.columns), styleIndex: [{ color: "gray", bg: "", italic: false, bold: false, index: [0, this.Terminal.columns] }] }
         }
     }
 
@@ -110,7 +114,8 @@ export class Screen extends EventEmitter {
         this.buffer.forEach((row, i) => {
             this.Terminal.cursorTo(0, i)
             let outString = ""
-                // convert styleIndex to chalk functions and apply them to the row text
+
+            // convert styleIndex to chalk functions and apply them to the row text
             row.styleIndex.forEach(style => {
                 let color = style.color ? chalk[style.color] : (_in) => _in
                 let bg = style.bg ? chalk[style.bg] : (_in) => _in
@@ -139,7 +144,7 @@ export class Screen extends EventEmitter {
      * @example screen.replaceAt('Hello Luca', 6, 'Elia') // returns 'Hello Elia'
      */
     replaceAt(str, index, replacement) {
-        return str.substring(0, index) + replacement + str.substring(index + replacement.length);
+        return str.substring(0, index) + replacement + str.substring(index + replacement.length)
     }
 
     /**
@@ -160,33 +165,35 @@ export class Screen extends EventEmitter {
         let newSize = _newSize
         let merged = []
         current.forEach(style => {
-                if (style.index[0] < offset && style.index[1] < offset) {
-                    merged.push(style)
-                    return
-                } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + newSize) {
-                    merged.push({...style, index: [style.index[0], offset] })
-                    return
-                } else if (style.index[0] < offset && style.index[1] > offset + newSize) {
-                    merged.push({...style, index: [style.index[0], offset] })
-                    merged.push({...style, index: [offset + newSize, style.index[1]] })
-                    return
-                } else if (style.index[0] >= offset && style.index[1] <= offset + newSize) {
-                    // Do nothing
-                    return
-                } else if (style.index[0] >= offset && style.index[0] <= offset + newSize && style.index[1] > offset + newSize) {
-                    merged.push({...style, index: [offset + newSize, style.index[1]] })
-                    return
-                } else if (style.index[0] > offset + newSize && style.index[1] > offset + newSize) {
-                    merged.push(style)
-                    return
-                }
-                this.emit("error", new Error("mergeStyles: This should never happen"))
-            })
-            // Then add the new style to the merged array
+            if (style.index[0] < offset && style.index[1] < offset) {
+                merged.push(style)
+                return
+            } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + newSize) {
+                merged.push({ ...style, index: [style.index[0], offset] })
+                return
+            } else if (style.index[0] < offset && style.index[1] > offset + newSize) {
+                merged.push({ ...style, index: [style.index[0], offset] })
+                merged.push({ ...style, index: [offset + newSize, style.index[1]] })
+                return
+            } else if (style.index[0] >= offset && style.index[1] <= offset + newSize) {
+                // Do nothing
+                return
+            } else if (style.index[0] >= offset && style.index[0] <= offset + newSize && style.index[1] > offset + newSize) {
+                merged.push({ ...style, index: [offset + newSize, style.index[1]] })
+                return
+            } else if (style.index[0] > offset + newSize && style.index[1] > offset + newSize) {
+                merged.push(style)
+                return
+            }
+            this.emit("error", new Error("mergeStyles: This should never happen"))
+        })
+
+        // Then add the new style to the merged array
         new_.forEach(newStyle => {
-                merged.push({...newStyle, index: [newStyle.index[0] + offset, newStyle.index[1] + offset] })
-            })
-            // Sort the merged array by index[0]
+            merged.push({ ...newStyle, index: [newStyle.index[0] + offset, newStyle.index[1] + offset] })
+        })
+
+        // Sort the merged array by index[0]
         merged.sort(this.sortByIndex)
         return merged
     }

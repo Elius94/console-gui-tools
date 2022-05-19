@@ -28,29 +28,29 @@ re case sensitive.
  */
 export class FileSelectorPopup extends EventEmitter {
     constructor(id, title, basePath, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
-        super();
+        super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager();
-        this.id = id;
-        this.title = title;
-        this.basePath = basePath;
-        this.currentPath = basePath;
-        this.selectDirectory = selectDirectory;
-        this.allowedExtensions = allowedExtensions;
-        this.limitToPath = limitToPath;
-        this.visible = visible;
-        this.marginTop = 4;
-        this.startIndex = 0;
-        this.selected = { text: `../`, name: "../", type: "dir", path: path.join(basePath, "../") };
+        this.CM = new ConsoleManager()
+        this.id = id
+        this.title = title
+        this.basePath = basePath
+        this.currentPath = basePath
+        this.selectDirectory = selectDirectory
+        this.allowedExtensions = allowedExtensions
+        this.limitToPath = limitToPath
+        this.visible = visible
+        this.marginTop = 4
+        this.startIndex = 0
+        this.selected = { text: "../", name: "../", type: "dir", path: path.join(basePath, "../") }
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this);
-            const message = `FileSelectorPopup ${this.id} already exists.`;
-            this.CM.error(message);
-            throw new Error(message);
+            this.CM.unRegisterWidget(this)
+            const message = `FileSelectorPopup ${this.id} already exists.`
+            this.CM.error(message)
+            throw new Error(message)
         }
-        this.CM.registerWiget(this);
-        this.options = [{ text: `../`, name: "../" }];
-        this.updateList(this.basePath);
+        this.CM.registerWiget(this)
+        this.options = [{ text: "../", name: "../" }]
+        this.updateList(this.basePath)
     }
 
     /**
@@ -102,7 +102,7 @@ export class FileSelectorPopup extends EventEmitter {
         }
         this.currentPath = _path
         this.listDir(this.currentPath).then((files) => {
-            this.options = [{ text: `../`, name: "../", type: "dir", path: path.join(this.currentPath, "../") }].concat(files)
+            this.options = [{ text: "../", name: "../", type: "dir", path: path.join(this.currentPath, "../") }].concat(files)
             this.setSelected(this.options[0], false)
             this.CM.refresh()
         })
@@ -122,90 +122,90 @@ export class FileSelectorPopup extends EventEmitter {
     keyListner(str, key) {
         const ind = this.options.indexOf(this.selected)
         switch (key.name) {
-            case 'down':
-                this.setSelected(this.options[(ind + 1) % this.options.length], false)
-                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                    if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
-                        this.startIndex++
-                    }
+        case "down":
+            this.setSelected(this.options[(ind + 1) % this.options.length], false)
+            if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
+                    this.startIndex++
+                }
+            } else {
+                this.startIndex = 0
+            }
+            break
+        case "up":
+            this.setSelected(this.options[(ind - 1 + this.options.length) % this.options.length], false)
+            if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
+                this.startIndex--
+            }
+            break
+        case "pagedown":
+            if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                this.setSelected(this.options[(ind + this.adaptOptions().length) % this.options.length], false)
+                if (this.startIndex + this.adaptOptions().length < this.options.length) {
+                    this.startIndex += this.adaptOptions().length
                 } else {
                     this.startIndex = 0
                 }
-                break
-            case 'up':
-                this.setSelected(this.options[(ind - 1 + this.options.length) % this.options.length], false)
-                if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
-                    this.startIndex--
+            } else {
+                return
+            }
+            break
+        case "pageup":
+            if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                this.setSelected(this.options[(ind - this.adaptOptions().length + this.options.length) % this.options.length], false)
+                if (this.startIndex > this.adaptOptions().length) {
+                    this.startIndex -= this.adaptOptions().length
+                } else {
+                    this.startIndex = 0
                 }
-                break
-            case 'pagedown':
-                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                    this.setSelected(this.options[(ind + this.adaptOptions().length) % this.options.length], false)
-                    if (this.startIndex + this.adaptOptions().length < this.options.length) {
-                        this.startIndex += this.adaptOptions().length
-                    } else {
-                        this.startIndex = 0
+            } else {
+                return
+            }
+            break
+        case "return":
+            {
+                if (this.selectDirectory) {
+                    if (this.selected.type === "dir") {
+                        this.emit("confirm", { path: this.selected.path, name: this.selected.name })
+                        this.CM.unRegisterWidget(this)
+                        this.hide()
+                        delete this
                     }
                 } else {
-                    return
-                }
-                break
-            case 'pageup':
-                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                    this.setSelected(this.options[(ind - this.adaptOptions().length + this.options.length) % this.options.length], false)
-                    if (this.startIndex > this.adaptOptions().length) {
-                        this.startIndex -= this.adaptOptions().length
+                    if (this.selected.type === "dir") {
+                        this.updateList(this.selected.path)
                     } else {
-                        this.startIndex = 0
-                    }
-                } else {
-                    return
-                }
-                break
-            case 'return':
-                {
-                    if (this.selectDirectory) {
-                        if (this.selected.type === "dir") {
-                            this.emit("confirm", { path: this.selected.path, name: this.selected.name })
-                            this.CM.unRegisterWidget(this)
-                            this.hide()
-                            delete this
-                        }
-                    } else {
-                        if (this.selected.type === "dir") {
-                            this.updateList(this.selected.path)
-                        } else {
-                            this.emit("confirm", { path: this.selected.path, name: this.selected.name })
-                            this.CM.unRegisterWidget(this)
-                            this.hide()
-                            delete this
-                        }
+                        this.emit("confirm", { path: this.selected.path, name: this.selected.name })
+                        this.CM.unRegisterWidget(this)
+                        this.hide()
+                        delete this
                     }
                 }
-                break
-            case 'space':
-                if (this.selected.type === "dir") {
-                    this.updateList(this.selected.path)
-                }
-                break
-            case 'escape':
-                {
-                    this.emit(`cancel`)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'q':
-                {
-                    this.CM.emit('exit')
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            default:
-                break
+            }
+            break
+        case "space":
+            if (this.selected.type === "dir") {
+                this.updateList(this.selected.path)
+            }
+            break
+        case "escape":
+            {
+                this.emit("cancel")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "q":
+            {
+                this.CM.emit("exit")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        default:
+            break
         }
         this.CM.refresh()
     }
@@ -225,7 +225,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @memberof FileSelectorPopup
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      */
-    setSelected(selected, refresh = true) {
+    setSelected(selected) {
         this.selected = selected
         this.CM.refresh()
         return this
@@ -322,14 +322,14 @@ export class FileSelectorPopup extends EventEmitter {
         footer += "┘\n"
 
         let content = ""
-        this.adaptOptions().forEach((option, index) => {
+        this.adaptOptions().forEach((option) => {
             content += `│${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}│\n`
         })
 
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split('\n').forEach((line, index) => {
+        windowDesign.split("\n").forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write({ text: line, style: { color: 'white' } })
+            this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         return this
     }

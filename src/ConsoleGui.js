@@ -1,8 +1,8 @@
 import { EventEmitter } from "events"
-import readline from "readline";
-import { PageBuilder, Screen } from "./components/index.js";
-import { DoubleLayout } from "./components/layout/index.js";
-import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from "./components/widgets/index.js";
+import readline from "readline"
+import { PageBuilder, Screen } from "./components/index.js"
+import { DoubleLayout } from "./components/layout/index.js"
+import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from "./components/widgets/index.js"
 
 /**
  * @class ConsoleManager
@@ -18,96 +18,96 @@ import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup, FileSe
 class ConsoleManager extends EventEmitter {
     constructor(options) {
         super()
-        this.Terminal = process.stdout;
-        this.Input = process.stdin;
+        this.Terminal = process.stdout
+        this.Input = process.stdin
         if (!ConsoleManager.instance) {
-            ConsoleManager.instance = this;
+            ConsoleManager.instance = this
 
             /** @const {Screen} Screen - The screen instance */
-            this.Screen = new Screen(this.Terminal);
+            this.Screen = new Screen(this.Terminal)
             this.Screen.on("error", (err) => {
                 this.error(err)
             })
 
-            this.widgetsCollection = [];
-            this.eventListenersContainer = {};
+            this.widgetsCollection = []
+            this.eventListenersContainer = {}
 
             /** @const {number | 'popup'} logLocation - Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window. */
-            this.logLocation = 1;
-            this.logPageSize = 10;
-            this.logPageTitle = "LOGS";
+            this.logLocation = 1
+            this.logPageSize = 10
+            this.logPageTitle = "LOGS"
 
             /** @const {Array<PageBuilder>} homePage - The main application */
-            this.pages = [new PageBuilder(), new PageBuilder()];
+            this.pages = [new PageBuilder(), new PageBuilder()]
 
             this.layoutOptions = {
                 showTitle: true,
                 boxed: true,
-                boxColor: 'cyan',
-                boxStyle: 'bold',
-                changeFocusKey: 'ctrl+l',
-                direction: 'horizontal',
-            };
+                boxColor: "cyan",
+                boxStyle: "bold",
+                changeFocusKey: "ctrl+l",
+                direction: "horizontal",
+            }
 
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
-            this.changeLayoutKey = this.layoutOptions.changeFocusKey;
-            this.changeLayoutkeys = this.changeLayoutKey.split('+');
-            this.applicationTitle = "";
+            this.changeLayoutKey = this.layoutOptions.changeFocusKey
+            this.changeLayoutkeys = this.changeLayoutKey.split("+")
+            this.applicationTitle = ""
 
             if (options) {
                 if (options.logLocation !== undefined) {
-                    if (typeof options.logLocation === 'number') {
-                        this.logLocation = options.logLocation > 0 ? options.logLocation : 0;
+                    if (typeof options.logLocation === "number") {
+                        this.logLocation = options.logLocation > 0 ? options.logLocation : 0
                     } else {
-                        if (options.logLocation === 'popup') {
-                            this.logLocation = 'popup';
-                            this.showLogKey = options.showLogKey || 'o';
+                        if (options.logLocation === "popup") {
+                            this.logLocation = "popup"
+                            this.showLogKey = options.showLogKey || "o"
                         } else {
-                            this.logLocation = 1;
+                            this.logLocation = 1
                         }
                     }
                 }
                 if (options.logPageSize) {
-                    this.logPageSize = options.logPageSize;
+                    this.logPageSize = options.logPageSize
                 }
-                if (typeof options.layoutOptions !== 'undefined') {
-                    this.layoutOptions = options.layoutOptions;
+                if (typeof options.layoutOptions !== "undefined") {
+                    this.layoutOptions = options.layoutOptions
                     if (options.layoutOptions.changeFocusKey) {
-                        this.changeLayoutKey = options.layoutOptions.changeFocusKey;
+                        this.changeLayoutKey = options.layoutOptions.changeFocusKey
                     }
                 }
                 if (options.title) {
-                    this.applicationTitle = options.title;
+                    this.applicationTitle = options.title
                 }
             }
 
             /** @const {PageBuilder} stdOut - The logs page */
-            this.stdOut = new PageBuilder();
-            this.stdOut.setRowsPerPage(this.logPageSize);
+            this.stdOut = new PageBuilder()
+            this.stdOut.setRowsPerPage(this.logPageSize)
 
             /** @const {DoubleLayout} layout - The layout instance */
-            if (this.logLocation === 'popup') {
-                this.layout = new DoubleLayout(this.pages[0], this.pages[1], this.layoutOptions);
-            } else if (typeof this.logLocation === 'number') {
+            if (this.logLocation === "popup") {
+                this.layout = new DoubleLayout(this.pages[0], this.pages[1], this.layoutOptions)
+            } else if (typeof this.logLocation === "number") {
                 if (this.logLocation === 0) {
-                    this.layout = new DoubleLayout(this.stdOut, this.pages[0], this.layoutOptions);
-                    this.layout.page1Title = this.logPageTitle;
-                    this.layout.page2Title = this.applicationTitle;
+                    this.layout = new DoubleLayout(this.stdOut, this.pages[0], this.layoutOptions)
+                    this.layout.page1Title = this.logPageTitle
+                    this.layout.page2Title = this.applicationTitle
                 } else {
-                    this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions);
-                    this.layout.page1Title = this.applicationTitle;
-                    this.layout.page2Title = this.logPageTitle;
+                    this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions)
+                    this.layout.page1Title = this.applicationTitle
+                    this.layout.page2Title = this.logPageTitle
                 }
             } else {
-                this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions);
-                this.layout.page1Title = this.applicationTitle;
-                this.layout.page2Title = this.logPageTitle;
+                this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions)
+                this.layout.page1Title = this.applicationTitle
+                this.layout.page2Title = this.logPageTitle
             }
-            this.addGenericListeners();
+            this.addGenericListeners()
 
             // I use readline to manage the keypress event
-            readline.emitKeypressEvents(this.Input);
-            this.Input.setRawMode(true); // With this I only get the key value
+            readline.emitKeypressEvents(this.Input)
+            this.Input.setRawMode(true) // With this I only get the key value
         }
         return ConsoleManager.instance
     }
@@ -126,18 +126,18 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      */
     addGenericListeners() {
-        this.Input.addListener('keypress', (str, key) => {
+        this.Input.addListener("keypress", (str, key) => {
             let change = false
             if (this.changeLayoutkeys.length > 1) {
-                if (this.changeLayoutkeys[0] == 'ctrl') {
+                if (this.changeLayoutkeys[0] == "ctrl") {
                     if (key.ctrl && key.name === this.changeLayoutkeys[1])
                         change = true
                 }
-                if (this.changeLayoutkeys[0] == 'meta') {
+                if (this.changeLayoutkeys[0] == "meta") {
                     if (key.alt && key.name === this.changeLayoutkeys[1])
                         change = true
                 }
-                if (this.changeLayoutkeys[0] == 'shift') {
+                if (this.changeLayoutkeys[0] == "shift") {
                     if (key.shift && key.name === this.changeLayoutkeys[1])
                         change = true
                 }
@@ -156,11 +156,11 @@ class ConsoleManager extends EventEmitter {
                 return
             }
 
-            if (key.ctrl && key.name === 'c') {
-                this.emit('exit')
+            if (key.ctrl && key.name === "c") {
+                this.emit("exit")
             } else {
                 if (Object.keys(this.widgetsCollection).length === 0) {
-                    if (key.name === 'down') {
+                    if (key.name === "down") {
                         if (this.layout.getSelected() === 0) {
                             this.layout.page1.decreaseScrollIndex()
                         } else {
@@ -168,7 +168,7 @@ class ConsoleManager extends EventEmitter {
                         }
                         this.refresh()
                         return
-                    } else if (key.name === 'up') {
+                    } else if (key.name === "up") {
                         if (this.layout.getSelected() === 0) {
                             this.layout.page1.increaseScrollIndex()
                         } else {
@@ -192,7 +192,7 @@ class ConsoleManager extends EventEmitter {
      */
     setKeyListener(id, manageFunction) {
         this.eventListenersContainer[id] = manageFunction
-        this.Input.addListener('keypress', this.eventListenersContainer[id])
+        this.Input.addListener("keypress", this.eventListenersContainer[id])
     }
 
     /**
@@ -202,7 +202,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.removeKeyListener('inputPopup')
      */
     removeKeyListener(id) {
-        this.Input.removeListener('keypress', this.eventListenersContainer[id])
+        this.Input.removeListener("keypress", this.eventListenersContainer[id])
         delete this.eventListenersContainer[id]
     }
 
@@ -235,9 +235,9 @@ class ConsoleManager extends EventEmitter {
      */
     setHomePage(page) {
         this.pages[0] = page
-        if (this.logLocation === 'popup') {
+        if (this.logLocation === "popup") {
             this.layout.setPage1(page)
-        } else if (typeof this.logLocation === 'number') {
+        } else if (typeof this.logLocation === "number") {
             if (this.logLocation === 0) {
                 this.layout.setPage2(page)
             } else {
@@ -259,7 +259,7 @@ class ConsoleManager extends EventEmitter {
      */
     setPage(page, pageNumber = 0, title = null) {
         this.pages[pageNumber] = page
-        if (this.logLocation === 'popup') {
+        if (this.logLocation === "popup") {
             if (pageNumber === 0) {
                 this.layout.setPage1(this.pages[pageNumber])
                 if (title) this.layout.page1Title = title
@@ -267,7 +267,7 @@ class ConsoleManager extends EventEmitter {
                 this.layout.setPage2(this.pages[pageNumber])
                 if (title) this.layout.page2Title = title
             }
-        } else if (typeof this.logLocation === 'number') {
+        } else if (typeof this.logLocation === "number") {
             if (this.logLocation === 0) {
                 this.layout.setPage2(this.pages[pageNumber])
                 if (title) this.layout.page2Title = title
@@ -333,7 +333,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.showLogPopup()
      */
     showLogPopup() {
-        return new CustomPopup("logPopup", "Application Logs", this.stdOut, this.Screen.width - 12).show();
+        return new CustomPopup("logPopup", "Application Logs", this.stdOut, this.Screen.width - 12).show()
     }
 
     /**
@@ -343,7 +343,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.log("Hello world")
      */
     log(message) {
-        this.stdOut.addRow({ text: message, color: 'white' })
+        this.stdOut.addRow({ text: message, color: "white" })
         this.updateLogsConsole(true)
     }
 
@@ -354,7 +354,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.error("Anomaly detected")
      */
     error(message) {
-        this.stdOut.addRow({ text: message, color: 'red' })
+        this.stdOut.addRow({ text: message, color: "red" })
         this.updateLogsConsole(true)
     }
 
@@ -365,7 +365,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.warn("Anomaly detected")
      */
     warn(message) {
-        this.stdOut.addRow({ text: message, color: 'yellow' })
+        this.stdOut.addRow({ text: message, color: "yellow" })
         this.updateLogsConsole(true)
     }
 
@@ -376,7 +376,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.info("Anomaly detected")
      */
     info(message) {
-        this.stdOut.addRow({ text: message, color: 'blue' })
+        this.stdOut.addRow({ text: message, color: "blue" })
         this.updateLogsConsole(true)
     }
 
@@ -402,11 +402,11 @@ class ConsoleManager extends EventEmitter {
      * @example CM.truncate("Hello world", 5, true) // "Hello..."
      */
     truncate(str, n, useWordBoundary) {
-        if (str.length <= n) { return str; }
-        const subString = str.substring(0, n - 1); // the original check
+        if (str.length <= n) { return str }
+        const subString = str.substring(0, n - 1) // the original check
         return (useWordBoundary ?
             subString.substring(0, subString.lastIndexOf(" ")) :
-            subString) + "…";
+            subString) + "…"
     }
 }
 

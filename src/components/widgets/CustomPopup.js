@@ -23,22 +23,22 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  */
 export class CustomPopup extends EventEmitter {
     constructor(id, title, content, width, visible = false) {
-        super();
+        super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager();
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.width = width;
-        this.visible = visible;
-        this.marginTop = 4;
+        this.CM = new ConsoleManager()
+        this.id = id
+        this.title = title
+        this.content = content
+        this.width = width
+        this.visible = visible
+        this.marginTop = 4
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this);
-            const message = `CustomPopup ${this.id} already exists.`;
-            this.CM.error(message);
-            throw new Error(message);
+            this.CM.unRegisterWidget(this)
+            const message = `CustomPopup ${this.id} already exists.`
+            this.CM.error(message)
+            throw new Error(message)
         }
-        this.CM.registerWiget(this);
+        this.CM.registerWiget(this)
     }
 
     /**
@@ -50,38 +50,38 @@ export class CustomPopup extends EventEmitter {
      */
     keyListner(str, key) {
         switch (key.name) {
-            case 'up':
-                this.content.increaseScrollIndex()
-                break
-            case 'down':
-                this.content.decreaseScrollIndex()
-                break
-            case 'return':
-                {
-                    this.emit(`confirm`)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'escape':
-                {
-                    this.emit(`cancel`)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'q':
-                {
-                    this.CM.emit('exit')
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            default:
-                break
+        case "up":
+            this.content.increaseScrollIndex()
+            break
+        case "down":
+            this.content.decreaseScrollIndex()
+            break
+        case "return":
+            {
+                this.emit("confirm")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "escape":
+            {
+                this.emit("cancel")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "q":
+            {
+                this.CM.emit("exit")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        default:
+            break
         }
         this.CM.refresh()
     }
@@ -194,7 +194,7 @@ export class CustomPopup extends EventEmitter {
             const offset = 2
             newLine = JSON.parse(JSON.stringify(line)) // Shallow copy because I don't want to modify the values but not the original
             let diff = unformattedLine.length - width
-                // remove truncated text
+            // remove truncated text
             for (let i = newLine.length - 1; i >= 0; i--) {
                 if (newLine[i].text.length > diff + offset) {
                     newLine[i].text = this.CM.truncate(newLine[i].text, (newLine[i].text.length - diff) - offset, true)
@@ -237,7 +237,7 @@ export class CustomPopup extends EventEmitter {
         header += "├" + "─".repeat(windowWidth) + "┤\n"
 
         const windowDesign = `${header}`
-        const arrWindowDesign = windowDesign.split('\n')
+        const arrWindowDesign = windowDesign.split("\n")
         arrWindowDesign.forEach((line, index) => {
             this.CM.Screen.cursorTo(x, this.marginTop + index)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
@@ -248,7 +248,7 @@ export class CustomPopup extends EventEmitter {
             this.drawLine(line, windowWidth)
         })
         this.CM.Screen.cursorTo(x, this.marginTop + _content.length + arrWindowDesign.length - 1)
-        this.CM.Screen.write({ text: `└${"─".repeat(windowWidth)}┘`, style: { color: 'white' } })
+        this.CM.Screen.write({ text: `└${"─".repeat(windowWidth)}┘`, style: { color: "white" } })
         return this
     }
 }

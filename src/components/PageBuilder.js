@@ -68,7 +68,7 @@ export class PageBuilder {
     addSpacer(height = 1) {
         if (height > 0) {
             for (let i = 0; i < height; i++) {
-                this.addRow({ text: '', color: '' })
+                this.addRow({ text: "", color: "" })
             }
         }
     }

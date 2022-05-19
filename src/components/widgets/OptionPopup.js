@@ -22,23 +22,23 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  */
 export class OptionPopup extends EventEmitter {
     constructor(id, title, options, selected, visible = false) {
-        super();
+        super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
-        this.CM = new ConsoleManager();
-        this.id = id;
-        this.title = title;
-        this.options = options;
-        this.selected = selected;
-        this.visible = visible;
-        this.marginTop = 4;
-        this.startIndex = 0;
+        this.CM = new ConsoleManager()
+        this.id = id
+        this.title = title
+        this.options = options
+        this.selected = selected
+        this.visible = visible
+        this.marginTop = 4
+        this.startIndex = 0
         if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this);
-            const message = `OptionPopup ${this.id} already exists.`;
-            this.CM.error(message);
-            throw new Error(message);
+            this.CM.unRegisterWidget(this)
+            const message = `OptionPopup ${this.id} already exists.`
+            this.CM.error(message)
+            throw new Error(message)
         }
-        this.CM.registerWiget(this);
+        this.CM.registerWiget(this)
     }
 
     adaptOptions() {
@@ -54,72 +54,72 @@ export class OptionPopup extends EventEmitter {
      */
     keyListner(str, key) {
         switch (key.name) {
-            case 'down':
-                this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length], false)
-                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                    if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
-                        this.startIndex++
-                    }
+        case "down":
+            this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length], false)
+            if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
+                    this.startIndex++
+                }
+            } else {
+                this.startIndex = 0
+            }
+            break
+        case "up":
+            this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length], false)
+            if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
+                this.startIndex--
+            }
+            break
+        case "pagedown":
+            if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                this.setSelected(this.options[(this.options.indexOf(this.selected) + this.adaptOptions().length) % this.options.length], false)
+                if (this.startIndex + this.adaptOptions().length < this.options.length) {
+                    this.startIndex += this.adaptOptions().length
                 } else {
                     this.startIndex = 0
                 }
-                break
-            case 'up':
-                this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length], false)
-                if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
-                    this.startIndex--
-                }
-                break
-            case 'pagedown':
-                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                    this.setSelected(this.options[(this.options.indexOf(this.selected) + this.adaptOptions().length) % this.options.length], false)
-                    if (this.startIndex + this.adaptOptions().length < this.options.length) {
-                        this.startIndex += this.adaptOptions().length
-                    } else {
-                        this.startIndex = 0
-                    }
+            } else {
+                return
+            }
+            break
+        case "pageup":
+            if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                this.setSelected(this.options[(this.options.indexOf(this.selected) - this.adaptOptions().length + this.options.length) % this.options.length], false)
+                if (this.startIndex > this.adaptOptions().length) {
+                    this.startIndex -= this.adaptOptions().length
                 } else {
-                    return
+                    this.startIndex = 0
                 }
-                break
-            case 'pageup':
-                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                    this.setSelected(this.options[(this.options.indexOf(this.selected) - this.adaptOptions().length + this.options.length) % this.options.length], false)
-                    if (this.startIndex > this.adaptOptions().length) {
-                        this.startIndex -= this.adaptOptions().length
-                    } else {
-                        this.startIndex = 0
-                    }
-                } else {
-                    return
-                }
-                break
-            case 'return':
-                {
-                    this.emit(`confirm`, this.selected)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'escape':
-                {
-                    this.emit(`cancel`)
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            case 'q':
-                {
-                    this.CM.emit('exit')
-                    this.CM.unRegisterWidget(this)
-                    this.hide()
-                    delete this
-                }
-                break
-            default:
-                break
+            } else {
+                return
+            }
+            break
+        case "return":
+            {
+                this.emit("confirm", this.selected)
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "escape":
+            {
+                this.emit("cancel")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        case "q":
+            {
+                this.CM.emit("exit")
+                this.CM.unRegisterWidget(this)
+                this.hide()
+                delete this
+            }
+            break
+        default:
+            break
         }
         this.CM.refresh()
     }
@@ -139,7 +139,7 @@ export class OptionPopup extends EventEmitter {
      * @memberof OptionPopup
      * @returns {OptionPopup} The instance of the OptionPopup.
      */
-    setSelected(selected, refresh = true) {
+    setSelected(selected) {
         this.selected = selected
         this.CM.refresh()
         return this
@@ -234,14 +234,14 @@ export class OptionPopup extends EventEmitter {
         footer += "┘\n"
 
         let content = ""
-        this.adaptOptions().forEach((option, index) => {
+        this.adaptOptions().forEach((option) => {
             content += `│${option === this.selected ? "<" : " "} ${option}${option === this.selected ? " >" : "  "}${" ".repeat(windowWidth - option.toString().length - 4)}│\n`
         })
 
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split('\n').forEach((line, index) => {
+        windowDesign.split("\n").forEach((line, index) => {
             this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
-            this.CM.Screen.write({ text: line, style: { color: 'white' } })
+            this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         return this
     }
