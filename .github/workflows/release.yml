@@ -28,7 +28,7 @@ jobs:
     needs: test
     steps:
       - name: Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')
         with: 
           generate_release_notes: true
@@ -45,7 +45,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - id: check
-        uses: EndBug/version-check@v1
+      - uses: EndBug/version-check@v1
         with:
           file-url: https://unpkg.com/console-gui-tools@1.1.12/package.json
           static-checking: localIsNew
