@@ -48,13 +48,13 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      */
     keyListnerNumeric(str, key) {
-        const v = Number(this.value)
+        let v = Number(this.value)
         if (Number.isNaN(v)) {
             v = 0
         }
         if (!Number.isNaN(Number(key.name))) {
             if (v.toString().length < 20) {
-                let tmp = v.toString()
+                let tmp = this.value.toString()
                 tmp += key.name
                 this.value = Number(tmp)
             }
@@ -63,17 +63,27 @@ export class InputPopup extends EventEmitter {
             this.value = v * -1
         } else if (key.sequence === '+') {
             this.value = Math.abs(v)
+        } else if (key.sequence === '.' || key.sequence === ',') {
+            if (this.value.toString().indexOf('.') === -1) {
+                this.value = v + '.'
+            }
         } else {
             switch (key.name) {
                 case 'backspace':
                     // If backspace is pressed I remove the last character from the typed value
-                    if (v.toString().length > 0) {
-                        this.value = Number(v.toString().slice(0, v.toString().length - 1))
+                    if (this.value.toString().length > 0) {
+                        if (this.value.toString().indexOf('.') === this.value.toString().length - 1) {
+                            this.value = v.toString()
+                        } else if (this.value.toString().indexOf('.') === this.value.toString().length - 2) {
+                            this.value = this.value.toString().slice(0, this.value.toString().length - 1)
+                        } else {
+                            this.value = Number(v.toString().slice(0, v.toString().length - 1))
+                        }
                     }
                     break
                 case 'return':
                     {
-                        this.emit(`confirm`, this.value)
+                        this.emit(`confirm`, Number(this.value))
                         this.CM.unRegisterWidget(this)
                         this.hide()
                         delete this
