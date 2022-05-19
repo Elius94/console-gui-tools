@@ -1,11 +1,11 @@
-import net from 'net';
-import EventEmitter from 'events';
+import net from "net"
+import EventEmitter from "events"
 
 const PORT = 9090
-const HOST = '127.0.0.1'
+const HOST = "127.0.0.1"
 let period = 100
 
-let mode = 'random'
+let mode = "random"
 
 const periodList = [10, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 30000, 60000, 120000, 300000, 600000, 900000, 1800000, 3600000, 7200000, 14400000, 28800000, 43200000, 86400000]
 const modeList = ["random", "linear"]
@@ -14,17 +14,17 @@ const clientManager = new EventEmitter()
 
 import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from '../src/ConsoleGui.js'
 const GUI = new ConsoleManager({
-    title: 'TCP Simulator', // Title of the console
+    title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
     logLocation: 1, // Location of the logs page
     layoutOptions: {
         boxed: true, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title
-        changeFocusKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
-        type: 'double', // Set to 'double' to enable double layout
-        direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
-        boxColor: 'yellow',
-        boxStyle: 'bold',
+        changeFocusKey: "ctrl+l", // Change layout with ctrl+l to switch to the logs page
+        type: "double", // Set to 'double' to enable double layout
+        direction: "vertical", // Set to 'horizontal' to enable horizontal layout
+        boxColor: "yellow",
+        boxStyle: "bold",
     },
 })
 

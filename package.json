@@ -35,6 +35,7 @@
         "chalk": "^5.0.1"
     },
     "devDependencies": {
+        "eslint": "^8.15.0",
         "jsdoc-to-markdown": "^7.1.1"
     }
 }

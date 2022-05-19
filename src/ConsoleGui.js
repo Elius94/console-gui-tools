@@ -1,6 +1,6 @@
 import { EventEmitter } from "events"
-import readline from 'readline';
-import { PageBuilder, Screen } from './components/index.js';
+import readline from "readline";
+import { PageBuilder, Screen } from "./components/index.js";
 import { DoubleLayout } from "./components/layout/index.js";
 import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from "./components/widgets/index.js";
 
@@ -295,10 +295,10 @@ class ConsoleManager extends EventEmitter {
      */
     setPages(pages) {
         this.pages = pages
-        if (this.logLocation === 'popup') {
+        if (this.logLocation === "popup") {
             this.layout.setPage1(this.pages[0])
             this.layout.setPage2(this.pages[1])
-        } else if (typeof this.logLocation === 'number') {
+        } else if (typeof this.logLocation === "number") {
             if (this.logLocation === 0) {
                 this.layout.setPage2(this.pages[0])
             } else {
