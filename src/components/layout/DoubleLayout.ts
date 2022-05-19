@@ -1,4 +1,17 @@
-import { ConsoleManager } from "../../ConsoleGui.js"
+import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
+import { StyledElement } from "../PageBuilder.js"
+
+export interface DoubleLayoutOptions {
+    showTitle: boolean | undefined,
+    boxed: boolean | undefined,
+    boxColor: string | undefined , // add color list from chalk
+    boxStyle: "bold" | undefined,
+    changeFocusKey: string | undefined,
+    direction: "horizontal" | "vertical",
+    page1Title: string | undefined,
+    page2Title: string | undefined,
+    pageRatio: [number, number] | undefined,
+}
 
 /**
  * @class DoubleLayout
@@ -10,7 +23,19 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @example const layout = new DoubleLayout(page1, page2, true, 0)
  */
 export class DoubleLayout {
-    constructor(page1, page2, options = {}, selected = 0) {
+    CM: ConsoleManager
+    options: DoubleLayoutOptions
+    selected: number
+    page1: PageBuilder
+    page2: PageBuilder
+    boxBold: boolean
+    proportions: [number, number]
+    page2Title: string
+    page1Title: string
+    realWidth = 0
+    isOdd: boolean | undefined
+
+    constructor(page1 : PageBuilder, page2: PageBuilder, options: DoubleLayoutOptions, selected: 0 | 1 = 0) {
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
 
@@ -34,28 +59,28 @@ export class DoubleLayout {
      * @param {PageBuilder} page the page to be added
      * @memberof DoubleLayout
      */
-    setPage1(page) { this.page1 = page }
+    setPage1(page: PageBuilder) { this.page1 = page }
 
     /**
      * @description This function is used to overwrite the page content.
      * @param {PageBuilder} page the page to be added
      * @memberof DoubleLayout
      */
-    setPage2(page) { this.page2 = page }
+    setPage2(page: PageBuilder) { this.page2 = page }
 
     /**
      * @description This function is used to enable or disable the layout border.
      * @param {boolean} border enable or disable the border
      * @memberof DoubleLayout
      */
-    setBorder(border) { this.options.boxed = border }
+    setBorder(border: boolean) { this.options.boxed = border }
 
     /**
      * @description This function is used to choose the page to be highlighted.
      * @param {number} selected 0 for page1, 1 for page2
      * @memberof DoubleLayout
      */
-    setSelected(selected) { this.selected = selected }
+    setSelected(selected: 1 | 2) { this.selected = selected }
 
     /**
      * @description This function is used to get the selected page.
@@ -86,7 +111,7 @@ export class DoubleLayout {
      * @memberof DoubleLayout
      * @returns {void}
      */
-    drawLine(line, index = 0) {
+    drawLine(line :  Array<StyledElement>, index = 0) {
         const dir = !this.options.direction || this.options.direction === "vertical" ? "vertical" : "horizontal"
         const bsize = this.options.boxed ? dir === "vertical" ? 2 : 3 : 0
         let unformattedLine = [""]
@@ -103,10 +128,10 @@ export class DoubleLayout {
                 [...line[1]]
             ]
             unformattedLine.push("")
-            line[0].forEach(element => {
+            line[0].forEach((element : StyledElement) => {
                 unformattedLine[0] += element.text
             })
-            line[1].forEach(element => {
+            line[1].forEach((element : StyledElement) => {
                 unformattedLine[1] += element.text
             })
         }
@@ -145,7 +170,7 @@ export class DoubleLayout {
             if (this.options.boxed) newLine[0].push({ text: "│", style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
             this.CM.Screen.write(...newLine[0])
         } else {
-            let ret = []
+            const ret = []
             if (this.options.boxed) ret.push({ text: "│", style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
             ret.push(...newLine[0])
             if (unformattedLine[0].length <= this.realWidth[0] - bsize) {
