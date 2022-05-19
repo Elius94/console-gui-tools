@@ -57,7 +57,7 @@ jobs:
           static-checking: localIsNew
 
       - name: Publish package to NPM 📦
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: steps.check.outputs.changed == 'true' && startsWith(github.ref, 'refs/tags/v')
         run: npm publish
 
         env:
