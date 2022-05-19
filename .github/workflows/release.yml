@@ -39,7 +39,7 @@ jobs:
   publish:
     name: Release and NPM publish
     needs: release
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
       - id: check
         uses: EndBug/version-check@v1
         with:
-          file-url: https://unpkg.com/console-gui-tools@1.1.12/package.json
+          file-url: "https://unpkg.com/console-gui-tools@latest/package.json"
           static-checking: localIsNew
 
       - name: Publish package to NPM 📦
