@@ -39,11 +39,12 @@ export class Screen extends EventEmitter {
         let newStyleIndex = []
         for (let i = 0; i < arguments.length; i++) {
             let arg = arguments[i]
-            if (arg.text) {
+            if (arg.text !== undefined) {
+                const txt = arg.text.toString()
                 let style = arg.style
-                style.index = [row.length, row.length + arg.text.length]
+                style.index = [row.length, row.length + txt.length]
                 newStyleIndex.push(style)
-                row += arg.text
+                row += txt
             }
         }
         const currentStyleIndex = this.buffer[this.cursor.y].styleIndex

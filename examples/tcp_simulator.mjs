@@ -22,7 +22,7 @@ const GUI = new ConsoleManager({
         showTitle: true, // Set to false to hide title
         changeFocusKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
         type: 'double', // Set to 'double' to enable double layout
-        direction: 'horizontal', // Set to 'horizontal' to enable horizontal layout
+        direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
         boxColor: 'yellow',
         boxStyle: 'bold',
     },
@@ -153,7 +153,6 @@ const updateConsole = async() => {
 GUI.on("exit", () => {
     closeApp()
 })
-let ixxxx = 0
 
 GUI.on("keypressed", (key) => {
     switch (key.name) {
