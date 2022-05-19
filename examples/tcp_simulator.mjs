@@ -15,14 +15,14 @@ const clientManager = new EventEmitter()
 import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from '../src/ConsoleGui.js'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
-    logsPageSize: 8, // Number of lines to show in logs page
+    logPageSize: 20, // Number of lines to show in logs page
     logLocation: 1, // Location of the logs page
     layoutOptions: {
         boxed: true, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title
         changeFocusKey: 'ctrl+l', // Change layout with ctrl+l to switch to the logs page
         type: 'double', // Set to 'double' to enable double layout
-        direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
+        direction: 'horizontal', // Set to 'horizontal' to enable horizontal layout
         boxColor: 'yellow',
         boxStyle: 'bold',
     },
@@ -153,6 +153,7 @@ const updateConsole = async() => {
 GUI.on("exit", () => {
     closeApp()
 })
+let ixxxx = 0
 
 GUI.on("keypressed", (key) => {
     switch (key.name) {

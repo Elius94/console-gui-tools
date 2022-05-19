@@ -206,7 +206,7 @@ export class DoubleLayout {
         } else { // Draw horizontally  
             this.realWidth = [Math.round(this.CM.Screen.width * this.proportions[0]), Math.round(this.CM.Screen.width * this.proportions[1])]
             const trimmedTitle = [this.CM.truncate(this.page1Title, this.realWidth[0] - 4, false), this.CM.truncate(this.page2Title, this.realWidth[1] - 3, false)]
-            const maxPageHeight = Math.max(this.page1.getPageHeight(), this.page2.getPageHeight())
+            const maxPageHeight = Math.max(this.page1.getViewedPageHeight(), this.page2.getViewedPageHeight())
             const p1 = this.page1.getContent()
             const p2 = this.page2.getContent()
             if (this.options.boxed) { // Draw pages with borders
