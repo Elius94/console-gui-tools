@@ -1,4 +1,4 @@
-name: Release
+name: Release Package
 
 on:
   push:
@@ -14,8 +14,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
@@ -28,24 +31,27 @@ jobs:
     needs: test
     steps:
       - name: Release
-      - uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')
-        with: 
+        with:
           generate_release_notes: true
 
   publish:
+    name: Release and NPM publish
     needs: release
     runs-on: windows-latest
     steps:
-      - name: Release and NPM publish
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v2
         with:
           node-version: 17
           registry-url: "https://registry.npmjs.org"
 
       - id: check
-      - uses: EndBug/version-check@v1
+        uses: EndBug/version-check@v1
         with:
           file-url: https://unpkg.com/console-gui-tools@1.1.12/package.json
           static-checking: localIsNew
