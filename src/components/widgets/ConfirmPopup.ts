@@ -1,4 +1,4 @@
-import { KeyListenerArgs } from "../../ConsoleGui.js"
+import { KeyListenerArgs } from "../../index.js"
 import ButtonPopup from "./ButtonPopup.js"
 
 /**

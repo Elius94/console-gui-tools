@@ -1,5 +1,5 @@
 import { ForegroundColor } from "chalk"
-import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
+import { ConsoleManager, PageBuilder } from "../../index.js"
 import { StyledElement } from "../PageBuilder.js"
 
 /**
