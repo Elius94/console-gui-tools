@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "esnext",
     "lib": ["dom", "esnext"],
     "module": "esnext",
     "declaration": true,
     "outDir": "./dist",
     // match output dir to input dir. e.g. dist/index instead of dist/src/index
-    "rootDir": "./src",
+    //"rootDir": "./src",
     "strict": true,
     "allowJs": false,
     "sourceMap": true,
@@ -27,7 +27,7 @@
     // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
     "skipLibCheck": true,
     // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
-    "noEmit": true,
+    //"noEmit": true,
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*", "dist"]

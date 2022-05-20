@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { ConsoleManager, KeyListenerArgs } from "../../index.js"
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 
 /**
  * @class InputPopup
