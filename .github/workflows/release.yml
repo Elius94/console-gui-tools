@@ -50,6 +50,9 @@ jobs:
           node-version: 17
           registry-url: "https://registry.npmjs.org"
 
+      - name: Run ci
+        run: npm ci
+
       - id: check
         uses: EndBug/version-check@v1
         with:
