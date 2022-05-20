@@ -1,13 +1,23 @@
 {
     "compilerOptions": {
-      "target": "es6",
       "module": "esnext",
+      "lib": ["dom", "esnext"],
+      "importHelpers": true,
+      // match output dir to input dir. e.g. dist/index instead of dist/src/index
+      "rootDir": "./src",
+      "noFallthroughCasesInSwitch": true,
+      // interop between ESM and CJS modules. Recommended by TS
+      "esModuleInterop": true,
+      // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
+      "skipLibCheck": true,
+      // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
+      "noEmit": true,
       "declaration": true,
       "outDir": "./dist",
       "strict": true,
       "allowJs": false,
       "sourceMap": true,
-      "moduleResolution": "Node",
+      "moduleResolution": "node",
       "forceConsistentCasingInFileNames": true,
       "noImplicitReturns": true,
       "noImplicitThis": true,
@@ -17,8 +27,7 @@
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "allowSyntheticDefaultImports": true,
-      
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "**/__tests__/*", "lib"]
+    "include": ["src", "types"],
+    "exclude": ["node_modules", "**/__tests__/*", "dist", "examples"]
   }

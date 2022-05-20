@@ -1,15 +1,46 @@
 {
     "name": "console-gui-tools",
-    "version": "1.1.17",
+    "version": "1.1.18",
     "description": "A simple library to draw option menu, text popup or other widgets and layout on a Node.js console.",
-    "main": "dist/ConsoleGui.js",
     "type": "module",
+    "main": "dist/ConsoleGui.js",
+    "typings": "dist/ConsoleGui.d.ts",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "husky": {
+        "hooks": {
+            "pre-commit": "tsdx lint"
+        }
+    },
+    "module": "dist/console-gui-tools.esm.js",
+    "size-limit": [
+        {
+            "path": "dist/console-gui-tools.cjs.production.min.js",
+            "limit": "10 KB"
+        },
+        {
+            "path": "dist/console-gui-tools.esm.js",
+            "limit": "10 KB"
+        }
+    ],
+    "engines": {
+        "node": ">=14"
+    },
     "scripts": {
-        "lint": "eslint . --ext .ts",
-        "build": "tsc",
-        "test": "npm run build && node ./examples/tcp_simulator.mjs",
-        "start": "npm run build && node lib/ConsoleGui.js",
-        "docsgen": "node ./docgen.cjs"
+        "_lint": "eslint . --ext .ts",
+        "_build": "tsc",
+        "_test": "npm run build && node ./examples/tcp_simulator.mjs",
+        "_start": "npm run build && node lib/ConsoleGui.js",
+        "docsgen": "node ./docgen.cjs",
+        "start": "tsdx watch",
+        "build": "tsdx build",
+        "test": "tsdx test",
+        "lint": "tsdx lint",
+        "prepare": "tsdx build",
+        "size": "size-limit",
+        "analyze": "size-limit --why"
     },
     "repository": {
         "type": "git",
@@ -42,6 +73,11 @@
         "@typescript-eslint/parser": "^5.25.0",
         "eslint": "^8.15.0",
         "jsdoc-to-markdown": "^7.1.1",
-        "typescript": "^4.6.4"
+        "typescript": "^4.6.4",
+        "@size-limit/preset-small-lib": "^7.0.8",
+        "husky": "^8.0.1",
+        "size-limit": "^7.0.8",
+        "tsdx": "^0.14.1",
+        "tslib": "^2.4.0"
     }
 }

@@ -11,7 +11,7 @@ const pluginsRootDir = ["src", "src/components", "src/components/layout", "src/c
 
 const pluginModules = pluginsRootDir.map(dir => {
     return fs.readdirSync(path.join(__dirname, dir))
-        .filter(file => file.endsWith(".js") && !file.endsWith("index.js"))
+        .filter(file => file.endsWith(".ts") && !file.endsWith("index.ts"))
         .map(file => path.join(__dirname, dir, file))
 })
 
