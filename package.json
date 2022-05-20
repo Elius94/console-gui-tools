@@ -1,6 +1,6 @@
 {
     "name": "console-gui-tools",
-    "version": "1.1.16",
+    "version": "1.1.20",
     "description": "A simple library to draw option menu, text popup or other widgets and layout on a Node.js console.",
     "main": "dist/ConsoleGui.js",
     "typings": "dist/ConsoleGui.d.ts",
