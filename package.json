@@ -1,7 +1,10 @@
 {
     "name": "console-gui-tools",
-    "version": "1.1.18",
+    "version": "1.1.20",
     "description": "A simple library to draw option menu, text popup or other widgets and layout on a Node.js console.",
+    "main": "dist/ConsoleGui.js",
+    "typings": "dist/ConsoleGui.d.ts",
+    "types": "dist/ConsoleGui.d.ts",
     "type": "module",
     "main": "dist/ConsoleGui.js",
     "typings": "dist/ConsoleGui.d.ts",
@@ -29,18 +32,12 @@
         "node": ">=14"
     },
     "scripts": {
-        "_lint": "eslint . --ext .ts",
-        "_build": "tsc",
-        "_test": "npm run build && node ./examples/tcp_simulator.mjs",
-        "_start": "npm run build && node lib/ConsoleGui.js",
-        "docsgen": "node ./docgen.cjs",
-        "start": "tsdx watch",
-        "build": "tsdx build",
-        "test": "tsdx test",
-        "lint": "tsdx lint",
-        "prepare": "tsdx build",
-        "size": "size-limit",
-        "analyze": "size-limit --why"
+        "lint": "eslint . --ext .ts",
+        "build": "tsc",
+        "prepare": "npm run build",
+        "test": "npm run build && node ./examples/tcp_simulator.mjs",
+        "start": "npm run build && node ./dist/ConsoqleGui.js",
+        "docsgen": "node ./docgen.cjs"
     },
     "repository": {
         "type": "git",
