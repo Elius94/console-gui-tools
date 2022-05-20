@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "esnext",
+      "declaration": true,
+      "outDir": "./dist",
+      "strict": true,
+      "allowJs": false,
+      "sourceMap": true,
+      "moduleResolution": "Node",
+      "forceConsistentCasingInFileNames": true,
+      "noImplicitReturns": true,
+      "noImplicitThis": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "allowSyntheticDefaultImports": true,
+      
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "**/__tests__/*", "lib"]
+  }

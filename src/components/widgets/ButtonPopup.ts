@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { ConsoleManager } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 
 /**
  * @class ButtonPopup
@@ -21,7 +21,17 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @example const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
  */
 export class ButtonPopup extends EventEmitter {
-    constructor(id, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
+    CM: ConsoleManager
+    id: string
+    title: string
+    message: string
+    buttons: string[]
+    selected: number
+    visible: boolean
+    marginTop: number
+    startIndex: number
+
+    public constructor(id: string, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -64,11 +74,11 @@ export class ButtonPopup extends EventEmitter {
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the popup is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} str - The string of the input.
-     * @param {Object} key - The key object.
+     * @param {string} _str - The string of the input.
+     * @param {any} key - The key object.
      * @memberof ButtonPopup
      */
-    keyListner(str, key) {
+    public keyListner(_str: string, key : KeyListenerArgs): void {
         switch (key.name) {
         case "left":
             if (this.selected > 0 && this.selected <= this.buttons.length) {
@@ -89,7 +99,7 @@ export class ButtonPopup extends EventEmitter {
                 this.emit("confirm", this.buttons[this.selected])
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "escape":
@@ -97,7 +107,7 @@ export class ButtonPopup extends EventEmitter {
                 this.emit("cancel")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "q":
@@ -105,7 +115,7 @@ export class ButtonPopup extends EventEmitter {
                 this.CM.emit("exit")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         default:
@@ -119,7 +129,7 @@ export class ButtonPopup extends EventEmitter {
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    show() {
+    public show(): ButtonPopup {
         if (!this.visible) {
             this.manageInput()
             this.visible = true
@@ -133,7 +143,7 @@ export class ButtonPopup extends EventEmitter {
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    hide() {
+    public hide(): ButtonPopup {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
@@ -147,7 +157,7 @@ export class ButtonPopup extends EventEmitter {
      * @returns {boolean} The visibility of the popup.
      * @memberof ButtonPopup
      */
-    isVisible() {
+    public isVisible(): boolean {
         return this.visible
     }
 
@@ -156,7 +166,7 @@ export class ButtonPopup extends EventEmitter {
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    manageInput() {
+    private manageInput(): ButtonPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
         return this
@@ -167,7 +177,7 @@ export class ButtonPopup extends EventEmitter {
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    unManageInput() {
+    private unManageInput(): ButtonPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
         return this
@@ -178,12 +188,12 @@ export class ButtonPopup extends EventEmitter {
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    draw() {
+    public draw(): ButtonPopup {
         const offset = 1
         const borderSize = 2
         const spaceBetweenButtons = 1
         let maxRowLength = 0
-        let buttonGrid = []
+        const buttonGrid: string[][] = []
         let rowLength = 0
         let rows = 0
 
@@ -270,12 +280,12 @@ export class ButtonPopup extends EventEmitter {
                             this.CM.error("Error in ButtonPopup draw function")
                         }
                         if (colIndex === row.length - 1) {
-                            content += " ".repeat(!emptySpace % 2 ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
+                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
                         } else {
                             content += " ".repeat(spaceBetweenButtons)
                         }
                     } else if (colIndex === row.length) {
-                        content += " ".repeat(!emptySpace % 2 ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
+                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
                     }
                 })
             }

@@ -1,8 +1,57 @@
 import { EventEmitter } from "events"
 import readline from "readline"
-import { PageBuilder, Screen } from "./components/index.js"
-import { DoubleLayout } from "./components/layout/index.js"
-import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from "./components/widgets/index.js"
+import DoubleLayout, { DoubleLayoutOptions } from "./components/layout/DoubleLayout.js"
+import PageBuilder from "./components/PageBuilder.js"
+import Screen from "./components/Screen.js"
+import CustomPopup from "./components/widgets/CustomPopup.js"
+import ButtonPopup from "./components/widgets/ButtonPopup.js"
+import ConfirmPopup from "./components/widgets/ConfirmPopup.js"
+import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
+import InputPopup from "./components/widgets/InputPopup.js"
+import OptionPopup from "./components/widgets/OptionPopup.js"
+
+
+/**
+ * @description This type is used to define the parameters of the KeyListener event (keypress).
+ * @typedef {Object} KeyListenerArgs
+ * @property {string} name - The name of the key pressed.
+ * @property {boolean} ctrl - If the ctrl key is pressed.
+ * @property {boolean} shift - If the shift key is pressed.
+ * @property {boolean} alt - If the alt key is pressed.
+ * @property {boolean} meta - If the meta key is pressed.
+ * @property {boolean} sequence - If the sequence of keys is pressed.
+ *
+ * @export
+ * @interface KeyListenerArgs
+ */
+export interface KeyListenerArgs {
+    name: string;
+    sequence: string;
+    ctrl: boolean;
+    alt: boolean;
+    shift: boolean;
+    meta: boolean;
+}
+
+/**
+ * @description This type is used to define the ConsoleGui options.
+ * @typedef {Object} ConsoleGuiOptions
+ * @property {string} [title] - The title of the ConsoleGui.
+ * @property {0 | 1 | "popup"} [logLocation] - The location of the logs.
+ * @property {string} [showLogKey] - The key to show the log.
+ * @property {number} [logPageSize] - The size of the log page.
+ * @property {DoubleLayoutOptions} [layoutOptions] - The options of the layout.
+ *
+ * @export
+ * @interface ConsoleGuiOptions
+ */
+export interface ConsoleGuiOptions {
+    logLocation?: 0 | 1 | "popup";
+    showLogKey?: string;
+    logPageSize?: number;
+    layoutOptions?: DoubleLayoutOptions;
+    title?: string;
+}
 
 /**
  * @class ConsoleManager
@@ -16,7 +65,26 @@ import { InputPopup, OptionPopup, ButtonPopup, ConfirmPopup, CustomPopup, FileSe
  * @example const CM = new ConsoleManager({ logPageSize: 10, layoutBorder: true, changeLayoutKey: 'ctrl+l', title: 'Console Application' })
  */
 class ConsoleManager extends EventEmitter {
-    constructor(options) {
+    Terminal: NodeJS.WriteStream & { fd: 1 }
+    Input: NodeJS.ReadStream & { fd: 0 }
+    static instance: ConsoleManager
+    Screen!: Screen
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    widgetsCollection: any[] = []
+    eventListenersContainer: { [key: string]: (_str: string, key : KeyListenerArgs) => void } = {}
+    logLocation!: 0 | 1 | "popup"
+    logPageSize!: number
+    logPageTitle!: string
+    pages!: PageBuilder[]
+    layoutOptions!: DoubleLayoutOptions
+    changeLayoutKey!: string
+    changeLayoutkeys!: string[]
+    applicationTitle!: string
+    showLogKey!: string
+    stdOut!: PageBuilder
+    layout!: DoubleLayout
+
+    public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
         this.Terminal = process.stdout
         this.Input = process.stdin
@@ -112,11 +180,11 @@ class ConsoleManager extends EventEmitter {
         return ConsoleManager.instance
     }
 
-    getLogPageSize() {
+    public getLogPageSize(): number {
         return this.logPageSize
     }
 
-    setLogPageSize(rows) {
+    public setLogPageSize(rows: number): void {
         this.logPageSize = rows
     }
 
@@ -125,8 +193,8 @@ class ConsoleManager extends EventEmitter {
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @memberof ConsoleManager
      */
-    addGenericListeners() {
-        this.Input.addListener("keypress", (str, key) => {
+    private addGenericListeners(): void {
+        this.Input.addListener("keypress", (_str: string, key : KeyListenerArgs): void => {
             let change = false
             if (this.changeLayoutkeys.length > 1) {
                 if (this.changeLayoutkeys[0] == "ctrl") {
@@ -190,7 +258,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setKeyListener('inputPopup', popup.keyListener)
      */
-    setKeyListener(id, manageFunction) {
+    public setKeyListener(id: string, manageFunction: (_str: string, key : KeyListenerArgs) => void): void {
         this.eventListenersContainer[id] = manageFunction
         this.Input.addListener("keypress", this.eventListenersContainer[id])
     }
@@ -201,7 +269,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.removeKeyListener('inputPopup')
      */
-    removeKeyListener(id) {
+    public removeKeyListener(id: string): void {
         this.Input.removeListener("keypress", this.eventListenersContainer[id])
         delete this.eventListenersContainer[id]
     }
@@ -211,7 +279,8 @@ class ConsoleManager extends EventEmitter {
      * @param {Widget} widget - The widget to register.
      * @memberof ConsoleManager
      */
-    registerWiget(widget) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public registerWiget(widget: any): void {
         this.widgetsCollection[widget.id] = widget
     }
 
@@ -220,7 +289,8 @@ class ConsoleManager extends EventEmitter {
      * @param {string} id - The id of the widget.
      * @memberof ConsoleManager
      */
-    unRegisterWidget(widget) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public unRegisterWidget(widget: any): void {
         if (this.widgetsCollection[widget.id]) {
             delete this.widgetsCollection[widget.id]
         }
@@ -233,7 +303,7 @@ class ConsoleManager extends EventEmitter {
      * @example CM.setHomePage(p)
      * @deprecated since version 1.1.12 - Use setPage or setPages instead
      */
-    setHomePage(page) {
+    public setHomePage(page: PageBuilder): void {
         this.pages[0] = page
         if (this.logLocation === "popup") {
             this.layout.setPage1(page)
@@ -257,7 +327,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setPage(p, 0)
      */
-    setPage(page, pageNumber = 0, title = null) {
+    public setPage(page: PageBuilder, pageNumber = 0, title: string | null = null): void {
         this.pages[pageNumber] = page
         if (this.logLocation === "popup") {
             if (pageNumber === 0) {
@@ -293,7 +363,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setPages([p1, p2], 0)
      */
-    setPages(pages) {
+    public setPages(pages: Array<PageBuilder>): void {
         this.pages = pages
         if (this.logLocation === "popup") {
             this.layout.setPage1(this.pages[0])
@@ -316,10 +386,10 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.refresh()
      */
-    refresh() {
+    public refresh(): void {
         this.Screen.update()
         this.layout.draw()
-        for (let widget in this.widgetsCollection) {
+        for (const widget in this.widgetsCollection) {
             if (this.widgetsCollection[widget].isVisible())
                 this.widgetsCollection[widget].draw()
         }
@@ -332,7 +402,7 @@ class ConsoleManager extends EventEmitter {
      * @returns the instance of the generated popup.
      * @example CM.showLogPopup()
      */
-    showLogPopup() {
+    public showLogPopup(): CustomPopup {
         return new CustomPopup("logPopup", "Application Logs", this.stdOut, this.Screen.width - 12).show()
     }
 
@@ -342,7 +412,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.log("Hello world")
      */
-    log(message) {
+    public log(message: string): void {
         this.stdOut.addRow({ text: message, color: "white" })
         this.updateLogsConsole(true)
     }
@@ -353,7 +423,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.error("Anomaly detected")
      */
-    error(message) {
+    public error(message: string): void {
         this.stdOut.addRow({ text: message, color: "red" })
         this.updateLogsConsole(true)
     }
@@ -364,7 +434,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.warn("Anomaly detected")
      */
-    warn(message) {
+    public warn(message: string): void {
         this.stdOut.addRow({ text: message, color: "yellow" })
         this.updateLogsConsole(true)
     }
@@ -375,24 +445,24 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.info("Anomaly detected")
      */
-    info(message) {
+    public info(message: string): void {
         this.stdOut.addRow({ text: message, color: "blue" })
         this.updateLogsConsole(true)
     }
 
     /**
      * @description This function is used to update the logs console. It is called by the log functions.
-     * @param {boolean} reset - If true, the log scroll index is resetted.
+     * @param {boolean} resetCursor - If true, the log scroll index is resetted.
      * @memberof ConsoleManager
      */
-    updateLogsConsole(resetCursor) {
+    private updateLogsConsole(resetCursor: boolean): void {
         if (resetCursor) {
             this.stdOut.setScrollIndex(0)
         }
         this.refresh()
     }
 
-    // TODO: move to utils.js
+    // TODO: move to utils
     /**
      * @description This function is used to truncate a string adding ... at the end.
      * @param {string} str - The string to truncate.
@@ -401,7 +471,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.truncate("Hello world", 5, true) // "Hello..."
      */
-    truncate(str, n, useWordBoundary) {
+    public truncate(str: string, n: number, useWordBoundary: boolean): string {
         if (str.length <= n) { return str }
         const subString = str.substring(0, n - 1) // the original check
         return (useWordBoundary ?

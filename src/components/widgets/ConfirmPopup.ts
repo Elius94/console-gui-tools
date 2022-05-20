@@ -1,3 +1,4 @@
+import { KeyListenerArgs } from "../../ConsoleGui.js"
 import ButtonPopup from "./ButtonPopup.js"
 
 /**
@@ -19,10 +20,10 @@ import ButtonPopup from "./ButtonPopup.js"
  * @example const popup = new ConfirmPopup("popup1", "Are you shure").show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
  */
 export class ConfirmPopup extends ButtonPopup {
-    constructor(id, title, message) {
+    public constructor(id: string, title: string | undefined, message: string | undefined) {
         super(id, title, message, ["Yes", "No"])
 
-        super.keyListner = (str, key) => {
+        super.keyListner = (_str: string, key : KeyListenerArgs) => {
             switch (key.name) {
             case "left":
                 if (this.selected > 0 && this.selected <= this.buttons.length) {
@@ -47,7 +48,7 @@ export class ConfirmPopup extends ButtonPopup {
                     }
                     this.CM.unRegisterWidget(this)
                     this.hide()
-                    delete this
+                    //delete this
                 }
                 break
             case "escape":
@@ -55,7 +56,7 @@ export class ConfirmPopup extends ButtonPopup {
                     this.emit("cancel")
                     this.CM.unRegisterWidget(this)
                     this.hide()
-                    delete this
+                    //delete this
                 }
                 break
             case "q":
@@ -63,7 +64,7 @@ export class ConfirmPopup extends ButtonPopup {
                     this.CM.emit("exit")
                     this.CM.unRegisterWidget(this)
                     this.hide()
-                    delete this
+                    //delete this
                 }
                 break
             default:
