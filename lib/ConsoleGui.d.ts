@@ -1,4 +1,54 @@
-import { PageBuilder } from "./components/PageBuilder.js";
+/// <reference types="node" />
+import { EventEmitter } from "events";
+import DoubleLayout, { DoubleLayoutOptions } from "./components/layout/DoubleLayout.js";
+import PageBuilder from "./components/PageBuilder.js";
+import Screen from "./components/Screen.js";
+import CustomPopup from "./components/widgets/CustomPopup.js";
+import ButtonPopup from "./components/widgets/ButtonPopup.js";
+import ConfirmPopup from "./components/widgets/ConfirmPopup.js";
+import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js";
+import InputPopup from "./components/widgets/InputPopup.js";
+import OptionPopup from "./components/widgets/OptionPopup.js";
+/**
+ * @description This type is used to define the parameters of the KeyListener event (keypress).
+ * @typedef {Object} KeyListenerArgs
+ * @property {string} name - The name of the key pressed.
+ * @property {boolean} ctrl - If the ctrl key is pressed.
+ * @property {boolean} shift - If the shift key is pressed.
+ * @property {boolean} alt - If the alt key is pressed.
+ * @property {boolean} meta - If the meta key is pressed.
+ * @property {boolean} sequence - If the sequence of keys is pressed.
+ *
+ * @export
+ * @interface KeyListenerArgs
+ */
+export interface KeyListenerArgs {
+    name: string;
+    sequence: string;
+    ctrl: boolean;
+    alt: boolean;
+    shift: boolean;
+    meta: boolean;
+}
+/**
+ * @description This type is used to define the ConsoleGui options.
+ * @typedef {Object} ConsoleGuiOptions
+ * @property {string} [title] - The title of the ConsoleGui.
+ * @property {0 | 1 | "popup"} [logLocation] - The location of the logs.
+ * @property {string} [showLogKey] - The key to show the log.
+ * @property {number} [logPageSize] - The size of the log page.
+ * @property {DoubleLayoutOptions} [layoutOptions] - The options of the layout.
+ *
+ * @export
+ * @interface ConsoleGuiOptions
+ */
+export interface ConsoleGuiOptions {
+    logLocation?: 0 | 1 | "popup";
+    showLogKey?: string;
+    logPageSize?: number;
+    layoutOptions?: DoubleLayoutOptions;
+    title?: string;
+}
 /**
  * @class ConsoleManager
  * @extends EventEmitter
@@ -10,41 +60,39 @@ import { PageBuilder } from "./components/PageBuilder.js";
  * @param {object} options - The options of the ConsoleManager.
  * @example const CM = new ConsoleManager({ logPageSize: 10, layoutBorder: true, changeLayoutKey: 'ctrl+l', title: 'Console Application' })
  */
-export class ConsoleManager extends EventEmitter {
-    constructor(options: any);
+declare class ConsoleManager extends EventEmitter {
     Terminal: NodeJS.WriteStream & {
         fd: 1;
     };
     Input: NodeJS.ReadStream & {
         fd: 0;
     };
-    /** @const {Screen} Screen - The screen instance */
-    Screen: Screen | undefined;
-    widgetsCollection: any[] | undefined;
-    eventListenersContainer: {} | undefined;
-    /** @const {number | 'popup'} logLocation - Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window. */
-    logLocation: any;
-    logPageSize: any;
-    logPageTitle: string | undefined;
-    /** @const {Array<PageBuilder>} homePage - The main application */
-    pages: PageBuilder[] | undefined;
-    layoutOptions: any;
-    /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
-    changeLayoutKey: any;
-    changeLayoutkeys: string[] | undefined;
-    applicationTitle: any;
-    showLogKey: any;
-    /** @const {PageBuilder} stdOut - The logs page */
-    stdOut: PageBuilder | undefined;
-    layout: DoubleLayout | undefined;
-    getLogPageSize(): any;
-    setLogPageSize(rows: any): void;
+    static instance: ConsoleManager;
+    Screen: Screen;
+    widgetsCollection: any[];
+    eventListenersContainer: {
+        [key: string]: (_str: string, key: KeyListenerArgs) => void;
+    };
+    logLocation: 0 | 1 | "popup";
+    logPageSize: number;
+    logPageTitle: string;
+    pages: PageBuilder[];
+    layoutOptions: DoubleLayoutOptions;
+    changeLayoutKey: string;
+    changeLayoutkeys: string[];
+    applicationTitle: string;
+    showLogKey: string;
+    stdOut: PageBuilder;
+    layout: DoubleLayout;
+    constructor(options?: ConsoleGuiOptions | undefined);
+    getLogPageSize(): number;
+    setLogPageSize(rows: number): void;
     /**
      * @description This function is used to make the ConsoleManager handle the key events when no widgets are showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @memberof ConsoleManager
      */
-    addGenericListeners(): void;
+    private addGenericListeners;
     /**
      * @description This function is used to set a key listener for a specific widget. The event listener is stored in the eventListenersContainer object.
      * @param {string} id - The id of the widget.
@@ -52,7 +100,7 @@ export class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setKeyListener('inputPopup', popup.keyListener)
      */
-    setKeyListener(id: string, manageFunction: Function): void;
+    setKeyListener(id: string, manageFunction: (_str: string, key: KeyListenerArgs) => void): void;
     /**
      * @description This function is used to remove a key listener for a specific widget. The event listener is removed from the eventListenersContainer object.
      * @param {string} id - The id of the widget.
@@ -65,7 +113,7 @@ export class ConsoleManager extends EventEmitter {
      * @param {Widget} widget - The widget to register.
      * @memberof ConsoleManager
      */
-    registerWiget(widget: Widget): void;
+    registerWiget(widget: any): void;
     /**
      * @description This function is used to unregister a widget. The widget is removed from the widgetsCollection object. That is called by the widgets in hide().
      * @param {string} id - The id of the widget.
@@ -88,7 +136,7 @@ export class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setPage(p, 0)
      */
-    setPage(page: PageBuilder, pageNumber?: number | undefined, title?: string | undefined): void;
+    setPage(page: PageBuilder, pageNumber?: number, title?: string | null): void;
     /**
      * @description This function is used to set both pages of layout. It also refresh the screen.
      * @param {Array<PageBuilder>} pages - The page to set as home page.
@@ -139,10 +187,10 @@ export class ConsoleManager extends EventEmitter {
     info(message: string): void;
     /**
      * @description This function is used to update the logs console. It is called by the log functions.
-     * @param {boolean} reset - If true, the log scroll index is resetted.
+     * @param {boolean} resetCursor - If true, the log scroll index is resetted.
      * @memberof ConsoleManager
      */
-    updateLogsConsole(resetCursor: any): void;
+    private updateLogsConsole;
     /**
      * @description This function is used to truncate a string adding ... at the end.
      * @param {string} str - The string to truncate.
@@ -153,13 +201,4 @@ export class ConsoleManager extends EventEmitter {
      */
     truncate(str: string, n: number, useWordBoundary: boolean): string;
 }
-import { OptionPopup } from "./components/widgets/OptionPopup.js";
-import { InputPopup } from "./components/widgets/InputPopup.js";
-import { ConfirmPopup } from "./components/widgets/ConfirmPopup.js";
-import { ButtonPopup } from "./components/widgets/ButtonPopup.js";
-import { CustomPopup } from "./components/widgets/CustomPopup.js";
-import { FileSelectorPopup } from "./components/widgets/FileSelectorPopup.js";
-import { EventEmitter } from "events";
-import { Screen } from "./components/Screen.js";
-import { DoubleLayout } from "./components/layout/DoubleLayout.js";
-export { PageBuilder, OptionPopup, InputPopup, ConfirmPopup, ButtonPopup, CustomPopup, FileSelectorPopup };
+export { PageBuilder, ConsoleManager, OptionPopup, InputPopup, ConfirmPopup, ButtonPopup, CustomPopup, FileSelectorPopup };

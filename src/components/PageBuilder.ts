@@ -1,17 +1,89 @@
+import { BackgroundColor, ForegroundColor } from "chalk"
+
+
+/**
+ * @description The type containing all the possible styles for the text.
+ * 
+ * @typedef {Object} StyleObject
+ * @property {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
+ * @property {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @property {boolean} [italic] - If the text is italic.
+ * @property {boolean} [bold] - If the text is bold.
+ * @property {boolean} [dim] - If the text is dim.
+ * @property {boolean} [underline] - If the text is underlined.
+ * @property {boolean} [inverse] - If the text is inverse.
+ * @property {boolean} [hidden] - If the text is hidden.
+ * @property {boolean} [strikethrough] - If the text is strikethrough.
+ * @property {boolean} [overline] - If the text is overlined.
+ * 
+ * @example const textStyle = { color: "red", backgroundColor: "blue", bold: true, italic: true }
+ *
+ * @export
+ * @interface StyleObject
+ */
+export interface StyleObject {
+    color?: ForegroundColor | "";
+    bg?: BackgroundColor | "";
+    italic?: boolean;
+    bold?: boolean;
+    dim?: boolean;
+    underline?: boolean;
+    inverse?: boolean;
+    hidden?: boolean;
+    strikethrough?: boolean;
+    overline?: boolean;
+}
+
+/**
+ * @description The type of the single styled text, stored in a line of the PageBuilder.
+ * 
+ * @typedef {Object} StyledElement
+ * @property {string} text - The text of the styled text.
+ * @property {StyleObject} style - The style of the styled text.
+ * 
+ * @example const styledText = { text: "Hello", style: { color: "red", backgroundColor: "blue", bold: true, italic: true } }
+ *
+ * @export
+ * @interface StyledElement
+ */
 export interface StyledElement {
     text: string;
-    style: {
-        color: string | undefined,
-        bg: string | undefined,
-        italic: boolean | undefined,
-        bold: boolean | undefined,
-        dim: boolean | undefined,
-        underline: boolean | undefined,
-        inverse: boolean | undefined,
-        hidden: boolean | undefined,
-        strikethrough: boolean | undefined,
-        overline: boolean | undefined,
-    }
+    style: StyleObject;
+}
+
+/**
+ * @description The type containing all the possible styles for the text and the text on the same level. It's used on the higher level.
+ * 
+ * @typedef {Object} SimplifiedStyledElement
+ * @property {string} text - The text of the styled text.
+ * @property {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
+ * @property {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @property {boolean} [italic] - If the text is italic.
+ * @property {boolean} [bold] - If the text is bold.
+ * @property {boolean} [dim] - If the text is dim.
+ * @property {boolean} [underline] - If the text is underlined.
+ * @property {boolean} [inverse] - If the text is inverse.
+ * @property {boolean} [hidden] - If the text is hidden.
+ * @property {boolean} [strikethrough] - If the text is strikethrough.
+ * @property {boolean} [overline] - If the text is overlined.
+ * 
+ * @example const textStyle = { color: "red", backgroundColor: "blue", bold: true, italic: true }
+ *
+ * @export
+ * @interface SimplifiedStyledElement
+ */
+export interface SimplifiedStyledElement {
+    text: string;
+    color?: ForegroundColor | "";
+    bg?: BackgroundColor | "";
+    italic?: boolean;
+    bold?: boolean;
+    dim?: boolean;
+    underline?: boolean;
+    inverse?: boolean;
+    hidden?: boolean;
+    strikethrough?: boolean;
+    overline?: boolean;
 }
 
 /**
@@ -27,8 +99,8 @@ export class PageBuilder {
     rowsPerPage: number
     scrollIndex: number
     content: StyledElement[][]
-    
-    constructor(rowsPerPage = 100) {
+
+    public constructor(rowsPerPage = 100) {
         this.rowsPerPage = rowsPerPage
 
         /**
@@ -53,12 +125,11 @@ export class PageBuilder {
      * page.addRow({ text: 'Hello World', color: 'white' })
      * page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
      */
-    addRow() {
+    public addRow(...args: SimplifiedStyledElement[]): void {
         // each argument is an object like {text: string, color: string}
         const _row: StyledElement[] = []
-        for (let i = 0; i < arguments.length; i++) {
-            // eslint-disable-next-line prefer-rest-params
-            const arg: any = arguments[i]
+        for (let i = 0; i < args.length; i++) {
+            const arg: SimplifiedStyledElement = args[i]
             _row.push({
                 text: arg.text,
                 style: {
@@ -86,7 +157,7 @@ export class PageBuilder {
      * @example page.addEmptyRow()
      * page.addEmptyRow(2)
      */
-    addSpacer(height = 1) {
+    public addSpacer(height = 1): void {
         if (height > 0) {
             for (let i = 0; i < height; i++) {
                 this.addRow({ text: "", color: "" })
@@ -100,7 +171,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.getContent()
      */
-    getContent() {
+    public getContent(): StyledElement[][] {
         if (this.getPageHeight() > this.rowsPerPage) {
             return this.content.slice(this.getPageHeight() - this.scrollIndex - this.rowsPerPage, this.getPageHeight() - this.scrollIndex)
         } else {
@@ -114,7 +185,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.getPageHeight()
      */
-    getPageHeight() {
+    public getPageHeight(): number {
         return this.content.length
     }
 
@@ -124,7 +195,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.getViewedPageHeight() // returns the height of the page that is visible
      */
-    getViewedPageHeight() {
+    public getViewedPageHeight(): number {
         return this.getContent().length
     }
 
@@ -135,7 +206,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.setScrollIndex(10)
      */
-    setScrollIndex(index : number) {
+    public setScrollIndex(index: number): void {
         this.scrollIndex = index
     }
 
@@ -146,7 +217,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.setRowsPerPage(10)
      */
-    setRowsPerPage(rpp : number) {
+    public setRowsPerPage(rpp: number): void {
         this.rowsPerPage = rpp
     }
 
@@ -156,7 +227,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.increaseScrollIndex()
      */
-    increaseScrollIndex() {
+    public increaseScrollIndex(): void {
         if (this.scrollIndex < this.getPageHeight() - this.rowsPerPage) {
             this.scrollIndex++
         }
@@ -168,7 +239,7 @@ export class PageBuilder {
      * @memberOf PageBuilder
      * @example page.increaseScrollIndex()
      */
-    decreaseScrollIndex() {
+    public decreaseScrollIndex(): void {
         if (this.scrollIndex > 0) {
             this.scrollIndex--
         }

@@ -1,7 +1,24 @@
 import { EventEmitter } from "events"
-import { ConsoleManager } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import fs from "fs"
 import path from "path"
+
+/**
+ * @description The file descriptions for the file selector popup.
+ * @typedef {Object} FileItemObject
+ * @property {string} name - The name of the file.
+ * @property {string} path - The path to the file.
+ * @property {"dir" | "file"} type - The type of the file.
+ * @property {string} text - The display text of the file.
+ *
+ * @interface FileItemObject
+ */
+interface FileItemObject { 
+    text: string; 
+    name: string; 
+    type: "dir" | "file"; 
+    path: string;
+}
 
 /**
  * @class FileSelectorPopup
@@ -27,7 +44,21 @@ re case sensitive.
  * @example const popup = new FileSelectorPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
  */
 export class FileSelectorPopup extends EventEmitter {
-    constructor(id, title, basePath, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
+    CM: ConsoleManager
+    id: string
+    title: string
+    basePath: string
+    currentPath: string
+    selectDirectory: boolean
+    allowedExtensions: string[]
+    limitToPath: boolean
+    visible: boolean
+    marginTop: number
+    startIndex: number
+    selected: FileItemObject
+    options: FileItemObject[]
+
+    public constructor(id: string, title: string, basePath: string, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -49,19 +80,19 @@ export class FileSelectorPopup extends EventEmitter {
             throw new Error(message)
         }
         this.CM.registerWiget(this)
-        this.options = [{ text: "../", name: "../" }]
+        this.options = [{ text: "../", name: "../", type: "dir", path: path.join(basePath, "../") }]
         this.updateList(this.basePath)
     }
 
     /**
      * @description This function is used to load the list of files and directories in the current path.
-     * it return a promise with the list of files and directories. The list is an array of objects like this:
-     * [{text: "📄 file.ext", name: "file.ext", type: "file", path: "path/to/file.ext"}, {text: "📁 dir/", name: "dir", type: "dir", path: "path/to/dir"}]
-     * @param {string} path - The path to load the list.
+    it return a promise with the list of files and directories. The list is an array of objects like this:
+    [{text: "📄 file.ext", name: "file.ext", type: "file", path: "path/to/file.ext"}, {text: "📁 dir/", name: "dir", type: "dir", path: "path/to/dir"}]
+     * @param {string} dir - The path to load the list.
      * @returns {Promise<Array<object>>} The list of files and directories.
      * @memberof FileSelectorPopup
      */
-    listDir(dir) {
+    private listDir(dir: string): Promise<Array<FileItemObject>> {
         return new Promise((resolve, reject) => {
             fs.readdir(dir, (err, files) => {
                 if (err) {
@@ -71,10 +102,10 @@ export class FileSelectorPopup extends EventEmitter {
                         const filePath = path.join(dir, file)
                         const stats = fs.statSync(filePath)
                         const isDirectory = stats.isDirectory()
-                        const isFile = stats.isFile()
+                        //const isFile = stats.isFile()
                         if (isDirectory) {
                             return { text: `📁 ${file}/`, name: file, type: "dir", path: filePath }
-                        } else if (isFile) {
+                        } else {
                             return { text: `📄 ${file}`, name: file, type: "file", path: filePath }
                         }
                     }).filter(file => {
@@ -83,7 +114,7 @@ export class FileSelectorPopup extends EventEmitter {
                             return false
                         }
                         return isAllowed || file.type === "dir"
-                    }))
+                    }) as Array<FileItemObject>)
                 }
             })
         })
@@ -91,10 +122,10 @@ export class FileSelectorPopup extends EventEmitter {
 
     /**
      * @description This function calls the updateList function and store the result to this.options, it also refresh the list of files and directories.
-     * @param {string} path - The path to load the list.
+     * @param {string} _path - The path to load the list.
      * @memberof FileSelectorPopup
      */
-    updateList(_path) {
+    private updateList(_path: string) {
         if (this.limitToPath) {
             if (!path.resolve(_path).includes(path.resolve(this.basePath))) {
                 return
@@ -102,13 +133,13 @@ export class FileSelectorPopup extends EventEmitter {
         }
         this.currentPath = _path
         this.listDir(this.currentPath).then((files) => {
-            this.options = [{ text: "../", name: "../", type: "dir", path: path.join(this.currentPath, "../") }].concat(files)
-            this.setSelected(this.options[0], false)
+            this.options = [{ text: "../", name: "../", type: "dir", path: path.join(this.currentPath, "../")} as FileItemObject].concat(files)
+            this.setSelected(this.options[0])
             this.CM.refresh()
         })
     }
 
-    adaptOptions() {
+    private adaptOptions() {
         return this.options.slice(this.startIndex, this.startIndex + this.CM.Screen.height - this.marginTop - 6)
     }
 
@@ -119,11 +150,11 @@ export class FileSelectorPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof FileSelectorPopup
      */
-    keyListner(str, key) {
+    public keyListner(_str: string, key: KeyListenerArgs) {
         const ind = this.options.indexOf(this.selected)
         switch (key.name) {
         case "down":
-            this.setSelected(this.options[(ind + 1) % this.options.length], false)
+            this.setSelected(this.options[(ind + 1) % this.options.length])
             if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
                 if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
                     this.startIndex++
@@ -133,14 +164,14 @@ export class FileSelectorPopup extends EventEmitter {
             }
             break
         case "up":
-            this.setSelected(this.options[(ind - 1 + this.options.length) % this.options.length], false)
+            this.setSelected(this.options[(ind - 1 + this.options.length) % this.options.length])
             if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
                 this.startIndex--
             }
             break
         case "pagedown":
             if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                this.setSelected(this.options[(ind + this.adaptOptions().length) % this.options.length], false)
+                this.setSelected(this.options[(ind + this.adaptOptions().length) % this.options.length])
                 if (this.startIndex + this.adaptOptions().length < this.options.length) {
                     this.startIndex += this.adaptOptions().length
                 } else {
@@ -152,7 +183,7 @@ export class FileSelectorPopup extends EventEmitter {
             break
         case "pageup":
             if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                this.setSelected(this.options[(ind - this.adaptOptions().length + this.options.length) % this.options.length], false)
+                this.setSelected(this.options[(ind - this.adaptOptions().length + this.options.length) % this.options.length])
                 if (this.startIndex > this.adaptOptions().length) {
                     this.startIndex -= this.adaptOptions().length
                 } else {
@@ -169,7 +200,7 @@ export class FileSelectorPopup extends EventEmitter {
                         this.emit("confirm", { path: this.selected.path, name: this.selected.name })
                         this.CM.unRegisterWidget(this)
                         this.hide()
-                        delete this
+                        //delete this
                     }
                 } else {
                     if (this.selected.type === "dir") {
@@ -178,7 +209,7 @@ export class FileSelectorPopup extends EventEmitter {
                         this.emit("confirm", { path: this.selected.path, name: this.selected.name })
                         this.CM.unRegisterWidget(this)
                         this.hide()
-                        delete this
+                        //delete this
                     }
                 }
             }
@@ -193,7 +224,7 @@ export class FileSelectorPopup extends EventEmitter {
                 this.emit("cancel")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "q":
@@ -201,7 +232,7 @@ export class FileSelectorPopup extends EventEmitter {
                 this.CM.emit("exit")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         default:
@@ -212,20 +243,20 @@ export class FileSelectorPopup extends EventEmitter {
 
     /**
      * @description This function is used to get the selected option.
-     * @returns {string | number} The selected value of the popup.
+     * @returns {FileItemObject} The selected value of the popup.
      * @memberof FileSelectorPopup
      */
-    getSelected() {
+    public getSelected(): FileItemObject {
         return this.selected
     }
 
     /**
      * @description This function is used to change the selection of the popup. It also refresh the ConsoleManager.
-     * @param {string | number} selected - The new value of the selection.
+     * @param {FileItemObject} selected - The new value of the selection.
      * @memberof FileSelectorPopup
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      */
-    setSelected(selected) {
+    private setSelected(selected : FileItemObject): FileSelectorPopup {
         this.selected = selected
         this.CM.refresh()
         return this
@@ -236,7 +267,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    show() {
+    public show(): FileSelectorPopup {
         if (!this.visible) {
             this.manageInput()
             this.visible = true
@@ -250,7 +281,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    hide() {
+    public hide(): FileSelectorPopup {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
@@ -264,7 +295,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {boolean} The visibility of the popup.
      * @memberof FileSelectorPopup
      */
-    isVisible() {
+    public isVisible(): boolean {
         return this.visible
     }
 
@@ -273,7 +304,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    manageInput() {
+    private manageInput(): FileSelectorPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
         return this
@@ -284,7 +315,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    unManageInput() {
+    private unManageInput(): FileSelectorPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
         return this
@@ -295,7 +326,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    draw() {
+    public draw(): FileSelectorPopup {
         // Change start index if selected is not in the adaptOptions return array
         const ind = this.adaptOptions().indexOf(this.selected)
         const ind1 = this.options.indexOf(this.selected)

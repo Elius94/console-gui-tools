@@ -1,6 +1,32 @@
 import { EventEmitter } from "events"
 import chalk from "chalk"
+import { StyledElement, StyleObject } from "./PageBuilder.js"
 chalk.level = 1
+
+/**
+ * @description The type containing all the possible styles for the text and the index array.
+ * @typedef {Object} StyleIndexObject
+ * @property {[number, number]} [index] - The index of the style in the style array.
+ * 
+ * @interface StyleIndexObject
+ * @extends {StyleObject}
+ */
+interface StyleIndexObject extends StyleObject {
+    index: [number, number];
+}
+
+/**
+ * @description The type containing all the possible styles for the text and the index array and the text.
+ * @typedef {Object} StyledElementWithIndex
+ * @property {string} text - The text of the styled element.
+ * @property {StyleIndexObject[]} [styleIndex] - The styles array with index.
+ * 
+ * @interface StyledElementWithIndex
+ */
+interface StyledElementWithIndex {
+    text: string;
+    styleIndex: StyleIndexObject[];
+}
 
 /**
  * @class Screen
@@ -10,7 +36,14 @@ chalk.level = 1
  * @example const screen = new Screen(process.stdout)
  */
 export class Screen extends EventEmitter {
-    constructor(_Terminal) {
+    Terminal: NodeJS.WriteStream
+    width: number
+    height: number
+    buffer: StyledElementWithIndex[]
+    cursor: { x: number; y: number }
+    currentY = 0
+
+    constructor(_Terminal: NodeJS.WriteStream) {
         super()
         this.Terminal = _Terminal
 
@@ -29,23 +62,22 @@ export class Screen extends EventEmitter {
 
     /**
      * @description This method is used to write or overwrite a row in the screen buffer at a specific position.
-     * @param {arguments<object>} row - The row to write.
+     * @param {arguments<object>} args - The row to write.
      * @returns {void}
      * @memberOf Screen
      * @example screen.write({ text: 'Hello World', color: 'white' })
-     * screen.write({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
+    screen.write({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
      */
-    write() {
+    write(...args: StyledElement[]): void {
         this.currentY++
 
         let row = ""
-        let newStyleIndex = []
-        for (let i = 0; i < arguments.length; i++) {
-            let arg = arguments[i]
+        const newStyleIndex = []
+        for (let i = 0; i < args.length; i++) {
+            const arg = args[i]
             if (arg.text !== undefined) {
                 const txt = arg.text.toString()
-                let style = arg.style
-                style.index = [row.length, row.length + txt.length]
+                const style: StyleIndexObject = { ...arg.style, index: [row.length, row.length + txt.length] }
                 newStyleIndex.push(style)
                 row += txt
             }
@@ -54,7 +86,7 @@ export class Screen extends EventEmitter {
 
         // Now recalculate the styleIndex for the current row mixing the old one with the new one
         // Create a new styleIndex merging the old one with the new one
-        let mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
+        const mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
 
         if (this.cursor.y < this.buffer.length - 1) {
             this.buffer[this.cursor.y].styleIndex = mergedStyleIndex
@@ -71,7 +103,7 @@ export class Screen extends EventEmitter {
      * @memberOf Screen
      * @example screen.cursorTo(0, 0)
      */
-    cursorTo(x, y) {
+    cursorTo(x: number, y: number): void {
         this.cursor.x = x
         this.cursor.y = y
     }
@@ -84,7 +116,7 @@ export class Screen extends EventEmitter {
      * @memberOf Screen
      * @example screen.moveCursor(0, 0)
      */
-    moveCursor(x, y) {
+    moveCursor(x: number, y: number): void {
         this.Terminal.cursorTo(x, y)
     }
 
@@ -94,7 +126,7 @@ export class Screen extends EventEmitter {
      * @memberOf Screen
      * @example screen.clear()
      */
-    update() {
+    update(): void {
         this.cursorTo(0, 0)
         this.width = this.Terminal.columns
         this.height = this.Terminal.rows
@@ -110,23 +142,23 @@ export class Screen extends EventEmitter {
      * @memberOf Screen
      * @example screen.print()
      */
-    print() {
+    print(): void {
         this.buffer.forEach((row, i) => {
             this.Terminal.cursorTo(0, i)
             let outString = ""
 
             // convert styleIndex to chalk functions and apply them to the row text
             row.styleIndex.forEach(style => {
-                let color = style.color ? chalk[style.color] : (_in) => _in
-                let bg = style.bg ? chalk[style.bg] : (_in) => _in
-                let italic = style.italic ? chalk.italic : (_in) => _in
-                let bold = style.bold ? chalk.bold : (_in) => _in
-                let dim = style.dim ? chalk.dim : (_in) => _in
-                let underline = style.underline ? chalk.underline : (_in) => _in
-                let overline = style.overline ? chalk.overline : (_in) => _in
-                let inverse = style.inverse ? chalk.inverse : (_in) => _in
-                let hidden = style.hidden ? chalk.hidden : (_in) => _in
-                let strikethrough = style.strikethrough ? chalk.strikethrough : (_in) => _in
+                const color = style.color ? chalk[style.color] : (_in: string): string => _in
+                const bg = style.bg ? chalk[style.bg] : (_in: string): string => _in
+                const italic = style.italic ? chalk.italic : (_in: string): string => _in
+                const bold = style.bold ? chalk.bold : (_in: string): string => _in
+                const dim = style.dim ? chalk.dim : (_in: string): string => _in
+                const underline = style.underline ? chalk.underline : (_in: string): string => _in
+                const overline = style.overline ? chalk.overline : (_in: string): string => _in
+                const inverse = style.inverse ? chalk.inverse : (_in: string): string => _in
+                const hidden = style.hidden ? chalk.hidden : (_in: string): string => _in
+                const strikethrough = style.strikethrough ? chalk.strikethrough : (_in: string): string => _in
                 outString += color(bg(italic(bold(dim(underline(overline(inverse(hidden(strikethrough(row.text.substring(style.index[0], style.index[1])))))))))))
             })
             this.Terminal.write(outString)
@@ -143,45 +175,45 @@ export class Screen extends EventEmitter {
      * @memberOf Screen
      * @example screen.replaceAt('Hello Luca', 6, 'Elia') // returns 'Hello Elia'
      */
-    replaceAt(str, index, replacement) {
+    replaceAt(str: string, index: number, replacement: string): string {
         return str.substring(0, index) + replacement + str.substring(index + replacement.length)
     }
 
     /**
      * @description This method is used to merge two styleIndex arrays into one. It also recalculates the indexes for the new row.
-     * @param {Array<object>} newStyleIndex - The new styleIndex array.
-     * @param {Array<object>} currentStyleIndex - The current styleIndex array.
+     * @param {Array<StyleIndexObject>} newStyleIndex - The new styleIndex array.
+     * @param {Array<StyleIndexObject>} currentStyleIndex - The current styleIndex array.
      * @param {number} startIndex - The start index of the new styleIndex array (Usually the cursor.x).
      * @param {number} newSize - The new size of the string.
-     * @returns {Array<object>}
+     * @returns {Array<StyleIndexObject>}
      * @memberOf Screen
      * @example screen.mergeStyles([{ color: 'red', bg: 'black', italic: false, bold: false, index: [0, 5] }, { color: 'white', bg: 'black', italic: false, bold: false, index: [6, 10] }], [{ color: 'magenta', bg: 'black', italic: false, bold: false, index: [0, 30] }], 5, 15)
      * returns [{ color: 'magenta', bg: 'black', italic: false, bold: false, index: [0, 4] }, { color: 'red', bg: 'black', italic: false, bold: false, index: [5, 10] }, { color: 'white', bg: 'black', italic: false, bold: false, index: [11, 15] }, { color: 'magenta', bg: 'black', italic: false, bold: false, index: [16, 30] }]
      */
-    mergeStyles(_new, _current, _offset, _newSize) {
-        let new_ = [..._new]
-        let current = [..._current]
-        let offset = _offset
-        let newSize = _newSize
-        let merged = []
+    mergeStyles(newStyleIndex: Array<StyleIndexObject>, currentStyleIndex: Array<StyleIndexObject>, startIndex: number, newSize: number): Array<StyleIndexObject> {
+        const new_ = [...newStyleIndex]
+        const current = [...currentStyleIndex]
+        const offset = startIndex
+        const _newSize = newSize
+        const merged: StyleIndexObject[] = []
         current.forEach(style => {
             if (style.index[0] < offset && style.index[1] < offset) {
                 merged.push(style)
                 return
-            } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + newSize) {
+            } else if (style.index[0] < offset && style.index[1] >= offset && style.index[1] <= offset + _newSize) {
                 merged.push({ ...style, index: [style.index[0], offset] })
                 return
-            } else if (style.index[0] < offset && style.index[1] > offset + newSize) {
+            } else if (style.index[0] < offset && style.index[1] > offset + _newSize) {
                 merged.push({ ...style, index: [style.index[0], offset] })
-                merged.push({ ...style, index: [offset + newSize, style.index[1]] })
+                merged.push({ ...style, index: [offset + _newSize, style.index[1]] })
                 return
-            } else if (style.index[0] >= offset && style.index[1] <= offset + newSize) {
+            } else if (style.index[0] >= offset && style.index[1] <= offset + _newSize) {
                 // Do nothing
                 return
-            } else if (style.index[0] >= offset && style.index[0] <= offset + newSize && style.index[1] > offset + newSize) {
-                merged.push({ ...style, index: [offset + newSize, style.index[1]] })
+            } else if (style.index[0] >= offset && style.index[0] <= offset + _newSize && style.index[1] > offset + _newSize) {
+                merged.push({ ...style, index: [offset + _newSize, style.index[1]] })
                 return
-            } else if (style.index[0] > offset + newSize && style.index[1] > offset + newSize) {
+            } else if (style.index[0] > offset + _newSize && style.index[1] > offset + _newSize) {
                 merged.push(style)
                 return
             }
@@ -200,13 +232,13 @@ export class Screen extends EventEmitter {
 
     /**
      * @description This method is used to sort an array of styleIndex objects by child index[0].
-     * @param {object} a - The first object to compare.
-     * @param {object} b - The second object to compare.
+     * @param {StyleIndexObject} a - The first object to compare.
+     * @param {StyleIndexObject} b - The second object to compare.
      * @returns {number}
      * @memberOf Screen
      * @example merged.sort(this.sortByIndex)
      */
-    sortByIndex(a, b) {
+    sortByIndex(a: StyleIndexObject, b: StyleIndexObject): number {
         if (a.index[0] < b.index[0]) {
             return -1
         } else if (a.index[0] > b.index[0]) {

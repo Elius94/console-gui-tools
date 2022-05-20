@@ -1,5 +1,6 @@
 import { EventEmitter } from "events"
-import { ConsoleManager } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import PageBuilder, { StyledElement } from "../PageBuilder.js"
 
 /**
  * @class CustomPopup
@@ -22,7 +23,15 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @example const popup = new CustomPopup("popup1", "See that values", new PageBuilder()).show()
  */
 export class CustomPopup extends EventEmitter {
-    constructor(id, title, content, width, visible = false) {
+    CM: ConsoleManager
+    id: string
+    title: string
+    content: PageBuilder
+    width: number
+    visible: boolean
+    marginTop: number
+
+    public constructor(id: string, title: string, content: PageBuilder, width: number, visible = false) {
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -48,7 +57,7 @@ export class CustomPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof CustomPopup
      */
-    keyListner(str, key) {
+    public keyListner(_str: string, key : KeyListenerArgs): void {
         switch (key.name) {
         case "up":
             this.content.increaseScrollIndex()
@@ -61,7 +70,7 @@ export class CustomPopup extends EventEmitter {
                 this.emit("confirm")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "escape":
@@ -69,7 +78,7 @@ export class CustomPopup extends EventEmitter {
                 this.emit("cancel")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "q":
@@ -77,7 +86,7 @@ export class CustomPopup extends EventEmitter {
                 this.CM.emit("exit")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         default:
@@ -91,7 +100,7 @@ export class CustomPopup extends EventEmitter {
      * @returns {PageBuilder} The content of the popup.
      * @memberof CustomPopup
      */
-    getContent() {
+    public getContent(): PageBuilder {
         return this.content
     }
 
@@ -101,7 +110,7 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      * @returns {CustomPopup} The instance of the CustomPopup.
      */
-    setContent(newContent) {
+    public setContent(newContent: PageBuilder): CustomPopup {
         this.content = newContent
         this.CM.refresh()
         return this
@@ -113,7 +122,7 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      * @returns {CustomPopup} The instance of the CustomPopup.
      */
-    setWidth(newWidth) {
+    public setWidth(newWidth: number): this {
         this.width = newWidth
         this.CM.refresh()
         return this
@@ -124,7 +133,7 @@ export class CustomPopup extends EventEmitter {
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    show() {
+    public show(): this {
         if (!this.visible) {
             this.manageInput()
             this.visible = true
@@ -138,7 +147,7 @@ export class CustomPopup extends EventEmitter {
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    hide() {
+    public hide(): this {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
@@ -152,7 +161,7 @@ export class CustomPopup extends EventEmitter {
      * @returns {boolean} The visibility of the popup.
      * @memberof CustomPopup
      */
-    isVisible() {
+    public isVisible(): boolean {
         return this.visible
     }
 
@@ -161,7 +170,7 @@ export class CustomPopup extends EventEmitter {
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    manageInput() {
+    private manageInput(): CustomPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
         return this
@@ -172,9 +181,9 @@ export class CustomPopup extends EventEmitter {
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    unManageInput() {
+    private unManageInput(): CustomPopup {
         // Add a command input listener to change mode
-        this.CM.removeKeyListener(this.id, this.keyListner.bind(this))
+        this.CM.removeKeyListener(this.id/*, this.keyListner.bind(this)*/)
         return this
     }
 
@@ -184,10 +193,10 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      * @returns {void}
      */
-    drawLine(line, width) {
+    private drawLine(line: StyledElement[], width: number): void {
         let unformattedLine = ""
         let newLine = [...line]
-        line.forEach(element => {
+        line.forEach((element: { text: string }) => {
             unformattedLine += element.text
         })
         if (unformattedLine.length > width - 2) { // Need to truncate
@@ -223,7 +232,7 @@ export class CustomPopup extends EventEmitter {
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    draw() {
+    public draw(): CustomPopup {
         const offset = 2
         const windowWidth = this.title.length > this.width ? this.title.length + (2 * offset) : this.width + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
@@ -243,7 +252,7 @@ export class CustomPopup extends EventEmitter {
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         const _content = this.content.getContent()
-        _content.forEach((line, index) => {
+        _content.forEach((line: StyledElement[], index: number) => {
             this.CM.Screen.cursorTo(x, this.marginTop + index + arrWindowDesign.length - 1)
             this.drawLine(line, windowWidth)
         })

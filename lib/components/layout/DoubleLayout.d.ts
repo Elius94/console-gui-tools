@@ -1,3 +1,32 @@
+import { ForegroundColor } from "chalk";
+import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js";
+/**
+ * @description The type containing all the possible options for the DoubleLayout.
+ * @typedef {Object} DoubleLayoutOptions
+ * @property {boolean} [showTitle] - If the title should be shown.
+ * @property {boolean} [boxed] - If the layout should be boxed.
+ * @property {ForegroundColor | ""} [boxColor] - The color of the box taken from the chalk library.
+ * @property {"bold"} [boxStyle] - If the border of the box should be bold.
+ * @property {string} [changeFocusKey] - The key that should be pressed to change the focus.
+ * @property {"horizontal" | "vertical"} [direction] - The direction of the layout.
+ * @property {string} [page1Title] - The title of the first page.
+ * @property {string} [page2Title] - The title of the second page.
+ * @property {[number, number]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ *
+ * @export
+ * @interface DoubleLayoutOptions
+ */
+export interface DoubleLayoutOptions {
+    showTitle?: boolean;
+    boxed?: boolean;
+    boxColor?: ForegroundColor | "";
+    boxStyle?: "bold";
+    changeFocusKey: string;
+    direction?: "horizontal" | "vertical";
+    page1Title?: string;
+    page2Title?: string;
+    pageRatio?: [number, number];
+}
 /**
  * @class DoubleLayout
  * @description This class is a layout that has two pages.
@@ -7,20 +36,19 @@
  * @param {number} selected The selected page.
  * @example const layout = new DoubleLayout(page1, page2, true, 0)
  */
-export class DoubleLayout {
-    constructor(page1: any, page2: any, options?: {}, selected?: number);
-    /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+export declare class DoubleLayout {
     CM: ConsoleManager;
-    options: {};
-    selected: number;
-    page1: any;
-    page2: any;
+    options: DoubleLayoutOptions;
+    selected: 0 | 1;
+    page1: PageBuilder;
+    page2: PageBuilder;
     boxBold: boolean;
-    proportions: any;
-    /** @const {string} page2Title The title of page2. */
-    page2Title: any;
-    /** @const {string} page1Title The application title. */
-    page1Title: any;
+    proportions: [number, number];
+    page2Title: string;
+    page1Title: string;
+    realWidth: number | [number, number];
+    isOdd: boolean | undefined;
+    constructor(page1: PageBuilder, page2: PageBuilder, options: DoubleLayoutOptions, selected?: 0 | 1);
     /**
      * @description This function is used to overwrite the page content.
      * @param {PageBuilder} page the page to be added
@@ -44,7 +72,7 @@ export class DoubleLayout {
      * @param {number} selected 0 for page1, 1 for page2
      * @memberof DoubleLayout
      */
-    setSelected(selected: number): void;
+    setSelected(selected: 0 | 1): void;
     /**
      * @description This function is used to get the selected page.
      * @returns {number} 0 for page1, 1 for page2
@@ -64,7 +92,7 @@ export class DoubleLayout {
      * @memberof DoubleLayout
      * @returns {void}
      */
-    drawLine(line: Array<object>, index?: number): void;
+    private drawLine;
     /**
      * @description This function is used to draw the layout to the screen.
      * @memberof DoubleLayout
@@ -72,8 +100,5 @@ export class DoubleLayout {
      * @example layout.draw()
      */
     draw(): void;
-    isOdd: boolean | undefined;
-    realWidth: number[] | undefined;
 }
 export default DoubleLayout;
-import { ConsoleManager } from "../../ConsoleGui.js";

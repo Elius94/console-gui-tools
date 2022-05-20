@@ -1,3 +1,4 @@
+import ButtonPopup from "./ButtonPopup.js";
 /**
  * @class ConfirmPopup
  * @extends ButtonPopup
@@ -16,8 +17,7 @@
  *
  * @example const popup = new ConfirmPopup("popup1", "Are you shure").show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
  */
-export class ConfirmPopup extends ButtonPopup {
-    constructor(id: any, title: any, message: any);
+export declare class ConfirmPopup extends ButtonPopup {
+    constructor(id: string, title: string | undefined, message: string | undefined);
 }
 export default ConfirmPopup;
-import ButtonPopup from "./ButtonPopup.js";

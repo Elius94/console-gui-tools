@@ -1,3 +1,7 @@
+/// <reference types="node" />
+import { EventEmitter } from "events";
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js";
+import PageBuilder from "../PageBuilder.js";
 /**
  * @class CustomPopup
  * @extends EventEmitter
@@ -18,16 +22,15 @@
  *
  * @example const popup = new CustomPopup("popup1", "See that values", new PageBuilder()).show()
  */
-export class CustomPopup extends EventEmitter {
-    constructor(id: any, title: any, content: any, width: any, visible?: boolean);
-    /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+export declare class CustomPopup extends EventEmitter {
     CM: ConsoleManager;
-    id: any;
-    title: any;
-    content: any;
-    width: any;
+    id: string;
+    title: string;
+    content: PageBuilder;
+    width: number;
     visible: boolean;
     marginTop: number;
+    constructor(id: string, title: string, content: PageBuilder, width: number, visible?: boolean);
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
@@ -35,7 +38,7 @@ export class CustomPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof CustomPopup
      */
-    keyListner(str: string, key: Object): void;
+    keyListner(_str: string, key: KeyListenerArgs): void;
     /**
      * @description This function is used to get the content of the popup.
      * @returns {PageBuilder} The content of the popup.
@@ -55,19 +58,19 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      * @returns {CustomPopup} The instance of the CustomPopup.
      */
-    setWidth(newWidth: number): CustomPopup;
+    setWidth(newWidth: number): this;
     /**
      * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    show(): CustomPopup;
+    show(): this;
     /**
      * @description This function is used to hide the popup. It also unregister the key events and refresh the ConsoleManager.
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    hide(): CustomPopup;
+    hide(): this;
     /**
      * @description This function is used to get the visibility of the popup.
      * @returns {boolean} The visibility of the popup.
@@ -79,20 +82,20 @@ export class CustomPopup extends EventEmitter {
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    manageInput(): CustomPopup;
+    private manageInput;
     /**
      * @description This function is used to remove the CustomPopup key listener callback to te ConsoleManager.
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
      */
-    unManageInput(): CustomPopup;
+    private unManageInput;
     /**
      * @description This function is used to draw a single line of the layout to the screen. It also trim the line if it is too long.
      * @param {Array<object>} line the line to be drawn
      * @memberof CustomPopup
      * @returns {void}
      */
-    drawLine(line: Array<object>, width: any): void;
+    private drawLine;
     /**
      * @description This function is used to draw the CustomPopup to the screen in the middle.
      * @returns {CustomPopup} The instance of the CustomPopup.
@@ -101,5 +104,3 @@ export class CustomPopup extends EventEmitter {
     draw(): CustomPopup;
 }
 export default CustomPopup;
-import { EventEmitter } from "events";
-import { ConsoleManager } from "../../ConsoleGui.js";

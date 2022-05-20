@@ -1,3 +1,6 @@
+/// <reference types="node" />
+import { EventEmitter } from "events";
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js";
 /**
  * @class InputPopup
  * @extends EventEmitter
@@ -17,32 +20,31 @@
  *
  * @example const popup = new InputPopup("popup1", "Choose the number", selectedNumber, true).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
  */
-export class InputPopup extends EventEmitter {
-    constructor(id: any, title: any, value: any, numeric: any, visible?: boolean);
-    /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+export declare class InputPopup extends EventEmitter {
     CM: ConsoleManager;
-    id: any;
-    title: any;
-    value: any;
-    numeric: any;
+    id: string;
+    title: string;
+    value: string | number;
+    numeric: boolean;
     visible: boolean;
     marginTop: number;
+    constructor(id: string, title: string, value: string | number, numeric: boolean, visible?: boolean);
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} str - The string of the input.
+     * @param {string} _str - The string of the input.
      * @param {Object} key - The key object.
      * @memberof InputPopup
      */
-    keyListnerNumeric(str: string, key: Object): void;
+    keyListnerNumeric(_str: string, key: KeyListenerArgs): void;
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} str - The string of the input.
+     * @param {string} _str - The string of the input.
      * @param {Object} key - The key object.
      * @memberof InputPopup
      */
-    keyListnerText(str: string, key: Object): void;
+    keyListnerText(_str: string, key: KeyListenerArgs): void;
     /**
      * @description This function is used to get the value of the input.
      * @returns {string | number} The value of the input.
@@ -55,7 +57,7 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      * @returns {InputPopup} The instance of the InputPopup.
      */
-    setValue(newValue: string | number): InputPopup;
+    setValue(newValue: string | number): this;
     /**
      * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
      * @returns {InputPopup} The instance of the InputPopup.
@@ -79,13 +81,13 @@ export class InputPopup extends EventEmitter {
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    manageInput(): InputPopup;
+    private manageInput;
     /**
      * @description This function is used to remove the InputPopup key listener callback to te ConsoleManager.
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    unManageInput(): InputPopup;
+    private unManageInput;
     /**
      * @description This function is used to draw the InputPopup to the screen in the middle.
      * @returns {InputPopup} The instance of the InputPopup.
@@ -94,5 +96,3 @@ export class InputPopup extends EventEmitter {
     draw(): InputPopup;
 }
 export default InputPopup;
-import { EventEmitter } from "events";
-import { ConsoleManager } from "../../ConsoleGui.js";

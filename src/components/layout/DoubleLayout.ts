@@ -1,16 +1,33 @@
+import { ForegroundColor } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
 import { StyledElement } from "../PageBuilder.js"
 
+/**
+ * @description The type containing all the possible options for the DoubleLayout.
+ * @typedef {Object} DoubleLayoutOptions
+ * @property {boolean} [showTitle] - If the title should be shown.
+ * @property {boolean} [boxed] - If the layout should be boxed.
+ * @property {ForegroundColor | ""} [boxColor] - The color of the box taken from the chalk library.
+ * @property {"bold"} [boxStyle] - If the border of the box should be bold.
+ * @property {string} [changeFocusKey] - The key that should be pressed to change the focus.
+ * @property {"horizontal" | "vertical"} [direction] - The direction of the layout.
+ * @property {string} [page1Title] - The title of the first page.
+ * @property {string} [page2Title] - The title of the second page.
+ * @property {[number, number]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ *
+ * @export
+ * @interface DoubleLayoutOptions
+ */
 export interface DoubleLayoutOptions {
-    showTitle: boolean | undefined,
-    boxed: boolean | undefined,
-    boxColor: string | undefined , // add color list from chalk
-    boxStyle: "bold" | undefined,
-    changeFocusKey: string | undefined,
-    direction: "horizontal" | "vertical",
-    page1Title: string | undefined,
-    page2Title: string | undefined,
-    pageRatio: [number, number] | undefined,
+    showTitle?: boolean;
+    boxed?: boolean;
+    boxColor?: ForegroundColor | ""; // add color list from chalk
+    boxStyle?: "bold";
+    changeFocusKey: string;
+    direction?: "horizontal" | "vertical";
+    page1Title?: string;
+    page2Title?: string;
+    pageRatio?: [number, number];
 }
 
 /**
@@ -25,17 +42,17 @@ export interface DoubleLayoutOptions {
 export class DoubleLayout {
     CM: ConsoleManager
     options: DoubleLayoutOptions
-    selected: number
+    selected: 0 | 1
     page1: PageBuilder
     page2: PageBuilder
     boxBold: boolean
     proportions: [number, number]
     page2Title: string
     page1Title: string
-    realWidth = 0
+    realWidth: number | [number, number] = 0
     isOdd: boolean | undefined
 
-    constructor(page1 : PageBuilder, page2: PageBuilder, options: DoubleLayoutOptions, selected: 0 | 1 = 0) {
+    public constructor(page1 : PageBuilder, page2: PageBuilder, options: DoubleLayoutOptions, selected: 0 | 1 = 0) {
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
 
@@ -59,35 +76,35 @@ export class DoubleLayout {
      * @param {PageBuilder} page the page to be added
      * @memberof DoubleLayout
      */
-    setPage1(page: PageBuilder) { this.page1 = page }
+    public setPage1(page: PageBuilder): void { this.page1 = page }
 
     /**
      * @description This function is used to overwrite the page content.
      * @param {PageBuilder} page the page to be added
      * @memberof DoubleLayout
      */
-    setPage2(page: PageBuilder) { this.page2 = page }
+    public setPage2(page: PageBuilder): void { this.page2 = page }
 
     /**
      * @description This function is used to enable or disable the layout border.
      * @param {boolean} border enable or disable the border
      * @memberof DoubleLayout
      */
-    setBorder(border: boolean) { this.options.boxed = border }
+    public setBorder(border: boolean): void { this.options.boxed = border }
 
     /**
      * @description This function is used to choose the page to be highlighted.
      * @param {number} selected 0 for page1, 1 for page2
      * @memberof DoubleLayout
      */
-    setSelected(selected: 1 | 2) { this.selected = selected }
+    public setSelected(selected: 0 | 1): void { this.selected = selected }
 
     /**
      * @description This function is used to get the selected page.
      * @returns {number} 0 for page1, 1 for page2
      * @memberof DoubleLayout
      */
-    getSelected() {
+    public getSelected(): number {
         return this.selected
     }
 
@@ -96,7 +113,7 @@ export class DoubleLayout {
      * @returns {void}
      * @memberof DoubleLayout
      */
-    changeLayout() {
+    public changeLayout(): void {
         if (this.selected == 0) {
             this.selected = 1
         } else {
@@ -111,7 +128,7 @@ export class DoubleLayout {
      * @memberof DoubleLayout
      * @returns {void}
      */
-    drawLine(line :  Array<StyledElement>, index = 0) {
+    private drawLine(line :  Array<StyledElement>, secondLine? : Array<StyledElement>, index = 0): void {
         const dir = !this.options.direction || this.options.direction === "vertical" ? "vertical" : "horizontal"
         const bsize = this.options.boxed ? dir === "vertical" ? 2 : 3 : 0
         let unformattedLine = [""]
@@ -124,14 +141,14 @@ export class DoubleLayout {
             })
         } else {
             newLine = [
-                [...line[0]],
-                [...line[1]]
+                [...line],
+                [...secondLine? secondLine : line]
             ]
             unformattedLine.push("")
-            line[0].forEach((element : StyledElement) => {
+            line.forEach((element : StyledElement) => {
                 unformattedLine[0] += element.text
             })
-            line[1].forEach((element : StyledElement) => {
+            secondLine?.forEach((element : StyledElement) => {
                 unformattedLine[1] += element.text
             })
         }
@@ -142,7 +159,7 @@ export class DoubleLayout {
                     if (dir === "vertical") {
                         newLine[i] = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
                     } else {
-                        newLine[i] = JSON.parse(JSON.stringify(line[i]))
+                        newLine[i] = JSON.parse(JSON.stringify(secondLine))
                     }
                     let diff = e.length - this.realWidth[i] + 1
 
@@ -170,7 +187,7 @@ export class DoubleLayout {
             if (this.options.boxed) newLine[0].push({ text: "│", style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
             this.CM.Screen.write(...newLine[0])
         } else {
-            const ret = []
+            const ret: StyledElement[] = []
             if (this.options.boxed) ret.push({ text: "│", style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
             ret.push(...newLine[0])
             if (unformattedLine[0].length <= this.realWidth[0] - bsize) {
@@ -192,7 +209,7 @@ export class DoubleLayout {
      * @returns {void}
      * @example layout.draw()
      */
-    draw() { //TODO: Trim also the application title
+    public draw(): void {
         this.isOdd = this.CM.Screen.width % 2 === 1
         if (!this.options.direction || this.options.direction === "vertical") {
             this.realWidth = [Math.round(this.CM.Screen.width * 1), Math.round(this.CM.Screen.width * 1)]
@@ -203,30 +220,30 @@ export class DoubleLayout {
                 } else {
                     this.CM.Screen.write({ text: `┌─${"─".repeat(this.CM.Screen.width - 3)}┐`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
-                this.page1.getContent().forEach(line => {
-                    this.drawLine(line, 0)
+                this.page1.getContent().forEach((line: StyledElement[]) => {
+                    this.drawLine(line, undefined, 0)
                 })
                 if (this.options.showTitle) {
                     this.CM.Screen.write({ text: `├─${trimmedTitle[1]}${"─".repeat(this.CM.Screen.width - trimmedTitle[1].length - 3)}┤`, style: { color: this.options.boxColor, bold: this.boxBold } })
                 } else {
                     this.CM.Screen.write({ text: `├${"─".repeat(this.CM.Screen.width - 2)}┤`, style: { color: this.options.boxColor, bold: this.boxBold } })
                 }
-                this.page2.getContent().forEach(line => {
-                    this.drawLine(line, 1)
+                this.page2.getContent().forEach((line: StyledElement[]) => {
+                    this.drawLine(line, undefined, 1)
                 })
                 this.CM.Screen.write({ text: `└${"─".repeat(this.CM.Screen.width - 2)}┘`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
             } else { // Draw pages without borders
                 if (this.options.showTitle) {
                     this.CM.Screen.write({ text: `${trimmedTitle[0]}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
-                this.page1.getContent().forEach(line => {
-                    this.drawLine(line, 0)
+                this.page1.getContent().forEach((line: StyledElement[]) => {
+                    this.drawLine(line, undefined, 0)
                 })
                 if (this.options.showTitle) {
                     this.CM.Screen.write({ text: `${trimmedTitle[1]}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
-                this.page2.getContent().forEach(line => {
-                    this.drawLine(line, 1)
+                this.page2.getContent().forEach((line: StyledElement[]) => {
+                    this.drawLine(line, undefined, 1)
                 })
             }
         } else { // Draw horizontally  
@@ -242,7 +259,7 @@ export class DoubleLayout {
                     this.CM.Screen.write({ text: `┌─${"─".repeat(this.realWidth[0] - 3)}┬`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `─${"─".repeat(this.realWidth[1] - 2)}┐`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
                 for (let i = 0; i < maxPageHeight; i++) {
-                    this.drawLine([p1[i] || [{ text: "", style: { color: "" } }], p2[i] || [{ text: "", style: { color: "" } }]])
+                    this.drawLine(p1[i] || [{ text: "", style: { color: "" } }], p2[i] || [{ text: "", style: { color: "" } }])
                 }
                 // Draw the bottom border
                 this.CM.Screen.write({ text: `└${"─".repeat(this.realWidth[0] - 2)}┴`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `${"─".repeat(this.realWidth[1] - 1)}┘`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
@@ -251,7 +268,7 @@ export class DoubleLayout {
                     this.CM.Screen.write({ text: `${trimmedTitle[0]}${" ".repeat(this.realWidth[0] - trimmedTitle[0].length)}${trimmedTitle[1]}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
                 for (let i = 0; i < maxPageHeight; i++) {
-                    this.drawLine([p1[i] || [{ text: "", style: { color: "" } }], p2[i] || [{ text: "", style: { color: "" } }]])
+                    this.drawLine(p1[i] || [{ text: "", style: { color: "" } }], p2[i] || [{ text: "", style: { color: "" } }])
                 }
             }
         }

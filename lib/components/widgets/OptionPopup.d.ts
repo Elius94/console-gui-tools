@@ -1,3 +1,6 @@
+/// <reference types="node" />
+import { EventEmitter } from "events";
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js";
 /**
  * @class OptionPopup
  * @extends EventEmitter
@@ -17,18 +20,17 @@
  *
  * @example const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
  */
-export class OptionPopup extends EventEmitter {
-    constructor(id: any, title: any, options: any, selected: any, visible?: boolean);
-    /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+export declare class OptionPopup extends EventEmitter {
     CM: ConsoleManager;
-    id: any;
-    title: any;
-    options: any;
-    selected: any;
+    id: string;
+    title: string;
+    options: Array<string | number>;
+    selected: string | number;
     visible: boolean;
     marginTop: number;
     startIndex: number;
-    adaptOptions(): any;
+    constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible?: boolean);
+    private adaptOptions;
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the popup is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
@@ -36,7 +38,7 @@ export class OptionPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof OptionPopup
      */
-    keyListner(str: string, key: Object): void;
+    keyListner(_str: string, key: KeyListenerArgs): void;
     /**
      * @description This function is used to get the selected option.
      * @returns {string | number} The selected value of the popup.
@@ -73,13 +75,13 @@ export class OptionPopup extends EventEmitter {
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    manageInput(): OptionPopup;
+    private manageInput;
     /**
      * @description This function is used to remove the OptionPopup key listener callback to te ConsoleManager.
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    unManageInput(): OptionPopup;
+    private unManageInput;
     /**
      * @description This function is used to draw the OptionPopup to the screen in the middle.
      * @returns {OptionPopup} The instance of the OptionPopup.
@@ -88,5 +90,3 @@ export class OptionPopup extends EventEmitter {
     draw(): OptionPopup;
 }
 export default OptionPopup;
-import { EventEmitter } from "events";
-import { ConsoleManager } from "../../ConsoleGui.js";

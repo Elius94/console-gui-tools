@@ -1,3 +1,6 @@
+/// <reference types="node" />
+import { EventEmitter } from "events";
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js";
 /**
  * @class ButtonPopup
  * @extends EventEmitter
@@ -17,11 +20,9 @@
  *
  * @example const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
  */
-export class ButtonPopup extends EventEmitter {
-    constructor(id: any, title?: string, message?: string, buttons?: string[], visible?: boolean);
-    /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+export declare class ButtonPopup extends EventEmitter {
     CM: ConsoleManager;
-    id: any;
+    id: string;
     title: string;
     message: string;
     buttons: string[];
@@ -29,6 +30,7 @@ export class ButtonPopup extends EventEmitter {
     visible: boolean;
     marginTop: number;
     startIndex: number;
+    constructor(id: string, title?: string, message?: string, buttons?: string[], visible?: boolean);
     boxChars: {
         normal: {
             topLeft: string;
@@ -50,11 +52,11 @@ export class ButtonPopup extends EventEmitter {
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the popup is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} str - The string of the input.
-     * @param {Object} key - The key object.
+     * @param {string} _str - The string of the input.
+     * @param {any} key - The key object.
      * @memberof ButtonPopup
      */
-    keyListner(str: string, key: Object): void;
+    keyListner(_str: string, key: KeyListenerArgs): void;
     /**
      * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
      * @returns {ButtonPopup} The instance of the ButtonPopup.
@@ -78,13 +80,13 @@ export class ButtonPopup extends EventEmitter {
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    manageInput(): ButtonPopup;
+    private manageInput;
     /**
      * @description This function is used to remove the ButtonPopup key listener callback to te ConsoleManager.
      * @returns {ButtonPopup} The instance of the ButtonPopup.
      * @memberof ButtonPopup
      */
-    unManageInput(): ButtonPopup;
+    private unManageInput;
     /**
      * @description This function is used to draw the ButtonPopup to the screen in the middle.
      * @returns {ButtonPopup} The instance of the ButtonPopup.
@@ -93,5 +95,3 @@ export class ButtonPopup extends EventEmitter {
     draw(): ButtonPopup;
 }
 export default ButtonPopup;
-import { EventEmitter } from "events";
-import { ConsoleManager } from "../../ConsoleGui.js";

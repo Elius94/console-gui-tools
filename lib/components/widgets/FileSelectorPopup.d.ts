@@ -1,3 +1,22 @@
+/// <reference types="node" />
+import { EventEmitter } from "events";
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js";
+/**
+ * @description The file descriptions for the file selector popup.
+ * @typedef {Object} FileItemObject
+ * @property {string} name - The name of the file.
+ * @property {string} path - The path to the file.
+ * @property {"dir" | "file"} type - The type of the file.
+ * @property {string} text - The display text of the file.
+ *
+ * @interface FileItemObject
+ */
+interface FileItemObject {
+    text: string;
+    name: string;
+    type: "dir" | "file";
+    path: string;
+}
 /**
  * @class FileSelectorPopup
  * @extends EventEmitter
@@ -21,49 +40,37 @@ re case sensitive.
  *
  * @example const popup = new FileSelectorPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
  */
-export class FileSelectorPopup extends EventEmitter {
-    constructor(id: any, title: any, basePath: any, selectDirectory?: boolean, allowedExtensions?: any[], limitToPath?: boolean, visible?: boolean);
-    /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
+export declare class FileSelectorPopup extends EventEmitter {
     CM: ConsoleManager;
-    id: any;
-    title: any;
-    basePath: any;
-    currentPath: any;
+    id: string;
+    title: string;
+    basePath: string;
+    currentPath: string;
     selectDirectory: boolean;
-    allowedExtensions: any[];
+    allowedExtensions: string[];
     limitToPath: boolean;
     visible: boolean;
     marginTop: number;
     startIndex: number;
-    selected: {
-        text: string;
-        name: string;
-        type: string;
-        path: string;
-    };
-    options: {
-        text: string;
-        name: string;
-    }[];
+    selected: FileItemObject;
+    options: FileItemObject[];
+    constructor(id: string, title: string, basePath: string, selectDirectory?: boolean, allowedExtensions?: never[], limitToPath?: boolean, visible?: boolean);
     /**
      * @description This function is used to load the list of files and directories in the current path.
-     * it return a promise with the list of files and directories. The list is an array of objects like this:
-     * [{text: "📄 file.ext", name: "file.ext", type: "file", path: "path/to/file.ext"}, {text: "📁 dir/", name: "dir", type: "dir", path: "path/to/dir"}]
-     * @param {string} path - The path to load the list.
+    it return a promise with the list of files and directories. The list is an array of objects like this:
+    [{text: "📄 file.ext", name: "file.ext", type: "file", path: "path/to/file.ext"}, {text: "📁 dir/", name: "dir", type: "dir", path: "path/to/dir"}]
+     * @param {string} dir - The path to load the list.
      * @returns {Promise<Array<object>>} The list of files and directories.
      * @memberof FileSelectorPopup
      */
-    listDir(dir: any): Promise<Array<object>>;
+    private listDir;
     /**
      * @description This function calls the updateList function and store the result to this.options, it also refresh the list of files and directories.
-     * @param {string} path - The path to load the list.
+     * @param {string} _path - The path to load the list.
      * @memberof FileSelectorPopup
      */
-    updateList(_path: any): void;
-    adaptOptions(): {
-        text: string;
-        name: string;
-    }[];
+    private updateList;
+    private adaptOptions;
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the popup is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
@@ -71,20 +78,20 @@ export class FileSelectorPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof FileSelectorPopup
      */
-    keyListner(str: string, key: Object): void;
+    keyListner(_str: string, key: KeyListenerArgs): void;
     /**
      * @description This function is used to get the selected option.
-     * @returns {string | number} The selected value of the popup.
+     * @returns {FileItemObject} The selected value of the popup.
      * @memberof FileSelectorPopup
      */
-    getSelected(): string | number;
+    getSelected(): FileItemObject;
     /**
      * @description This function is used to change the selection of the popup. It also refresh the ConsoleManager.
-     * @param {string | number} selected - The new value of the selection.
+     * @param {FileItemObject} selected - The new value of the selection.
      * @memberof FileSelectorPopup
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      */
-    setSelected(selected: string | number): FileSelectorPopup;
+    private setSelected;
     /**
      * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
@@ -108,13 +115,13 @@ export class FileSelectorPopup extends EventEmitter {
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    manageInput(): FileSelectorPopup;
+    private manageInput;
     /**
      * @description This function is used to remove the FileSelectorPopup key listener callback to te ConsoleManager.
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
      * @memberof FileSelectorPopup
      */
-    unManageInput(): FileSelectorPopup;
+    private unManageInput;
     /**
      * @description This function is used to draw the FileSelectorPopup to the screen in the middle.
      * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
@@ -123,5 +130,3 @@ export class FileSelectorPopup extends EventEmitter {
     draw(): FileSelectorPopup;
 }
 export default FileSelectorPopup;
-import { EventEmitter } from "events";
-import { ConsoleManager } from "../../ConsoleGui.js";

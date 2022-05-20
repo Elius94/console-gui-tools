@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { ConsoleManager } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 
 /**
  * @class OptionPopup
@@ -21,7 +21,16 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @example const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
  */
 export class OptionPopup extends EventEmitter {
-    constructor(id, title, options, selected, visible = false) {
+    CM: ConsoleManager
+    id: string
+    title: string
+    options: Array<string | number>
+    selected: string | number
+    visible: boolean
+    marginTop: number
+    startIndex: number
+
+    public constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible = false) {
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -41,7 +50,7 @@ export class OptionPopup extends EventEmitter {
         this.CM.registerWiget(this)
     }
 
-    adaptOptions() {
+    private adaptOptions(): Array<string | number> {
         return this.options.slice(this.startIndex, this.startIndex + this.CM.Screen.height - this.marginTop - 6)
     }
 
@@ -52,10 +61,10 @@ export class OptionPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof OptionPopup
      */
-    keyListner(str, key) {
+    keyListner(_str: string, key: KeyListenerArgs) {
         switch (key.name) {
         case "down":
-            this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length], false)
+            this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length])
             if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
                 if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
                     this.startIndex++
@@ -65,14 +74,14 @@ export class OptionPopup extends EventEmitter {
             }
             break
         case "up":
-            this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length], false)
+            this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length])
             if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
                 this.startIndex--
             }
             break
         case "pagedown":
             if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                this.setSelected(this.options[(this.options.indexOf(this.selected) + this.adaptOptions().length) % this.options.length], false)
+                this.setSelected(this.options[(this.options.indexOf(this.selected) + this.adaptOptions().length) % this.options.length])
                 if (this.startIndex + this.adaptOptions().length < this.options.length) {
                     this.startIndex += this.adaptOptions().length
                 } else {
@@ -84,7 +93,7 @@ export class OptionPopup extends EventEmitter {
             break
         case "pageup":
             if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
-                this.setSelected(this.options[(this.options.indexOf(this.selected) - this.adaptOptions().length + this.options.length) % this.options.length], false)
+                this.setSelected(this.options[(this.options.indexOf(this.selected) - this.adaptOptions().length + this.options.length) % this.options.length])
                 if (this.startIndex > this.adaptOptions().length) {
                     this.startIndex -= this.adaptOptions().length
                 } else {
@@ -99,7 +108,7 @@ export class OptionPopup extends EventEmitter {
                 this.emit("confirm", this.selected)
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "escape":
@@ -107,7 +116,7 @@ export class OptionPopup extends EventEmitter {
                 this.emit("cancel")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "q":
@@ -115,7 +124,7 @@ export class OptionPopup extends EventEmitter {
                 this.CM.emit("exit")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         default:
@@ -129,7 +138,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {string | number} The selected value of the popup.
      * @memberof OptionPopup
      */
-    getSelected() {
+    public getSelected(): string | number {
         return this.selected
     }
 
@@ -139,7 +148,7 @@ export class OptionPopup extends EventEmitter {
      * @memberof OptionPopup
      * @returns {OptionPopup} The instance of the OptionPopup.
      */
-    setSelected(selected) {
+    public setSelected(selected: string | number): OptionPopup {
         this.selected = selected
         this.CM.refresh()
         return this
@@ -150,7 +159,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    show() {
+    public show(): OptionPopup {
         if (!this.visible) {
             this.manageInput()
             this.visible = true
@@ -164,7 +173,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    hide() {
+    public hide(): OptionPopup {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
@@ -178,7 +187,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {boolean} The visibility of the popup.
      * @memberof OptionPopup
      */
-    isVisible() {
+    public isVisible(): boolean {
         return this.visible
     }
 
@@ -187,7 +196,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    manageInput() {
+    private manageInput(): OptionPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
         return this
@@ -198,7 +207,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    unManageInput() {
+    private unManageInput(): OptionPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
         return this
@@ -209,7 +218,7 @@ export class OptionPopup extends EventEmitter {
      * @returns {OptionPopup} The instance of the OptionPopup.
      * @memberof OptionPopup
      */
-    draw() {
+    public draw(): OptionPopup {
         // Change start index if selected is not in the adaptOptions return array
         if (this.adaptOptions().indexOf(this.selected) === -1) {
             this.startIndex = this.options.indexOf(this.selected) - this.adaptOptions().length + 1 > 0 ? this.options.indexOf(this.selected) - this.adaptOptions().length + 1 : 0

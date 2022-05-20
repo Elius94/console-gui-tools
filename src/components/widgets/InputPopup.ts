@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { ConsoleManager } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 
 /**
  * @class InputPopup
@@ -21,7 +21,15 @@ import { ConsoleManager } from "../../ConsoleGui.js"
  * @example const popup = new InputPopup("popup1", "Choose the number", selectedNumber, true).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
  */
 export class InputPopup extends EventEmitter {
-    constructor(id, title, value, numeric, visible = false) {
+    CM: ConsoleManager
+    id: string
+    title: string
+    value: string | number
+    numeric: boolean
+    visible: boolean
+    marginTop: number
+
+    public constructor(id: string, title: string, value: string | number, numeric: boolean, visible = false) {
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -43,11 +51,11 @@ export class InputPopup extends EventEmitter {
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} str - The string of the input.
+     * @param {string} _str - The string of the input.
      * @param {Object} key - The key object.
      * @memberof InputPopup
      */
-    keyListnerNumeric(str, key) {
+    public keyListnerNumeric(_str: string, key: KeyListenerArgs): void {
         let v = Number(this.value)
         if (Number.isNaN(v)) {
             v = 0
@@ -86,7 +94,7 @@ export class InputPopup extends EventEmitter {
                     this.emit("confirm", Number(this.value))
                     this.CM.unRegisterWidget(this)
                     this.hide()
-                    delete this
+                    //delete this
                 }
                 break
             case "escape":
@@ -94,7 +102,7 @@ export class InputPopup extends EventEmitter {
                     this.emit("cancel")
                     this.CM.unRegisterWidget(this)
                     this.hide()
-                    delete this
+                    //delete this
                 }
                 break
             case "q":
@@ -102,7 +110,7 @@ export class InputPopup extends EventEmitter {
                     this.CM.emit("exit")
                     this.CM.unRegisterWidget(this)
                     this.hide()
-                    delete this
+                    //delete this
                 }
                 break
             default:
@@ -115,11 +123,11 @@ export class InputPopup extends EventEmitter {
     /**
      * @description This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} str - The string of the input.
+     * @param {string} _str - The string of the input.
      * @param {Object} key - The key object.
      * @memberof InputPopup
      */
-    keyListnerText(str, key) {
+    public keyListnerText(_str: string, key: KeyListenerArgs): void {
         const v = this.value
         if (v.toString().length < 20) {
             let tmp = v.toString()
@@ -138,7 +146,7 @@ export class InputPopup extends EventEmitter {
                 this.emit("confirm", this.value)
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "escape":
@@ -146,7 +154,7 @@ export class InputPopup extends EventEmitter {
                 this.emit("cancel")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         case "q":
@@ -154,7 +162,7 @@ export class InputPopup extends EventEmitter {
                 this.CM.emit("exit")
                 this.CM.unRegisterWidget(this)
                 this.hide()
-                delete this
+                //delete this
             }
             break
         default:
@@ -168,7 +176,7 @@ export class InputPopup extends EventEmitter {
      * @returns {string | number} The value of the input.
      * @memberof InputPopup
      */
-    getValue() {
+    public getValue(): string | number {
         return this.value
     }
 
@@ -178,7 +186,7 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      * @returns {InputPopup} The instance of the InputPopup.
      */
-    setValue(newValue) {
+    public setValue(newValue: string | number): this {
         this.value = newValue
         this.CM.refresh()
         return this
@@ -189,7 +197,7 @@ export class InputPopup extends EventEmitter {
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    show() {
+    public show(): InputPopup {
         if (!this.visible) {
             this.manageInput()
             this.visible = true
@@ -203,7 +211,7 @@ export class InputPopup extends EventEmitter {
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    hide() {
+    public hide(): InputPopup {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
@@ -217,7 +225,7 @@ export class InputPopup extends EventEmitter {
      * @returns {boolean} The visibility of the popup.
      * @memberof InputPopup
      */
-    isVisible() {
+    public isVisible(): boolean {
         return this.visible
     }
 
@@ -226,7 +234,7 @@ export class InputPopup extends EventEmitter {
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    manageInput() {
+    private manageInput(): InputPopup {
         // Add a command input listener to change mode
         if (this.numeric) {
             this.CM.setKeyListener(this.id, this.keyListnerNumeric.bind(this))
@@ -241,12 +249,12 @@ export class InputPopup extends EventEmitter {
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    unManageInput() {
+    private unManageInput(): InputPopup {
         // Add a command input listener to change mode
         if (this.numeric) {
-            this.CM.removeKeyListener(this.id, this.keyListnerNumeric.bind(this))
+            this.CM.removeKeyListener(this.id/*, this.keyListnerNumeric.bind(this)*/)
         } else {
-            this.CM.removeKeyListener(this.id, this.keyListnerText.bind(this))
+            this.CM.removeKeyListener(this.id/*, this.keyListnerText.bind(this)*/)
         }
         return this
     }
@@ -256,7 +264,7 @@ export class InputPopup extends EventEmitter {
      * @returns {InputPopup} The instance of the InputPopup.
      * @memberof InputPopup
      */
-    draw() {
+    public draw(): InputPopup {
         const offset = 2
         const windowWidth = this.title.length > this.value.toString().length ? this.title.length + (2 * offset) : this.value.toString().length + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
