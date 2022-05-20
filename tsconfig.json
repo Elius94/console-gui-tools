@@ -1,13 +1,17 @@
 {
     "compilerOptions": {
-      "target": "es6",
+      "target": "ES2022",
       "module": "esnext",
+      "lib": ["ES2021", "esnext"],
       "declaration": true,
+      "importHelpers": true,
       "outDir": "./dist",
+      // match output dir to input dir. e.g. dist/index instead of dist/src/index
+      "rootDir": "./src",
       "strict": true,
       "allowJs": false,
       "sourceMap": true,
-      "moduleResolution": "Node",
+      "moduleResolution": "node",
       "forceConsistentCasingInFileNames": true,
       "noImplicitReturns": true,
       "noImplicitThis": true,
@@ -17,8 +21,13 @@
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "allowSyntheticDefaultImports": true,
-      
+      // interop between ESM and CJS modules. Recommended by TS
+      "esModuleInterop": true,
+      // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
+      "skipLibCheck": true,
+      // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
+      "noEmit": true,
     },
     "include": ["src"],
-    "exclude": ["node_modules", "**/__tests__/*", "lib"]
+    "exclude": ["node_modules", "**/__tests__/*", "dir"]
   }
