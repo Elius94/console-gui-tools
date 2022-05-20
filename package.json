@@ -9,6 +9,7 @@
     "scripts": {
         "lint": "eslint ./src/ --ext .ts",
         "build": "tsc",
+        "prepare": "npm run build",
         "test": "npm run build && node ./examples/tcp_simulator.mjs",
         "start": "npm run build && node ./dist/ConsoleGui.js",
         "docsgen": "node ./docgen.cjs"
