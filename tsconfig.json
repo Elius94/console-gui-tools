@@ -4,9 +4,9 @@
     "lib": ["es2020", "esnext", "es2021", "es2022"],
     "module": "es2022",
     "declaration": true,
-    "outDir": "./dist",
+    "outDir": "./dist/esm",
     // match output dir to input dir. e.g. dist/index instead of dist/src/index
-    //"rootDir": "./src",
+    "rootDir": "./src",
     "strict": true,
     "allowJs": false,
     "declarationMap": true,
