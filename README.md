@@ -12,8 +12,20 @@ It's in embryonic phase, any suggestion will be constructive :D
 
 ![Animation](https://user-images.githubusercontent.com/14907987/164886106-b9c1e295-f4bf-4cc3-9065-365e1141dfd9.gif)
 
+## Requirements
 
- [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=elius94&repo=console-gui-tools&theme=github_dark&show_icons=true)](https://github.com/Elius94/console-gui-tools) [![https://nodei.co/npm/console-gui-tools.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/console-gui-tools.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/console-gui-tools)
+> This is a Typescript module that is compiled as ES module. It should be used in other ES application. If you want to use it in a Commonjs app you can learn on the internet how to wrap it in, or you can clone this repo and change the tsconfig.json -> module: commonjs and package.json -> type: commonjs than build it for your project.
+
+#### Node.js
+Version: >= 14
+
+#### OS
+It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11
+
+#### Windows users
+In windows you can use it in both 10, and 11 but don't use the old Powershell (💩), make you a favor and use [Windows Terminal](https://github.com/microsoft/terminal) with Powershell Core (the last official)
+That is currently installed by default in Windows 11.
+In alternative i've runned this also with git bash shell.
 
 ## Installation
 
