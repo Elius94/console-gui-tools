@@ -14,12 +14,12 @@ import OptionPopup from "./components/widgets/OptionPopup.js"
 /**
  * @description This type is used to define the parameters of the KeyListener event (keypress).
  * @typedef {Object} KeyListenerArgs
- * @property {string} name - The name of the key pressed.
- * @property {boolean} ctrl - If the ctrl key is pressed.
- * @property {boolean} shift - If the shift key is pressed.
- * @property {boolean} alt - If the alt key is pressed.
- * @property {boolean} meta - If the meta key is pressed.
- * @property {boolean} sequence - If the sequence of keys is pressed.
+ * @prop {string} name - The name of the key pressed.
+ * @prop {boolean} ctrl - If the ctrl key is pressed.
+ * @prop {boolean} shift - If the shift key is pressed.
+ * @prop {boolean} alt - If the alt key is pressed.
+ * @prop {boolean} meta - If the meta key is pressed.
+ * @prop {boolean} sequence - If the sequence of keys is pressed.
  *
  * @export
  * @interface KeyListenerArgs
@@ -36,11 +36,11 @@ export interface KeyListenerArgs {
 /**
  * @description This type is used to define the ConsoleGui options.
  * @typedef {Object} ConsoleGuiOptions
- * @property {string} [title] - The title of the ConsoleGui.
- * @property {0 | 1 | "popup"} [logLocation] - The location of the logs.
- * @property {string} [showLogKey] - The key to show the log.
- * @property {number} [logPageSize] - The size of the log page.
- * @property {DoubleLayoutOptions} [layoutOptions] - The options of the layout.
+ * @prop {string} [title] - The title of the ConsoleGui.
+ * @prop {0 | 1 | "popup"} [logLocation] - The location of the logs.
+ * @prop {string} [showLogKey] - The key to show the log.
+ * @prop {number} [logPageSize] - The size of the log page.
+ * @prop {DoubleLayoutOptions} [layoutOptions] - The options of the layout.
  *
  * @export
  * @interface ConsoleGuiOptions

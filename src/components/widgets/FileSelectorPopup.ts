@@ -6,10 +6,10 @@ import path from "path"
 /**
  * @description The file descriptions for the file selector popup.
  * @typedef {Object} FileItemObject
- * @property {string} name - The name of the file.
- * @property {string} path - The path to the file.
- * @property {"dir" | "file"} type - The type of the file.
- * @property {string} text - The display text of the file.
+ * @prop {string} name - The name of the file.
+ * @prop {string} path - The path to the file.
+ * @prop {"dir" | "file"} type - The type of the file.
+ * @prop {string} text - The display text of the file.
  *
  * @interface FileItemObject
  */

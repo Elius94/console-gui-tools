@@ -9,14 +9,11 @@
 
 <dl>
 <dt><a href="#CM">CM</a> : <code>ConsoleManager</code></dt>
-<dd><p>the instance of ConsoleManager (singleton)</p>
-</dd>
+<dd><p>the instance of ConsoleManager (singleton)</p></dd>
 <dt><a href="#page2Title">page2Title</a> : <code>string</code></dt>
-<dd><p>The title of page2.</p>
-</dd>
+<dd><p>The title of page2.</p></dd>
 <dt><a href="#page1Title">page1Title</a> : <code>string</code></dt>
-<dd><p>The application title.</p>
-</dd>
+<dd><p>The application title.</p></dd>
 </dl>
 
 <a name="DoubleLayout"></a>
@@ -38,15 +35,15 @@
 <a name="new_DoubleLayout_new"></a>
 
 ### new DoubleLayout(page1, page2, options, selected)
-This class is a layout that has two pages.
+<p>This class is a layout that has two pages.</p>
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| page1 | <code>PageBuilder</code> | The first page. |
-| page2 | <code>PageBuilder</code> | The second page. |
-| options | <code>boolean</code> | Layout options. |
-| selected | <code>number</code> | The selected page. |
+| page1 | <code>PageBuilder</code> | <p>The first page.</p> |
+| page2 | <code>PageBuilder</code> | <p>The second page.</p> |
+| options | <code>boolean</code> | <p>Layout options.</p> |
+| selected | <code>number</code> | <p>The selected page.</p> |
 
 **Example**  
 ```js
@@ -55,76 +52,76 @@ const layout = new DoubleLayout(page1, page2, true, 0)
 <a name="DoubleLayout+setPage1"></a>
 
 ### doubleLayout.setPage1(page)
-This function is used to overwrite the page content.
+<p>This function is used to overwrite the page content.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| page | <code>PageBuilder</code> | the page to be added |
+| page | <code>PageBuilder</code> | <p>the page to be added</p> |
 
 <a name="DoubleLayout+setPage2"></a>
 
 ### doubleLayout.setPage2(page)
-This function is used to overwrite the page content.
+<p>This function is used to overwrite the page content.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| page | <code>PageBuilder</code> | the page to be added |
+| page | <code>PageBuilder</code> | <p>the page to be added</p> |
 
 <a name="DoubleLayout+setBorder"></a>
 
 ### doubleLayout.setBorder(border)
-This function is used to enable or disable the layout border.
+<p>This function is used to enable or disable the layout border.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| border | <code>boolean</code> | enable or disable the border |
+| border | <code>boolean</code> | <p>enable or disable the border</p> |
 
 <a name="DoubleLayout+setSelected"></a>
 
 ### doubleLayout.setSelected(selected)
-This function is used to choose the page to be highlighted.
+<p>This function is used to choose the page to be highlighted.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| selected | <code>number</code> | 0 for page1, 1 for page2 |
+| selected | <code>number</code> | <p>0 for page1, 1 for page2</p> |
 
 <a name="DoubleLayout+getSelected"></a>
 
 ### doubleLayout.getSelected() ⇒ <code>number</code>
-This function is used to get the selected page.
+<p>This function is used to get the selected page.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
-**Returns**: <code>number</code> - 0 for page1, 1 for page2  
+**Returns**: <code>number</code> - <p>0 for page1, 1 for page2</p>  
 <a name="DoubleLayout+changeLayout"></a>
 
 ### doubleLayout.changeLayout() ⇒ <code>void</code>
-This function is used to get switch the selected page.
+<p>This function is used to get switch the selected page.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 <a name="DoubleLayout+drawLine"></a>
 
 ### doubleLayout.drawLine(line, lineIndex) ⇒ <code>void</code>
-This function is used to draw a single line of the layout to the screen. It also trim the line if it is too long.
+<p>This function is used to draw a single line of the layout to the screen. It also trim the line if it is too long.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| line | <code>Array.&lt;object&gt;</code> | the line to be drawn |
-| lineIndex | <code>number</code> | the index of the selected line |
+| line | <code>Array.&lt;object&gt;</code> | <p>the line to be drawn</p> |
+| lineIndex | <code>number</code> | <p>the index of the selected line</p> |
 
 <a name="DoubleLayout+draw"></a>
 
 ### doubleLayout.draw() ⇒ <code>void</code>
-This function is used to draw the layout to the screen.
+<p>This function is used to draw the layout to the screen.</p>
 
 **Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
 **Example**  
@@ -134,18 +131,18 @@ layout.draw()
 <a name="CM"></a>
 
 ## CM : <code>ConsoleManager</code>
-the instance of ConsoleManager (singleton)
+<p>the instance of ConsoleManager (singleton)</p>
 
 **Kind**: global constant  
 <a name="page2Title"></a>
 
 ## page2Title : <code>string</code>
-The title of page2.
+<p>The title of page2.</p>
 
 **Kind**: global constant  
 <a name="page1Title"></a>
 
 ## page1Title : <code>string</code>
-The application title.
+<p>The application title.</p>
 
 **Kind**: global constant  

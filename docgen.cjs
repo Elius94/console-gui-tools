@@ -37,7 +37,7 @@ if (!fs.existsSync(path.join(__dirname, docsFolder))) {
 plugins.forEach(({ pluginPath, pluginName }) => {
     jsdoc2md.getJsdocData({ files: pluginPath, configure: "./jsdoc2md.json" })
 
-    const templateData = jsdoc2md.getTemplateDataSync({ files: pluginPath })
+    const templateData = jsdoc2md.getTemplateDataSync({ files: pluginPath, configure: "./jsdoc2md.json" })
     const output = dmd(templateData)
 
     fs.writeFileSync(path.join(__dirname, docsFolder, `${pluginName}.md`), output)

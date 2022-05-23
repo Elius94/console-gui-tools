@@ -6,7 +6,7 @@ chalk.level = 1
 /**
  * @description The type containing all the possible styles for the text and the index array.
  * @typedef {Object} StyleIndexObject
- * @property {[number, number]} [index] - The index of the style in the style array.
+ * @prop {Array<number>} index - The index of the style in the style array.
  * 
  * @interface StyleIndexObject
  * @extends {StyleObject}
@@ -18,8 +18,8 @@ interface StyleIndexObject extends StyleObject {
 /**
  * @description The type containing all the possible styles for the text and the index array and the text.
  * @typedef {Object} StyledElementWithIndex
- * @property {string} text - The text of the styled element.
- * @property {StyleIndexObject[]} [styleIndex] - The styles array with index.
+ * @prop {string} text - The text of the styled element.
+ * @prop {StyleIndexObject[]} styleIndex - The styles array with index.
  * 
  * @interface StyledElementWithIndex
  */

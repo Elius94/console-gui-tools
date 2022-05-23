@@ -6,15 +6,22 @@
 <a name="new_ConfirmPopup_new"></a>
 
 ### new ConfirmPopup(id, title, message, visible)
-This class is an overload of ButtonPopup that is used to create a popup with That asks for a confirm [Yes, No]. ![ConfirmPopup](https://user-images.githubusercontent.com/14907987/165752226-b76b157f-4935-4248-a5cc-3b21d087cb04.gif)Emits the following events: - "confirm" when the user confirm- "cancel" when the user cancel- "exit" when the user exit
+<p>This class is an overload of ButtonPopup that is used to create a popup with That asks for a confirm [Yes, No].</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/165752226-b76b157f-4935-4248-a5cc-3b21d087cb04.gif" alt="ConfirmPopup"></p>
+<p>Emits the following events:</p>
+<ul>
+<li>&quot;confirm&quot; when the user confirm</li>
+<li>&quot;cancel&quot; when the user cancel</li>
+<li>&quot;exit&quot; when the user exit</li>
+</ul>
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | The id of the popup. |
-| title | <code>string</code> | The title of the popup. |
-| message | <code>string</code> | The message of the popup. |
-| visible | <code>boolean</code> | If the popup is visible. Default is false (make it appears using show()). |
+| id | <code>string</code> | <p>The id of the popup.</p> |
+| title | <code>string</code> | <p>The title of the popup.</p> |
+| message | <code>string</code> | <p>The message of the popup.</p> |
+| visible | <code>boolean</code> | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
 
 **Example**  
 ```js

@@ -5,15 +5,15 @@ import { StyledElement } from "../PageBuilder.js"
 /**
  * @description The type containing all the possible options for the DoubleLayout.
  * @typedef {Object} DoubleLayoutOptions
- * @property {boolean} [showTitle] - If the title should be shown.
- * @property {boolean} [boxed] - If the layout should be boxed.
- * @property {ForegroundColor | ""} [boxColor] - The color of the box taken from the chalk library.
- * @property {"bold"} [boxStyle] - If the border of the box should be bold.
- * @property {string} [changeFocusKey] - The key that should be pressed to change the focus.
- * @property {"horizontal" | "vertical"} [direction] - The direction of the layout.
- * @property {string} [page1Title] - The title of the first page.
- * @property {string} [page2Title] - The title of the second page.
- * @property {[number, number]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ * @prop {boolean} [showTitle] - If the title should be shown.
+ * @prop {boolean} [boxed] - If the layout should be boxed.
+ * @prop {ForegroundColor | ""} [boxColor] - The color of the box taken from the chalk library.
+ * @prop {"bold"} [boxStyle] - If the border of the box should be bold.
+ * @prop {string} [changeFocusKey] - The key that should be pressed to change the focus.
+ * @prop {"horizontal" | "vertical"} [direction] - The direction of the layout.
+ * @prop {string} [page1Title] - The title of the first page.
+ * @prop {string} [page2Title] - The title of the second page.
+ * @prop {[number, number]} [pageRatio] - The ratio of the pages. (in horizontal direction)
  *
  * @export
  * @interface DoubleLayoutOptions

@@ -5,16 +5,16 @@ import { BackgroundColor, ForegroundColor } from "chalk"
  * @description The type containing all the possible styles for the text.
  * 
  * @typedef {Object} StyleObject
- * @property {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
- * @property {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
- * @property {boolean} [italic] - If the text is italic.
- * @property {boolean} [bold] - If the text is bold.
- * @property {boolean} [dim] - If the text is dim.
- * @property {boolean} [underline] - If the text is underlined.
- * @property {boolean} [inverse] - If the text is inverse.
- * @property {boolean} [hidden] - If the text is hidden.
- * @property {boolean} [strikethrough] - If the text is strikethrough.
- * @property {boolean} [overline] - If the text is overlined.
+ * @prop {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
+ * @prop {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @prop {boolean} [italic] - If the text is italic.
+ * @prop {boolean} [bold] - If the text is bold.
+ * @prop {boolean} [dim] - If the text is dim.
+ * @prop {boolean} [underline] - If the text is underlined.
+ * @prop {boolean} [inverse] - If the text is inverse.
+ * @prop {boolean} [hidden] - If the text is hidden.
+ * @prop {boolean} [strikethrough] - If the text is strikethrough.
+ * @prop {boolean} [overline] - If the text is overlined.
  * 
  * @example const textStyle = { color: "red", backgroundColor: "blue", bold: true, italic: true }
  *
@@ -38,8 +38,8 @@ export interface StyleObject {
  * @description The type of the single styled text, stored in a line of the PageBuilder.
  * 
  * @typedef {Object} StyledElement
- * @property {string} text - The text of the styled text.
- * @property {StyleObject} style - The style of the styled text.
+ * @prop {string} text - The text of the styled text.
+ * @prop {StyleObject} style - The style of the styled text.
  * 
  * @example const styledText = { text: "Hello", style: { color: "red", backgroundColor: "blue", bold: true, italic: true } }
  *
@@ -55,17 +55,17 @@ export interface StyledElement {
  * @description The type containing all the possible styles for the text and the text on the same level. It's used on the higher level.
  * 
  * @typedef {Object} SimplifiedStyledElement
- * @property {string} text - The text of the styled text.
- * @property {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
- * @property {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
- * @property {boolean} [italic] - If the text is italic.
- * @property {boolean} [bold] - If the text is bold.
- * @property {boolean} [dim] - If the text is dim.
- * @property {boolean} [underline] - If the text is underlined.
- * @property {boolean} [inverse] - If the text is inverse.
- * @property {boolean} [hidden] - If the text is hidden.
- * @property {boolean} [strikethrough] - If the text is strikethrough.
- * @property {boolean} [overline] - If the text is overlined.
+ * @prop {string} text - The text of the styled text.
+ * @prop {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
+ * @prop {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @prop {boolean} [italic] - If the text is italic.
+ * @prop {boolean} [bold] - If the text is bold.
+ * @prop {boolean} [dim] - If the text is dim.
+ * @prop {boolean} [underline] - If the text is underlined.
+ * @prop {boolean} [inverse] - If the text is inverse.
+ * @prop {boolean} [hidden] - If the text is hidden.
+ * @prop {boolean} [strikethrough] - If the text is strikethrough.
+ * @prop {boolean} [overline] - If the text is overlined.
  * 
  * @example const textStyle = { color: "red", backgroundColor: "blue", bold: true, italic: true }
  *
