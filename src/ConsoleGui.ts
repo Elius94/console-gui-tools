@@ -114,7 +114,7 @@ class ConsoleManager extends EventEmitter {
                 boxColor: "cyan",
                 boxStyle: "bold",
                 changeFocusKey: "ctrl+l",
-                direction: "horizontal",
+                direction: "vertical",
             }
 
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
