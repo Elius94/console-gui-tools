@@ -123,7 +123,7 @@ export class DoubleLayout {
 
     /**
      * @description This function is used to draw a single line of the layout to the screen. It also trim the line if it is too long.
-     * @param {Array<object>} line the line to be drawn
+     * @param {Array<StyledElement>} line the line to be drawn
      * @param {number} lineIndex the index of the selected line
      * @memberof DoubleLayout
      * @returns {void}
