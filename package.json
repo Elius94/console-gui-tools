@@ -31,7 +31,14 @@
         "node.js",
         "curses",
         "ncurses",
-        "tui"
+        "tui",
+        "terminal",
+        "command-line",
+        "logs",
+        "terminal-graphics",
+        "consoleapp",
+        "terminal-colors",
+        "terminal-ui"
     ],
     "author": "Elia Lazzari",
     "license": "MIT",
