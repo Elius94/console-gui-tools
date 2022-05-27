@@ -2,6 +2,7 @@ import { ForegroundColor } from "chalk"
 import { ConsoleManager } from "../../ConsoleGui.js"
 import PageBuilder from "../PageBuilder.js"
 import DoubleLayout, { DoubleLayoutOptions } from "./DoubleLayout.js"
+import QuadLayout, { QuadLayoutOptions } from "./QuadLayout.js"
 import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
 
 /**
@@ -42,10 +43,10 @@ export interface LayoutOptions {
 export class LayoutManager {
     private CM!: ConsoleManager
     private options!: LayoutOptions
-    private optionsRelative!: SingleLayoutOptions | DoubleLayoutOptions
+    private optionsRelative!: SingleLayoutOptions | DoubleLayoutOptions | QuadLayoutOptions
     public pages: { [key: number]: PageBuilder } = {}
     private pageTitles: string[] = []
-    public layout!: DoubleLayout | SingleLayout
+    public layout!: SingleLayout |DoubleLayout | QuadLayout
     private instance!: LayoutManager
 
     public constructor(pages: PageBuilder[], options: LayoutOptions) {
@@ -94,7 +95,20 @@ export class LayoutManager {
 
                 break
             case "quad":
-
+                this.optionsRelative = {
+                    showTitle: this.options.showTitle,
+                    boxed: this.options.boxed,
+                    boxColor: this.options.boxColor,
+                    boxStyle: this.options.boxStyle,
+                    changeFocusKey: this.options.changeFocusKey,
+                    direction: this.options.direction,
+                    page1Title: this.pageTitles ? this.pageTitles[0] : "",
+                    page2Title: this.pageTitles ? this.pageTitles[1] : "",
+                    page3Title: this.pageTitles ? this.pageTitles[2] : "",
+                    page4Title: this.pageTitles ? this.pageTitles[3] : "",
+                    pageRatio: this.options.pageRatio,
+                } as QuadLayoutOptions
+                this.layout = new QuadLayout(this.pages[0], this.pages[1], this.pages[2], this.pages[3], this.optionsRelative as QuadLayoutOptions)
                 break
             default:
                 break
@@ -215,6 +229,18 @@ export class LayoutManager {
     public changeLayout(): void {
         if (!this.isSingleLayout(this.layout)) {
             this.layout.changeLayout()
+        }
+    }
+
+    public decreaseRatio(quantity: number) {
+        if (!this.isSingleLayout(this.layout)) {
+            this.layout.decreaseRatio(quantity)
+        }
+    }
+
+    public increaseRatio(quantity: number) {
+        if (!this.isSingleLayout(this.layout)) {
+            this.layout.increaseRatio(quantity)
         }
     }
 

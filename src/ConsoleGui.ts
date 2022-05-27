@@ -266,6 +266,17 @@ class ConsoleManager extends EventEmitter {
                         this.refresh()
                         return
                     }
+                    if (this.layoutOptions.type !== "single") {
+                        if (key.name === "left") {
+                            this.layout.decreaseRatio(0.01)
+                            this.refresh()
+                            return
+                        } else if (key.name === "right") {
+                            this.layout.increaseRatio(0.01)
+                            this.refresh()
+                            return
+                        }
+                    }
                     this.emit("keypressed", key)
                 }
             }
@@ -363,15 +374,18 @@ class ConsoleManager extends EventEmitter {
     /**
      * @description This function is used to set both pages of layout. It also refresh the screen.
      * @param {Array<PageBuilder>} pages - The page to set as home page.
-     * @param {string[] | null} [titlea] - The titles of the page to overwrite the default titles. Default is null.
+     * @param {string[] | null} [titles] - The titles of the page to overwrite the default titles. Default is null.
      * @memberof ConsoleManager
      * @example CM.setPages([p1, p2], 0)
      */
     public setPages(pages: Array<PageBuilder>, titles: string[] | null = null): void {
-        this.pages = pages
-        if (typeof this.logLocation === "number") {
-            this.pages[this.logLocation] = this.stdOut
-        }
+        pages.forEach((page, index) => {
+            if (typeof this.logLocation === "number" && this.logLocation === index) {
+                return
+            } else {
+                this.pages[index] = page
+            }
+        })
         this.layout.setPages(this.pages)
         if (titles) this.layout.setTitles(titles)
         this.refresh()

@@ -161,6 +161,36 @@ export class DoubleLayout {
     }
 
     /**
+     * @description This function is used to change the page ratio.
+     * @param {[number, number]} ratio the ratio of pages
+     * @memberof QuadLayout
+     * @example layout.setRatio([0.4, 0.6])
+     */
+    public setRatio(ratio: [number, number]): void {
+        this.proportions = ratio
+    }
+
+    public increaseRatio(quantity: number): void {
+        if (this.proportions[0] < 1 - quantity) {
+            this.proportions[0] += quantity
+            this.proportions[1] -= quantity
+        } else {
+            this.proportions[1] += quantity
+            this.proportions[0] -= quantity
+        }
+    }
+
+    public decreaseRatio(quantity: number): void {
+        if (this.proportions[0] > 0 + quantity) {
+            this.proportions[0] -= quantity
+            this.proportions[1] += quantity
+        } else {
+            this.proportions[1] -= quantity
+            this.proportions[0] += quantity
+        }
+    }
+
+    /**
      * @description This function is used to draw a single line of the layout to the screen. It also trim the line if it is too long.
      * @param {Array<StyledElement>} line the line to be drawn
      * @param {number} lineIndex the index of the selected line
