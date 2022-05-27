@@ -98,11 +98,24 @@ export class DoubleLayout {
      */
     public setPage2(page: PageBuilder): void { this.page2 = page }
 
+    /**
+     * @description This function is used to set the page titles.
+     * @param {string[]} titles the titles of the pages
+     * @memberof DoubleLayout
+     * @example layout.setTitles(["Page 1", "Page 2"])
+     */
     public setTitles(titles: string[]) {
         this.page1Title = titles[0]
         this.page2Title = titles[1]
     }
 
+    /**
+     * @description This function is used to set the page title at the given index.
+     * @param {string} title the title of the page
+     * @param {number} index the index of the page
+     * @memberof DoubleLayout
+     * @example layout.setTitle("Page 1", 0)
+     */
     public setTitle(title: string, index: number): void {
         if (index == 0) {
             this.page1Title = title

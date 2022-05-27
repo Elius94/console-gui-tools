@@ -57,6 +57,13 @@ export class SingleLayout {
      */
     public setPage(page: PageBuilder): void { this.page = page }
 
+    /**
+     * @description This function is used to set the title of the layout.
+     * @param {string} title the title to be set
+     * @memberof SingleLayout
+     * @returns {void}
+     * @example layout.setTitle("My Title")
+     */
     public setTitle(title: string): void { this.pageTitle = title }
 
     /**

@@ -37,16 +37,16 @@ export interface KeyListenerArgs {
  * @description This type is used to define the ConsoleGui options.
  * @typedef {Object} ConsoleGuiOptions
  * @prop {string} [title] - The title of the ConsoleGui.
- * @prop {0 | 1 | "popup"} [logLocation] - The location of the logs.
+ * @prop {0 | 1 | 2 | 3 | "popup"} [logLocation] - The location of the logs.
  * @prop {string} [showLogKey] - The key to show the log.
  * @prop {number} [logPageSize] - The size of the log page.
- * @prop {DoubleLayoutOptions} [layoutOptions] - The options of the layout.
+ * @prop {LayoutOptions} [layoutOptions] - The options of the layout.
  *
  * @export
  * @interface ConsoleGuiOptions
  */
 export interface ConsoleGuiOptions {
-    logLocation?: 0 | 1 | "popup";
+    logLocation?: 0 | 1 | 2 | 3 | "popup";
     showLogKey?: string;
     logPageSize?: number;
     layoutOptions?: LayoutOptions;
@@ -72,7 +72,7 @@ class ConsoleManager extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     widgetsCollection: any[] = []
     eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } = {}
-    logLocation!: 0 | 1 | "popup"
+    logLocation!: 0 | 1 | 2 | 3 | "popup"
     logPageSize!: number
     logPageTitle!: string
     pages!: PageBuilder[]
@@ -197,12 +197,24 @@ class ConsoleManager extends EventEmitter {
         return ConsoleManager.instance
     }
 
+    /**
+     * @description This method is used to get the log page size.
+     * @returns {number} The log page size.
+     * @memberof ConsoleManager
+     * @example CM.getLogPageSize()
+     */
     public getLogPageSize(): number {
         return this.logPageSize
     }
 
-    public setLogPageSize(rows: number): void {
-        this.logPageSize = rows
+    /**
+     * @description This method is used to set the log page size.
+     * @param {number} size - The new log page size.
+     * @returns {void}
+     * @example CM.setLogPageSize(10)
+     */
+    public setLogPageSize(size: number): void {
+        this.logPageSize = size
     }
 
     /**
@@ -332,7 +344,7 @@ class ConsoleManager extends EventEmitter {
      * @description This function is used to set a page of layout. It also refresh the screen.
      * @param {PageBuilder} page - The page to set as home page.
      * @param {number} [pageNumber] - The page number to set. 0 is the first page, 1 is the second page.
-     * @param {string} [title] - The title of the page to overwrite the default title. Default is null.
+     * @param {string | null} [title] - The title of the page to overwrite the default title. Default is null.
      * @memberof ConsoleManager
      * @example CM.setPage(p, 0)
      */
@@ -351,6 +363,7 @@ class ConsoleManager extends EventEmitter {
     /**
      * @description This function is used to set both pages of layout. It also refresh the screen.
      * @param {Array<PageBuilder>} pages - The page to set as home page.
+     * @param {string[] | null} [titlea] - The titles of the page to overwrite the default titles. Default is null.
      * @memberof ConsoleManager
      * @example CM.setPages([p1, p2], 0)
      */

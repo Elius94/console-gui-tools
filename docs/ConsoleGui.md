@@ -12,13 +12,13 @@
 <dd><p>The screen instance</p></dd>
 <dt><a href="#logLocation">logLocation</a> : <code>number</code> | <code>&#x27;popup&#x27;</code></dt>
 <dd><p>Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string (&quot;popup&quot;) - to put them on a CustomPopup that can be displayed on the window.</p></dd>
-<dt><a href="#homePage">homePage</a> : <code>Array.&lt;PageBuilder&gt;</code></dt>
-<dd><p>The main application</p></dd>
 <dt><a href="#changeLayoutKey">changeLayoutKey</a> : <code>string</code></dt>
 <dd><p>The key or combination to switch the selected page</p></dd>
+<dt><a href="#homePage">homePage</a> : <code>Array.&lt;PageBuilder&gt;</code></dt>
+<dd><p>The main application</p></dd>
 <dt><a href="#stdOut">stdOut</a> : <code>PageBuilder</code></dt>
 <dd><p>The logs page</p></dd>
-<dt><a href="#layout">layout</a> : <code>DoubleLayout</code></dt>
+<dt><a href="#layout">layout</a> : <code>LayoutManager</code></dt>
 <dd><p>The layout instance</p></dd>
 </dl>
 
@@ -30,6 +30,8 @@
 
 * [ConsoleManager](#ConsoleManager) ⇐ <code>EventEmitter</code>
     * [new ConsoleManager(options)](#new_ConsoleManager_new)
+    * [.getLogPageSize()](#ConsoleManager+getLogPageSize) ⇒ <code>number</code>
+    * [.setLogPageSize(size)](#ConsoleManager+setLogPageSize) ⇒ <code>void</code>
     * [.addGenericListeners()](#ConsoleManager+addGenericListeners)
     * [.setKeyListener(id, manageFunction)](#ConsoleManager+setKeyListener)
     * [.removeKeyListener(id)](#ConsoleManager+removeKeyListener)
@@ -37,7 +39,7 @@
     * [.unRegisterWidget(id)](#ConsoleManager+unRegisterWidget)
     * ~~[.setHomePage(page)](#ConsoleManager+setHomePage)~~
     * [.setPage(page, [pageNumber], [title])](#ConsoleManager+setPage)
-    * [.setPages(pages)](#ConsoleManager+setPages)
+    * [.setPages(pages, [titlea])](#ConsoleManager+setPages)
     * [.refresh()](#ConsoleManager+refresh)
     * [.showLogPopup()](#ConsoleManager+showLogPopup) ⇒
     * [.log(message)](#ConsoleManager+log)
@@ -66,6 +68,32 @@ Emits the following events:</p>
 **Example**  
 ```js
 const CM = new ConsoleManager({ logPageSize: 10, layoutBorder: true, changeLayoutKey: 'ctrl+l', title: 'Console Application' })
+```
+<a name="ConsoleManager+getLogPageSize"></a>
+
+### consoleManager.getLogPageSize() ⇒ <code>number</code>
+<p>This method is used to get the log page size.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+**Returns**: <code>number</code> - <p>The log page size.</p>  
+**Example**  
+```js
+CM.getLogPageSize()
+```
+<a name="ConsoleManager+setLogPageSize"></a>
+
+### consoleManager.setLogPageSize(size) ⇒ <code>void</code>
+<p>This method is used to set the log page size.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| size | <code>number</code> | <p>The new log page size.</p> |
+
+**Example**  
+```js
+CM.setLogPageSize(10)
 ```
 <a name="ConsoleManager+addGenericListeners"></a>
 
@@ -155,7 +183,7 @@ CM.setHomePage(p)
 | --- | --- | --- | --- |
 | page | <code>PageBuilder</code> |  | <p>The page to set as home page.</p> |
 | [pageNumber] | <code>number</code> | <code>0</code> | <p>The page number to set. 0 is the first page, 1 is the second page.</p> |
-| [title] | <code>string</code> | <code>null</code> | <p>The title of the page to overwrite the default title. Default is null.</p> |
+| [title] | <code>string</code> \| <code>null</code> | <code>null</code> | <p>The title of the page to overwrite the default title. Default is null.</p> |
 
 **Example**  
 ```js
@@ -163,7 +191,7 @@ CM.setPage(p, 0)
 ```
 <a name="ConsoleManager+setPages"></a>
 
-### consoleManager.setPages(pages)
+### consoleManager.setPages(pages, [titlea])
 <p>This function is used to set both pages of layout. It also refresh the screen.</p>
 
 **Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
@@ -171,6 +199,7 @@ CM.setPage(p, 0)
 | Param | Type | Description |
 | --- | --- | --- |
 | pages | <code>Array.&lt;PageBuilder&gt;</code> | <p>The page to set as home page.</p> |
+| [titlea] | <code>Array.&lt;string&gt;</code> \| <code>null</code> | <p>The titles of the page to overwrite the default titles. Default is null.</p> |
 
 **Example**  
 ```js
@@ -297,16 +326,16 @@ CM.truncate("Hello world", 5, true) // "Hello..."
 <p>Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string (&quot;popup&quot;) - to put them on a CustomPopup that can be displayed on the window.</p>
 
 **Kind**: global constant  
-<a name="homePage"></a>
-
-## homePage : <code>Array.&lt;PageBuilder&gt;</code>
-<p>The main application</p>
-
-**Kind**: global constant  
 <a name="changeLayoutKey"></a>
 
 ## changeLayoutKey : <code>string</code>
 <p>The key or combination to switch the selected page</p>
+
+**Kind**: global constant  
+<a name="homePage"></a>
+
+## homePage : <code>Array.&lt;PageBuilder&gt;</code>
+<p>The main application</p>
 
 **Kind**: global constant  
 <a name="stdOut"></a>
@@ -317,7 +346,7 @@ CM.truncate("Hello world", 5, true) // "Hello..."
 **Kind**: global constant  
 <a name="layout"></a>
 
-## layout : <code>DoubleLayout</code>
+## layout : <code>LayoutManager</code>
 <p>The layout instance</p>
 
 **Kind**: global constant  

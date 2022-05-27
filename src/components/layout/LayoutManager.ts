@@ -35,18 +35,18 @@ export interface LayoutOptions {
 /**
  * @class LayoutManager
  * @description This class is a layout that has two pages.
- * @param {PageBuilder} page The first page.
+ * @param {PageBuilder[]} pages The pages that should be shown.
  * @param {boolean} options Layout options.
- * @example const layout = new LayoutManager(page1, page2, true, 0)
+ * @example const layout = new LayoutManager([page1, page2], pageOptions);
  */
 export class LayoutManager {
-    CM!: ConsoleManager
-    options!: LayoutOptions
-    optionsRelative!: SingleLayoutOptions | DoubleLayoutOptions
-    pages: { [key: number]: PageBuilder } = {}
-    pageTitles: string[] = []
+    private CM!: ConsoleManager
+    private options!: LayoutOptions
+    private optionsRelative!: SingleLayoutOptions | DoubleLayoutOptions
+    public pages: { [key: number]: PageBuilder } = {}
+    private pageTitles: string[] = []
     public layout!: DoubleLayout | SingleLayout
-    instance!: LayoutManager
+    private instance!: LayoutManager
 
     public constructor(pages: PageBuilder[], options: LayoutOptions) {
         if (this.instance) {
@@ -102,10 +102,24 @@ export class LayoutManager {
         }
     }
 
+    /**
+     * @description This function is used to check if the layout is a single layout by checking the type of the instance.
+     * @param {unknown} x - The instance of the layout.
+     * @returns {boolean} - If the layout is a single layout.
+     * @memberof LayoutManager
+     * @example const isSingleLayout = this.isSingleLayout(layout)
+     */
     private isSingleLayout = (x: unknown): x is SingleLayout => {
         return x instanceof SingleLayout
     }
 
+    /**
+     * @description This function is used to update the layout pages.
+     * @param {PageBuilder[]} pages The pages that should be shown.
+     * @memberof LayoutManager
+     * @example layout.updatePages([page1, page2])
+     * @example layout.updatePages([page1, page2, page3])
+     */
     public setPages(pages: PageBuilder[]): void {
         pages.forEach((page, index) => {
             this.pages[index] = page
@@ -120,6 +134,7 @@ export class LayoutManager {
     /**
      * @description This function is used to overwrite the page content.
      * @param {PageBuilder} page the page to be added
+     * @param {number} index the index of the page
      * @memberof LayoutManager
      */
     public setPage(page: PageBuilder, index: number): void { 
@@ -131,6 +146,13 @@ export class LayoutManager {
         }
     }
 
+    /**
+     * @description This function is used to update the page title.
+     * @param {string} title The title of the page.
+     * @param {number} index The index of the page.
+     * @memberof LayoutManager
+     * @example layout.setTitle("Page Title", 1)
+     */
     public setTitle(title: string, index: number): void { 
         this.pageTitles[index] = title
         if (this.isSingleLayout(this.layout)) {
@@ -140,6 +162,12 @@ export class LayoutManager {
         }
     }
 
+    /**
+     * @description This function is used to update the page titles.
+     * @param {string[]} titles The titles of the pages.
+     * @memberof LayoutManager
+     * @example layout.setTitles(["Page Title 1", "Page Title 2"])
+     */
     public setTitles(titles: string[]): void {
         this.pageTitles = titles
         if (this.isSingleLayout(this.layout)) {
@@ -158,7 +186,7 @@ export class LayoutManager {
 
     /**
      * @description This function is used to choose the page to be highlighted.
-     * @param {number} selected 0 for page1, 1 for page2
+     * @param {0 | 1 | 2 | 3} selected 0 for page1, 1 for page2
      * @memberof LayoutManager
      */
     public setSelected(selected: 0 | 1 | 2 | 3): void { 
@@ -169,7 +197,7 @@ export class LayoutManager {
 
     /**
       * @description This function is used to get the selected page.
-      * @returns {number} 0 for page1, 1 for page2
+      * @returns {0 | 1 | 2 | 3} 0 for page1, 1 for page2, 2 for page3, 3 for page4
       * @memberof LayoutManager
       */
     public getSelected(): number {
@@ -180,7 +208,7 @@ export class LayoutManager {
     }
 
     /**
-      * @description This function is used to get switch the selected page.
+      * @description This function is used to get switch the selected page. If the layout is a single layout, it will do nothing.
       * @returns {void}
       * @memberof LayoutManager
       */
