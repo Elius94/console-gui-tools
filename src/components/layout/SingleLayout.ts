@@ -57,6 +57,8 @@ export class SingleLayout {
      */
     public setPage(page: PageBuilder): void { this.page = page }
 
+    public setTitle(title: string): void { this.pageTitle = title }
+
     /**
      * @description This function is used to enable or disable the layout border.
      * @param {boolean} border enable or disable the border

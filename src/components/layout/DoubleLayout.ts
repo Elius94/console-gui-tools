@@ -65,10 +65,23 @@ export class DoubleLayout {
         this.proportions = this.options.pageRatio || [0.7, 0.3]
 
         /** @const {string} page2Title The title of page2. */
-        this.page2Title = this.options.page2Title || this.CM.logPageTitle
+        this.page2Title = this.options.page2Title || ""
 
         /** @const {string} page1Title The application title. */
-        this.page1Title = this.options.page1Title || this.CM.applicationTitle
+        this.page1Title = this.options.page1Title || ""
+    }
+
+    /**
+     * @description This function is used to overwrite the page content.
+     * @param {PageBuilder} page the page to be added
+     * @memberof DoubleLayout 
+     */
+    public setPage(page: PageBuilder, index: number): void {  // TODO: 
+        if (index == 0) {
+            this.page1 = page
+        } else {
+            this.page2 = page
+        }
     }
 
     /**
@@ -84,6 +97,19 @@ export class DoubleLayout {
      * @memberof DoubleLayout
      */
     public setPage2(page: PageBuilder): void { this.page2 = page }
+
+    public setTitles(titles: string[]) {
+        this.page1Title = titles[0]
+        this.page2Title = titles[1]
+    }
+
+    public setTitle(title: string, index: number): void {
+        if (index == 0) {
+            this.page1Title = title
+        } else {
+            this.page2Title = title
+        }
+    }
 
     /**
      * @description This function is used to enable or disable the layout border.
@@ -159,14 +185,14 @@ export class DoubleLayout {
                     if (dir === "vertical") {
                         newLine[i] = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
                     } else {
-                        newLine[i] = JSON.parse(JSON.stringify(secondLine))
+                        newLine[i] = i === 0 ? JSON.parse(JSON.stringify(line)) : JSON.parse(JSON.stringify(secondLine))
                     }
                     let diff = e.length - this.realWidth[i] + 1
 
                     // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
                         if (newLine[i][j].text.length > diff + offset) {
-                            newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, true)
+                            newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, false)
                             break
                         } else {
                             diff -= newLine[i][j].text.length

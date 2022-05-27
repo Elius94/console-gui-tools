@@ -1,6 +1,5 @@
 import { EventEmitter } from "events"
 import readline from "readline"
-import DoubleLayout, { DoubleLayoutOptions } from "./components/layout/DoubleLayout.js"
 import PageBuilder from "./components/PageBuilder.js"
 import Screen from "./components/Screen.js"
 import CustomPopup from "./components/widgets/CustomPopup.js"
@@ -9,6 +8,7 @@ import ConfirmPopup from "./components/widgets/ConfirmPopup.js"
 import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
+import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
 
 
 /**
@@ -49,7 +49,7 @@ export interface ConsoleGuiOptions {
     logLocation?: 0 | 1 | "popup";
     showLogKey?: string;
     logPageSize?: number;
-    layoutOptions?: DoubleLayoutOptions;
+    layoutOptions?: LayoutOptions;
     title?: string;
 }
 
@@ -71,18 +71,18 @@ class ConsoleManager extends EventEmitter {
     Screen!: Screen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     widgetsCollection: any[] = []
-    eventListenersContainer: { [key: string]: (_str: string, key : KeyListenerArgs) => void } = {}
+    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } = {}
     logLocation!: 0 | 1 | "popup"
     logPageSize!: number
     logPageTitle!: string
     pages!: PageBuilder[]
-    layoutOptions!: DoubleLayoutOptions
+    layoutOptions!: LayoutOptions
+    layout!: LayoutManager
     changeLayoutKey!: string
     changeLayoutkeys!: string[]
     applicationTitle!: string
     showLogKey!: string
     stdOut!: PageBuilder
-    layout!: DoubleLayout
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -104,24 +104,22 @@ class ConsoleManager extends EventEmitter {
             this.logLocation = 1
             this.logPageSize = 10
             this.logPageTitle = "LOGS"
-
-            /** @const {Array<PageBuilder>} homePage - The main application */
-            this.pages = [new PageBuilder(), new PageBuilder()]
-
+            
             this.layoutOptions = {
                 showTitle: true,
                 boxed: true,
                 boxColor: "cyan",
                 boxStyle: "bold",
                 changeFocusKey: "ctrl+l",
+                type: "double",
                 direction: "vertical",
             }
-
+            
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
             this.changeLayoutKey = this.layoutOptions.changeFocusKey
             this.changeLayoutkeys = this.changeLayoutKey.split("+")
             this.applicationTitle = ""
-
+            
             if (options) {
                 if (options.logLocation !== undefined) {
                     if (typeof options.logLocation === "number") {
@@ -148,28 +146,47 @@ class ConsoleManager extends EventEmitter {
                     this.applicationTitle = options.title
                 }
             }
-
+            
+            /** @const {Array<PageBuilder>} homePage - The main application */
+            switch (this.layoutOptions.type) {
+            case "single":
+                this.pages = [new PageBuilder()]
+                break
+            case "double":
+                this.pages = [new PageBuilder(), new PageBuilder()]
+                break
+            case "triple":
+                this.pages = [new PageBuilder(), new PageBuilder(), new PageBuilder()]
+                break
+            case "quad":
+                this.pages = [new PageBuilder(), new PageBuilder(), new PageBuilder(), new PageBuilder()]
+                break
+            default:
+                this.pages = [new PageBuilder(), new PageBuilder()]
+                break
+            }
+            
             /** @const {PageBuilder} stdOut - The logs page */
             this.stdOut = new PageBuilder()
             this.stdOut.setRowsPerPage(this.logPageSize)
 
-            /** @const {DoubleLayout} layout - The layout instance */
+            /** @const {LayoutManager} layout - The layout instance */
+            this.layout = new LayoutManager(this.pages, this.layoutOptions)
+
             if (this.logLocation === "popup") {
-                this.layout = new DoubleLayout(this.pages[0], this.pages[1], this.layoutOptions)
+                this.setPages(this.pages)
             } else if (typeof this.logLocation === "number") {
-                if (this.logLocation === 0) {
-                    this.layout = new DoubleLayout(this.stdOut, this.pages[0], this.layoutOptions)
-                    this.layout.page1Title = this.logPageTitle
-                    this.layout.page2Title = this.applicationTitle
-                } else {
-                    this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions)
-                    this.layout.page1Title = this.applicationTitle
-                    this.layout.page2Title = this.logPageTitle
-                }
+                this.setPage(this.stdOut, this.logLocation)
+                this.pages.forEach((page, index) => {
+                    if (index !== this.logLocation) {
+                        this.setPage(page, index)
+                    }
+                })
+                this.layout.setTitle(this.logPageTitle, this.logLocation)
             } else {
-                this.layout = new DoubleLayout(this.pages[0], this.stdOut, this.layoutOptions)
-                this.layout.page1Title = this.applicationTitle
-                this.layout.page2Title = this.logPageTitle
+                this.setPages([...this.pages, this.stdOut])
+                this.layout.setTitle(this.applicationTitle, 0)
+                this.layout.setTitle(this.logPageTitle, 1)
             }
             this.addGenericListeners()
 
@@ -194,7 +211,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      */
     private addGenericListeners(): void {
-        this.Input.addListener("keypress", (_str: string, key : KeyListenerArgs): void => {
+        this.Input.addListener("keypress", (_str: string, key: KeyListenerArgs): void => {
             let change = false
             if (this.changeLayoutkeys.length > 1) {
                 if (this.changeLayoutkeys[0] == "ctrl") {
@@ -229,19 +246,11 @@ class ConsoleManager extends EventEmitter {
             } else {
                 if (Object.keys(this.widgetsCollection).length === 0) {
                     if (key.name === "down") {
-                        if (this.layout.getSelected() === 0) {
-                            this.layout.page1.decreaseScrollIndex()
-                        } else {
-                            this.layout.page2.decreaseScrollIndex()
-                        }
+                        this.layout.pages[this.layout.getSelected()].decreaseScrollIndex()
                         this.refresh()
                         return
                     } else if (key.name === "up") {
-                        if (this.layout.getSelected() === 0) {
-                            this.layout.page1.increaseScrollIndex()
-                        } else {
-                            this.layout.page2.increaseScrollIndex()
-                        }
+                        this.layout.pages[this.layout.getSelected()].increaseScrollIndex()
                         this.refresh()
                         return
                     }
@@ -258,7 +267,7 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setKeyListener('inputPopup', popup.keyListener)
      */
-    public setKeyListener(id: string, manageFunction: (_str: string, key : KeyListenerArgs) => void): void {
+    public setKeyListener(id: string, manageFunction: (_str: string, key: KeyListenerArgs) => void): void {
         this.eventListenersContainer[id] = manageFunction
         this.Input.addListener("keypress", this.eventListenersContainer[id])
     }
@@ -306,15 +315,15 @@ class ConsoleManager extends EventEmitter {
     public setHomePage(page: PageBuilder): void {
         this.pages[0] = page
         if (this.logLocation === "popup") {
-            this.layout.setPage1(page)
+            this.layout.setPage(page, 0)
         } else if (typeof this.logLocation === "number") {
             if (this.logLocation === 0) {
-                this.layout.setPage2(page)
+                this.layout.setPage(page, 1)
             } else {
-                this.layout.setPage1(page)
+                this.layout.setPage(page, 0)
             }
         } else {
-            this.layout.setPage1(page)
+            this.layout.setPage(page, 1)
         }
         this.refresh()
     }
@@ -329,31 +338,13 @@ class ConsoleManager extends EventEmitter {
      */
     public setPage(page: PageBuilder, pageNumber = 0, title: string | null = null): void {
         this.pages[pageNumber] = page
-        if (this.logLocation === "popup") {
-            if (pageNumber === 0) {
-                this.layout.setPage1(this.pages[pageNumber])
-                if (title) this.layout.page1Title = title
-            } else {
-                this.layout.setPage2(this.pages[pageNumber])
-                if (title) this.layout.page2Title = title
-            }
-        } else if (typeof this.logLocation === "number") {
-            if (this.logLocation === 0) {
-                this.layout.setPage2(this.pages[pageNumber])
-                if (title) this.layout.page2Title = title
-            } else {
-                this.layout.setPage1(this.pages[pageNumber])
-                if (title) this.layout.page1Title = title
-            }
-        } else {
-            if (pageNumber === 0) {
-                this.layout.setPage1(this.pages[pageNumber])
-                if (title) this.layout.page1Title = title
-            } else {
-                this.layout.setPage2(this.pages[pageNumber])
-                if (title) this.layout.page2Title = title
+        if (typeof this.logLocation === "number") {
+            if (this.logLocation === pageNumber) {
+                this.pages[this.logLocation] = this.stdOut
             }
         }
+        this.layout.setPage(this.pages[pageNumber], pageNumber)
+        if (title) this.layout.setTitle(title, pageNumber)
         this.refresh()
     }
 
@@ -363,21 +354,13 @@ class ConsoleManager extends EventEmitter {
      * @memberof ConsoleManager
      * @example CM.setPages([p1, p2], 0)
      */
-    public setPages(pages: Array<PageBuilder>): void {
+    public setPages(pages: Array<PageBuilder>, titles: string[] | null = null): void {
         this.pages = pages
-        if (this.logLocation === "popup") {
-            this.layout.setPage1(this.pages[0])
-            this.layout.setPage2(this.pages[1])
-        } else if (typeof this.logLocation === "number") {
-            if (this.logLocation === 0) {
-                this.layout.setPage2(this.pages[0])
-            } else {
-                this.layout.setPage1(this.pages[0])
-            }
-        } else {
-            this.layout.setPage1(this.pages[0])
-            this.layout.setPage2(this.pages[1])
+        if (typeof this.logLocation === "number") {
+            this.pages[this.logLocation] = this.stdOut
         }
+        this.layout.setPages(this.pages)
+        if (titles) this.layout.setTitles(titles)
         this.refresh()
     }
 

@@ -14,7 +14,7 @@
         "build": "npx tsc",
         "prepare": "npm run build",
         "test": "npm run build && node ./examples/tcp_simulator.mjs",
-        "start": "npm run build && node ./dist/ConsoqleGui.js",
+        "start": "npm run build && node ./dist/ConsoleGui.js",
         "docs": "node ./docgen.cjs"
     },
     "repository": {
