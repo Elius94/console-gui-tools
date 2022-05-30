@@ -21,8 +21,8 @@ const GUI = new ConsoleManager({
         boxed: true, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title
         changeFocusKey: "ctrl+l", // Change layout with ctrl+l to switch to the logs page
-        type: "quad", // Set to 'double' to enable double layout
-        direction: "vertical", // Set to 'horizontal' to enable horizontal layout
+        type: "double", // Set to 'double' to enable double layout
+        direction: "horizontal", // Set to 'horizontal' to enable horizontal layout
         boxColor: "yellow",
         boxStyle: "bold",
     },
@@ -160,7 +160,7 @@ const updateConsole = async() => {
     /*GUI.setPage(p1, 2, "bottom-left")
     GUI.setPage(p2, 3, "bottom-right")*/
 
-    GUI.setPages([p, p1, new PageBuilder(), p2], ["TCP Simulator", "LOGS", "bottom-left", "bottom-right"])
+    GUI.setPages([p, new PageBuilder(), p1, p2], ["TCP Simulator", "LOGS", "bottom-left", "bottom-right"])
 }
 
 GUI.on("exit", () => {

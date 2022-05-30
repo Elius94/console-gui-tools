@@ -170,23 +170,33 @@ export class DoubleLayout {
         this.proportions = ratio
     }
 
+    /**
+     * @description This function is used to increase the page ratio by the given ratio to add. (Only works if the direction is horizontal)
+     * @param {number} quantity the ratio to add
+     * @memberof QuadLayout
+     * @example layout.increaseRatio(0.01)
+     */
     public increaseRatio(quantity: number): void {
-        if (this.proportions[0] < 1 - quantity) {
-            this.proportions[0] += quantity
-            this.proportions[1] -= quantity
-        } else {
-            this.proportions[1] += quantity
-            this.proportions[0] -= quantity
+        if (this.options.direction == "horizontal") {
+            if (this.proportions[0] < 0.9) {
+                this.proportions[0] = Number((this.proportions[0] + quantity).toFixed(2))
+                this.proportions[1] = Number((this.proportions[1] - quantity).toFixed(2))
+            }
         }
     }
 
+    /**
+     * @description This function is used to decrease the page ratio by the given ratio to subtract. (Only works if the direction is horizontal).
+     * @param {number} quantity the ratio to subtract
+     * @memberof QuadLayout
+     * @example layout.decreaseRatio(0.01)
+     */
     public decreaseRatio(quantity: number): void {
-        if (this.proportions[0] > 0 + quantity) {
-            this.proportions[0] -= quantity
-            this.proportions[1] += quantity
-        } else {
-            this.proportions[1] -= quantity
-            this.proportions[0] += quantity
+        if (this.options.direction == "horizontal") {
+            if (this.proportions[0] > 0.1) {
+                this.proportions[0] = Number((this.proportions[0] - quantity).toFixed(2))
+                this.proportions[1] = Number((this.proportions[1] + quantity).toFixed(2))
+            }
         }
     }
 

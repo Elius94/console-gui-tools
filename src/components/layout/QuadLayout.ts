@@ -92,7 +92,7 @@ export class QuadLayout {
      * @param {PageBuilder} page the page to be added
      * @memberof QuadLayout 
      */
-    public setPage(page: PageBuilder, index: number): void {  // TODO: 
+    public setPage(page: PageBuilder, index: number): void {
         switch (index) {
         case 0:
             this.page1 = page
@@ -224,42 +224,42 @@ export class QuadLayout {
         this.proportions = ratio
     }
 
+    /**
+     * @description This function is used to increase the page ratio of the selected row by the given ratio to add.
+     * @param {number} quantity the ratio to add
+     * @memberof QuadLayout
+     * @example layout.increaseRatio(0.01)
+     */
     public increaseRatio(quantity: number): void {
         if (this.selected < 2) {
-            if (this.proportions[0][0] < 1 - quantity) {
-                this.proportions[0][0] += quantity
-                this.proportions[0][1] -= quantity
-            } else {
-                this.proportions[0][1] += quantity
-                this.proportions[0][0] -= quantity
+            if (this.proportions[0][0] < 0.9) {
+                this.proportions[0][0] = Number((this.proportions[0][0] + quantity).toFixed(2))
+                this.proportions[0][1] = Number((this.proportions[0][1] - quantity).toFixed(2))
             }
         } else {
-            if (this.proportions[1][0] < 1 - quantity) {
-                this.proportions[1][0] += quantity
-                this.proportions[1][1] -= quantity
-            } else {
-                this.proportions[1][1] += quantity
-                this.proportions[1][0] -= quantity
+            if (this.proportions[1][0] < 0.9) {
+                this.proportions[1][0] = Number((this.proportions[1][0] + quantity).toFixed(2))
+                this.proportions[1][1] = Number((this.proportions[1][1] - quantity).toFixed(2))
             }
         }
     }
 
+    /**
+     * @description This function is used to decrease the page ratio of the selected row by the given ratio to add.
+     * @param {number} quantity the ratio to subtract
+     * @memberof QuadLayout
+     * @example layout.decreaseRatio(0.01)
+     */
     public decreaseRatio(quantity: number): void {
         if (this.selected < 2) {
-            if (this.proportions[0][0] > 0 + quantity) {
-                this.proportions[0][0] -= quantity
-                this.proportions[0][1] += quantity
-            } else {
-                this.proportions[0][1] -= quantity
-                this.proportions[0][0] += quantity
+            if (this.proportions[0][0] > 0.1) {
+                this.proportions[0][0] = Number((this.proportions[0][0] - quantity).toFixed(2))
+                this.proportions[0][1] = Number((this.proportions[0][1] + quantity).toFixed(2))
             }
         } else {
-            if (this.proportions[1][0] > 0 + quantity) {
-                this.proportions[1][0] -= quantity
-                this.proportions[1][1] += quantity
-            } else {
-                this.proportions[1][1] -= quantity
-                this.proportions[1][0] += quantity
+            if (this.proportions[1][0] > 0.1) {
+                this.proportions[1][0] = Number((this.proportions[1][0] - quantity).toFixed(2))
+                this.proportions[1][1] = Number((this.proportions[1][1] + quantity).toFixed(2))
             }
         }
     }
@@ -384,7 +384,7 @@ export class QuadLayout {
                     }
                 }
                 for (let i = 0; i < maxPageHeight; i++) {
-                    this.drawLine(p[j][i] || [{ text: "", style: { color: "" } }], p[j + 1][i] || [{ text: "", style: { color: "" } }], j)
+                    this.drawLine(p[j + (j * 1)][i] || [{ text: "", style: { color: "" } }], p[j + (j * 1) + 1][i] || [{ text: "", style: { color: "" } }], j)
                 }
                 // Draw the bottom border
                 if (j === 0) {
@@ -396,14 +396,16 @@ export class QuadLayout {
                             str = `${"─".repeat(first - trimmedTitle[j + 1][0].length - 3)}┼`
                         if (first > second)
                             str = `${"─".repeat(second - trimmedTitle[j + 1][0].length - 3)}┬`
-                        if (first < second)
+                        if (first < second && trimmedTitle[j + 1][0].length < first - 2)
                             str = `${"─".repeat(first - trimmedTitle[j + 1][0].length - 3)}┴${"─".repeat(second - first - 1)}┬`
+                        if (first < second && trimmedTitle[j + 1][0].length >= first - 2)
+                            str = `${"─".repeat(second - trimmedTitle[j + 1][0].length - 3)}┬`
                         let str2
                         if (first === second || first < second)
                             str2 = `${"─".repeat(this.realWidth[j + 1][1] - trimmedTitle[j + 1][1].length - 2)}`
                         if (first > second) {
-                            if (first - second >= trimmedTitle[j + 1][1].length) {
-                                str2 = `${"─".repeat(first - second - (trimmedTitle[j + 1][1].length + 2))}┴${"─".repeat(second - 1)}`
+                            if (first - second >= trimmedTitle[j + 1][1].length + 2) {
+                                str2 = `${"─".repeat(first - second - (trimmedTitle[j + 1][1].length + 2))}┴${"─".repeat(this.realWidth[j][1] - 1)}`
                             } else {
                                 str2 = `${"─".repeat(this.realWidth[j + 1][1] - (trimmedTitle[j + 1][1].length + 2))}`
                             }
@@ -416,14 +418,20 @@ export class QuadLayout {
                     } else {
                         let str
                         if (first === second)
-                            str = `${"─".repeat(first - 2)}┼}`
+                            str = `${"─".repeat(first - 2)}┼`
                         if (first > second)
                             str = `${"─".repeat(second - 2)}┬`
                         if (first < second)
-                            str = `${"─".repeat(first - 2)}┴}`
+                            str = `${"─".repeat(first - 2)}┴${"─".repeat(second - first - 1)}┬`
+                        let str2
+                        if (first <= second)
+                            str2 = `${"─".repeat(this.realWidth[j + 1][1] - 1)}`
+                        if (first > second) {
+                            str2 = `${"─".repeat(first - second - 1)}┴${"─".repeat(this.realWidth[j][1] - 1)}`
+                        }
                         this.CM.Screen.write(
-                            { text: `├─${"─".repeat(this.realWidth[j + 1][0] - 3)}${str}`, style: { color: this.selected === 0 || this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
-                            { text: `─${"─".repeat(this.realWidth[j + 1][1] - 2)}┐`, style: { color: this.selected === 1 || this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
+                            { text: `├${str}`, style: { color: this.selected === 0 || this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
+                            { text: `${str2}┤`, style: { color: this.selected === 1 || this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
                         )
                     }
                 } else {
@@ -447,7 +455,7 @@ export class QuadLayout {
                     }
                 }
                 for (let i = 0; i < maxPageHeight; i++) {
-                    this.drawLine(p[j][i] || [{ text: "", style: { color: "" } }], p[j + 1][i] || [{ text: "", style: { color: "" } }], j)
+                    this.drawLine(p[j + (j * 1)][i] || [{ text: "", style: { color: "" } }], p[j + (j * 1) + 1][i] || [{ text: "", style: { color: "" } }], j)
                 }
             }
         }

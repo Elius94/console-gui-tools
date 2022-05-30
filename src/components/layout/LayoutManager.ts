@@ -46,7 +46,7 @@ export class LayoutManager {
     private optionsRelative!: SingleLayoutOptions | DoubleLayoutOptions | QuadLayoutOptions
     public pages: { [key: number]: PageBuilder } = {}
     private pageTitles: string[] = []
-    public layout!: SingleLayout |DoubleLayout | QuadLayout
+    public layout!: SingleLayout | DoubleLayout | QuadLayout
     private instance!: LayoutManager
 
     public constructor(pages: PageBuilder[], options: LayoutOptions) {
@@ -232,12 +232,24 @@ export class LayoutManager {
         }
     }
 
+    /**
+     * @description This function is used to decrease the row ratio between the pages in the selected row. This is propagated to the layout instance.
+     * @param {quantity} quantity The amount of aspect ratio to be decreased.
+     * @memberof LayoutManager
+     * @example layout.decreaseRowRatio(0.01)
+     */
     public decreaseRatio(quantity: number) {
         if (!this.isSingleLayout(this.layout)) {
             this.layout.decreaseRatio(quantity)
         }
     }
 
+    /**
+     * @description This function is used to increase the row ratio between the pages in the selected row. This is propagated to the layout instance.
+     * @param {quantity} quantity The amount of aspect ratio to be increased.
+     * @memberof LayoutManager
+     * @example layout.increaseRowRatio(0.01)
+     */
     public increaseRatio(quantity: number) {
         if (!this.isSingleLayout(this.layout)) {
             this.layout.increaseRatio(quantity)
