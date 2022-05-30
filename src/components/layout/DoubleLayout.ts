@@ -65,10 +65,23 @@ export class DoubleLayout {
         this.proportions = this.options.pageRatio || [0.7, 0.3]
 
         /** @const {string} page2Title The title of page2. */
-        this.page2Title = this.options.page2Title || this.CM.logPageTitle
+        this.page2Title = this.options.page2Title || ""
 
         /** @const {string} page1Title The application title. */
-        this.page1Title = this.options.page1Title || this.CM.applicationTitle
+        this.page1Title = this.options.page1Title || ""
+    }
+
+    /**
+     * @description This function is used to overwrite the page content.
+     * @param {PageBuilder} page the page to be added
+     * @memberof DoubleLayout 
+     */
+    public setPage(page: PageBuilder, index: number): void {  // TODO: 
+        if (index == 0) {
+            this.page1 = page
+        } else {
+            this.page2 = page
+        }
     }
 
     /**
@@ -84,6 +97,32 @@ export class DoubleLayout {
      * @memberof DoubleLayout
      */
     public setPage2(page: PageBuilder): void { this.page2 = page }
+
+    /**
+     * @description This function is used to set the page titles.
+     * @param {string[]} titles the titles of the pages
+     * @memberof DoubleLayout
+     * @example layout.setTitles(["Page 1", "Page 2"])
+     */
+    public setTitles(titles: string[]) {
+        this.page1Title = titles[0]
+        this.page2Title = titles[1]
+    }
+
+    /**
+     * @description This function is used to set the page title at the given index.
+     * @param {string} title the title of the page
+     * @param {number} index the index of the page
+     * @memberof DoubleLayout
+     * @example layout.setTitle("Page 1", 0)
+     */
+    public setTitle(title: string, index: number): void {
+        if (index == 0) {
+            this.page1Title = title
+        } else {
+            this.page2Title = title
+        }
+    }
 
     /**
      * @description This function is used to enable or disable the layout border.
@@ -122,8 +161,48 @@ export class DoubleLayout {
     }
 
     /**
+     * @description This function is used to change the page ratio.
+     * @param {Array<number>} ratio the ratio of pages
+     * @memberof QuadLayout
+     * @example layout.setRatio([0.4, 0.6])
+     */
+    public setRatio(ratio: [number, number]): void {
+        this.proportions = ratio
+    }
+
+    /**
+     * @description This function is used to increase the page ratio by the given ratio to add. (Only works if the direction is horizontal)
+     * @param {number} quantity the ratio to add
+     * @memberof QuadLayout
+     * @example layout.increaseRatio(0.01)
+     */
+    public increaseRatio(quantity: number): void {
+        if (this.options.direction == "horizontal") {
+            if (this.proportions[0] < 0.9) {
+                this.proportions[0] = Number((this.proportions[0] + quantity).toFixed(2))
+                this.proportions[1] = Number((this.proportions[1] - quantity).toFixed(2))
+            }
+        }
+    }
+
+    /**
+     * @description This function is used to decrease the page ratio by the given ratio to subtract. (Only works if the direction is horizontal).
+     * @param {number} quantity the ratio to subtract
+     * @memberof QuadLayout
+     * @example layout.decreaseRatio(0.01)
+     */
+    public decreaseRatio(quantity: number): void {
+        if (this.options.direction == "horizontal") {
+            if (this.proportions[0] > 0.1) {
+                this.proportions[0] = Number((this.proportions[0] - quantity).toFixed(2))
+                this.proportions[1] = Number((this.proportions[1] + quantity).toFixed(2))
+            }
+        }
+    }
+
+    /**
      * @description This function is used to draw a single line of the layout to the screen. It also trim the line if it is too long.
-     * @param {Array<object>} line the line to be drawn
+     * @param {Array<StyledElement>} line the line to be drawn
      * @param {number} lineIndex the index of the selected line
      * @memberof DoubleLayout
      * @returns {void}
@@ -159,14 +238,14 @@ export class DoubleLayout {
                     if (dir === "vertical") {
                         newLine[i] = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
                     } else {
-                        newLine[i] = JSON.parse(JSON.stringify(secondLine))
+                        newLine[i] = i === 0 ? JSON.parse(JSON.stringify(line)) : JSON.parse(JSON.stringify(secondLine))
                     }
                     let diff = e.length - this.realWidth[i] + 1
 
                     // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
                         if (newLine[i][j].text.length > diff + offset) {
-                            newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, true)
+                            newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, false)
                             break
                         } else {
                             diff -= newLine[i][j].text.length

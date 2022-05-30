@@ -23,8 +23,11 @@
 
 * [DoubleLayout](#DoubleLayout)
     * [new DoubleLayout(page1, page2, options, selected)](#new_DoubleLayout_new)
+    * [.setPage(page)](#DoubleLayout+setPage)
     * [.setPage1(page)](#DoubleLayout+setPage1)
     * [.setPage2(page)](#DoubleLayout+setPage2)
+    * [.setTitles(titles)](#DoubleLayout+setTitles)
+    * [.setTitle(title, index)](#DoubleLayout+setTitle)
     * [.setBorder(border)](#DoubleLayout+setBorder)
     * [.setSelected(selected)](#DoubleLayout+setSelected)
     * [.getSelected()](#DoubleLayout+getSelected) ⇒ <code>number</code>
@@ -49,6 +52,17 @@
 ```js
 const layout = new DoubleLayout(page1, page2, true, 0)
 ```
+<a name="DoubleLayout+setPage"></a>
+
+### doubleLayout.setPage(page)
+<p>This function is used to overwrite the page content.</p>
+
+**Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| page | <code>PageBuilder</code> | <p>the page to be added</p> |
+
 <a name="DoubleLayout+setPage1"></a>
 
 ### doubleLayout.setPage1(page)
@@ -71,6 +85,37 @@ const layout = new DoubleLayout(page1, page2, true, 0)
 | --- | --- | --- |
 | page | <code>PageBuilder</code> | <p>the page to be added</p> |
 
+<a name="DoubleLayout+setTitles"></a>
+
+### doubleLayout.setTitles(titles)
+<p>This function is used to set the page titles.</p>
+
+**Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| titles | <code>Array.&lt;string&gt;</code> | <p>the titles of the pages</p> |
+
+**Example**  
+```js
+layout.setTitles(["Page 1", "Page 2"])
+```
+<a name="DoubleLayout+setTitle"></a>
+
+### doubleLayout.setTitle(title, index)
+<p>This function is used to set the page title at the given index.</p>
+
+**Kind**: instance method of [<code>DoubleLayout</code>](#DoubleLayout)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| title | <code>string</code> | <p>the title of the page</p> |
+| index | <code>number</code> | <p>the index of the page</p> |
+
+**Example**  
+```js
+layout.setTitle("Page 1", 0)
+```
 <a name="DoubleLayout+setBorder"></a>
 
 ### doubleLayout.setBorder(border)
@@ -115,7 +160,7 @@ const layout = new DoubleLayout(page1, page2, true, 0)
 
 | Param | Type | Description |
 | --- | --- | --- |
-| line | <code>Array.&lt;object&gt;</code> | <p>the line to be drawn</p> |
+| line | <code>Array.&lt;StyledElement&gt;</code> | <p>the line to be drawn</p> |
 | lineIndex | <code>number</code> | <p>the index of the selected line</p> |
 
 <a name="DoubleLayout+draw"></a>
