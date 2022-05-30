@@ -1,9 +1,6 @@
-# console-gui-tools
- A simple library to draw option menu, text popup or other widgets and layout on a Node.js console.
- 
+# console-gui-tools 
 [![npm version](https://badge.fury.io/js/console-gui-tools.svg)](https://npmjs.com/package/console-gui-tools) [![npm](https://img.shields.io/npm/dt/console-gui-tools)](https://npmjs.com/package/console-gui-tools) ![GitHub](https://img.shields.io/github/license/elius94/console-gui-tools)
 
-# console-gui-tools
 A simple Node.js library to create Console Apps like a wizard (or maybe if you like old style colored screen or something like "teletext" programs 😂)
 Apart from jokes, it is a library that allows you to create a screen divided into a part with everything you want to see (such as variable values) and another in which the logs run.
 Moreover in this way the application is managed by the input event "keypressed" to which each key corresponds to a bindable command.
@@ -261,17 +258,25 @@ GUI.setPage(p, 0)
 The application instance needs to output the content through a layout class.
 In the "layoutOptions" provided to the ConsoleManager, we can set the layout:
 
- - boxed: Set to true to enable boxed layout mode (default: true)
- ![image](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png) "boxed"
- ![image](https://user-images.githubusercontent.com/14907987/170997089-ef0c1460-1f81-4623-832c-5eee5d26fa17.png) "not boxed"
+<details><summary>boxed: Set to true to enable boxed layout mode (default: true)</summary>
+
+| boxed: true | boxed: false |
+| ----------- | ------------ |
+| ![boxed layout](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png) | ![not boxed layout](https://user-images.githubusercontent.com/14907987/170997089-ef0c1460-1f81-4623-832c-5eee5d26fa17.png) |
+
+</details>
+
  - showTitle: Set to false to hide titles (default: true, on title per page)
  - changeFocusKey: The key or the combination that will change the focus between the pages of the layout (default: 'ctrl+l')
- - type: Can be "single", "double" or "quad" to choose the layout type (default: "double")
- ![image](https://user-images.githubusercontent.com/14907987/170997567-b1260996-cc7e-4c26-8389-39519313f3f6.png) "single"
- ![image](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png) "double"
- ![image](https://user-images.githubusercontent.com/14907987/170998201-59880c90-7b1a-491a-8a45-6610e5c33de9.png) "quad"
+<details><summary>type: Can be "single", "double" or "quad" to choose the layout type (default: "double")</summary>
+ 
+| type: "single" | type: "double" | type: "quad" | 
+| -------------- | -------------- | ------------ |
+| ![image](https://user-images.githubusercontent.com/14907987/170997567-b1260996-cc7e-4c26-8389-39519313f3f6.png) | ![image](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png) | ![image](https://user-images.githubusercontent.com/14907987/170998201-59880c90-7b1a-491a-8a45-6610e5c33de9.png) |
+
+</details>
+
  - direction: Set to 'horizontal' to enable horizontal layout (only for "double" layout)
- ![image](https://user-images.githubusercontent.com/14907987/170997330-b8dab576-ef85-43b2-ae3e-d85a37340fd9.png) "horizontal" example
  - boxColor: The color of the box (default: 'yellow')
  - boxStyle: The style of the box (default: 'bold')
 
@@ -293,9 +298,16 @@ GUI.setPage(P2, 2, "Bottom Left")
 GUI.setPages([p, p1, P2], ["App Title", "Top Right", "Bottom Left"])
 ```
 
+<details><summary>Changing the layout aspect ratio</summary>
+ 
 If we are in quad layout mode or double horizontal layout, we can change the aspect ratio of the layout rows by pressing the "left" and "right" keys:
-![changeratio](https://user-images.githubusercontent.com/14907987/170999347-868eac7b-6bdf-4147-bcb0-b7465282ed5f.gif)
+ 
+![change ratio](https://user-images.githubusercontent.com/14907987/170999347-868eac7b-6bdf-4147-bcb0-b7465282ed5f.gif)
+ 
  > If you are using the quad layout mode the arrow keys will change the aspect ratio of the layout selected row (the top or the bottom row, depending on the selected page)
+ 
+</details>
+ 
 # Widgets
 ## To create an option popup (select)
 ```js
@@ -464,6 +476,7 @@ This library is in development now. New componets will come asap.
 MIT License Copyright (c) 2022 [Elia Lazzari](https://github.com/Elius94)
  
 Colors and styles are managed using [Chalk](https://github.com/chalk/chalk)
+ 
 ![image](https://user-images.githubusercontent.com/14907987/164770011-d29579ad-e681-43b2-b550-7fb52fd74021.png)
 
 ## Code Documentation
