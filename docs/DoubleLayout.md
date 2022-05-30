@@ -39,6 +39,7 @@
 
 ### new DoubleLayout(page1, page2, options, selected)
 <p>This class is a layout that has two pages.</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png" alt="double layout"></p>
 
 
 | Param | Type | Description |

@@ -4,7 +4,6 @@ import { StyledElement } from "../PageBuilder.js"
 
 /**
  * @description The type containing all the possible options for the SingleLayout.
- * ![single layout](https://user-images.githubusercontent.com/14907987/170997567-b1260996-cc7e-4c26-8389-39519313f3f6.png)
  * @typedef {Object} SingleLayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
@@ -26,6 +25,9 @@ export interface SingleLayoutOptions {
 /**
  * @class SingleLayout
  * @description This class is a layout that has two pages.
+ * 
+ * ![single layout](https://user-images.githubusercontent.com/14907987/170997567-b1260996-cc7e-4c26-8389-39519313f3f6.png)
+ * 
  * @param {PageBuilder} page The first page.
  * @param {boolean} options Layout options.
  * @example const layout = new SingleLayout(page1, page2, true, 0)

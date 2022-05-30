@@ -48,6 +48,7 @@
 
 ### new QuadLayout(page1, page2, page3, page4, options, selected)
 <p>This class is a layout that has two pages.</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/170998201-59880c90-7b1a-491a-8a45-6610e5c33de9.png" alt="quad layout"></p>
 
 
 | Param | Type | Description |

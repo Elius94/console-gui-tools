@@ -31,6 +31,7 @@
 
 ### new SingleLayout(page, options)
 <p>This class is a layout that has two pages.</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/170997567-b1260996-cc7e-4c26-8389-39519313f3f6.png" alt="single layout"></p>
 
 
 | Param | Type | Description |

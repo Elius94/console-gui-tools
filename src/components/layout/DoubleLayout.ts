@@ -4,7 +4,6 @@ import { StyledElement } from "../PageBuilder.js"
 
 /**
  * @description The type containing all the possible options for the DoubleLayout.
- * ![double layout](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png)
  * @typedef {Object} DoubleLayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
@@ -34,6 +33,9 @@ export interface DoubleLayoutOptions {
 /**
  * @class DoubleLayout
  * @description This class is a layout that has two pages.
+ * 
+ * ![double layout](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png)
+ * 
  * @param {PageBuilder} page1 The first page.
  * @param {PageBuilder} page2 The second page.
  * @param {boolean} options Layout options.

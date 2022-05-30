@@ -4,7 +4,6 @@ import { StyledElement } from "../PageBuilder.js"
 
 /**
  * @description The type containing all the possible options for the QuadLayout.
- * ![quad layout](https://user-images.githubusercontent.com/14907987/170998201-59880c90-7b1a-491a-8a45-6610e5c33de9.png)
  * @typedef {Object} QuadLayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
@@ -36,6 +35,9 @@ export interface QuadLayoutOptions {
 /**
  * @class QuadLayout
  * @description This class is a layout that has two pages.
+ * 
+ * ![quad layout](https://user-images.githubusercontent.com/14907987/170998201-59880c90-7b1a-491a-8a45-6610e5c33de9.png)
+ * 
  * @param {PageBuilder} page1 The first page.
  * @param {PageBuilder} page2 The second page.
  * @param {PageBuilder} page3 The third page.

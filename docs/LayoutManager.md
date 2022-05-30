@@ -37,6 +37,7 @@
 
 ### new LayoutManager(pages, options)
 <p>This class is a layout that has two pages.</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/170999347-868eac7b-6bdf-4147-bcb0-b7465282ed5f.gif" alt="change ratio"></p>
 
 
 | Param | Type | Description |

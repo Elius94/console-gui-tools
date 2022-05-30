@@ -7,7 +7,6 @@ import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
 
 /**
  * @description The type containing all the possible options for the layout.
- * ![change ratio](https://user-images.githubusercontent.com/14907987/170999347-868eac7b-6bdf-4147-bcb0-b7465282ed5f.gif)
  * @typedef {Object} LayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
@@ -37,6 +36,9 @@ export interface LayoutOptions {
 /**
  * @class LayoutManager
  * @description This class is a layout that has two pages.
+ * 
+ * ![change ratio](https://user-images.githubusercontent.com/14907987/170999347-868eac7b-6bdf-4147-bcb0-b7465282ed5f.gif)
+ * 
  * @param {PageBuilder[]} pages The pages that should be shown.
  * @param {boolean} options Layout options.
  * @example const layout = new LayoutManager([page1, page2], pageOptions);
