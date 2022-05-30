@@ -39,7 +39,7 @@
     * [.unRegisterWidget(id)](#ConsoleManager+unRegisterWidget)
     * ~~[.setHomePage(page)](#ConsoleManager+setHomePage)~~
     * [.setPage(page, [pageNumber], [title])](#ConsoleManager+setPage)
-    * [.setPages(pages, [titlea])](#ConsoleManager+setPages)
+    * [.setPages(pages, [titles])](#ConsoleManager+setPages)
     * [.refresh()](#ConsoleManager+refresh)
     * [.showLogPopup()](#ConsoleManager+showLogPopup) ⇒
     * [.log(message)](#ConsoleManager+log)
@@ -191,15 +191,15 @@ CM.setPage(p, 0)
 ```
 <a name="ConsoleManager+setPages"></a>
 
-### consoleManager.setPages(pages, [titlea])
+### consoleManager.setPages(pages, [titles])
 <p>This function is used to set both pages of layout. It also refresh the screen.</p>
 
 **Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| pages | <code>Array.&lt;PageBuilder&gt;</code> | <p>The page to set as home page.</p> |
-| [titlea] | <code>Array.&lt;string&gt;</code> \| <code>null</code> | <p>The titles of the page to overwrite the default titles. Default is null.</p> |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| pages | <code>Array.&lt;PageBuilder&gt;</code> |  | <p>The page to set as home page.</p> |
+| [titles] | <code>Array.&lt;string&gt;</code> \| <code>null</code> | <code></code> | <p>The titles of the page to overwrite the default titles. Default is null.</p> |
 
 **Example**  
 ```js

@@ -216,7 +216,7 @@ export class QuadLayout {
 
     /**
      * @description This function is used to change the page ratio.
-     * @param {[[number, number], [number, number]]} ratio the ratio of pages
+     * @param {Array<Array<number>>} ratio the ratio of pages
      * @memberof QuadLayout
      * @example layout.setRatio([[0.4, 0.6], [0.5, 0.5]])
      */

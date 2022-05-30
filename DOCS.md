@@ -7,6 +7,7 @@ To view the documentation for a specific component or class, click on the links 
 * [Screen](docs/Screen.md)
 * [DoubleLayout](docs/DoubleLayout.md)
 * [LayoutManager](docs/LayoutManager.md)
+* [QuadLayout](docs/QuadLayout.md)
 * [SingleLayout](docs/SingleLayout.md)
 * [ButtonPopup](docs/ButtonPopup.md)
 * [ConfirmPopup](docs/ConfirmPopup.md)

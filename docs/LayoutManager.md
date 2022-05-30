@@ -29,6 +29,8 @@
     * [.setSelected(selected)](#LayoutManager+setSelected)
     * [.getSelected()](#LayoutManager+getSelected) ⇒ <code>0</code> \| <code>1</code> \| <code>2</code> \| <code>3</code>
     * [.changeLayout()](#LayoutManager+changeLayout) ⇒ <code>void</code>
+    * [.decreaseRatio(quantity)](#LayoutManager+decreaseRatio)
+    * [.increaseRatio(quantity)](#LayoutManager+increaseRatio)
     * [.draw()](#LayoutManager+draw) ⇒ <code>void</code>
 
 <a name="new_LayoutManager_new"></a>
@@ -143,6 +145,36 @@ layout.setTitles(["Page Title 1", "Page Title 2"])
 <p>This function is used to get switch the selected page. If the layout is a single layout, it will do nothing.</p>
 
 **Kind**: instance method of [<code>LayoutManager</code>](#LayoutManager)  
+<a name="LayoutManager+decreaseRatio"></a>
+
+### layoutManager.decreaseRatio(quantity)
+<p>This function is used to decrease the row ratio between the pages in the selected row. This is propagated to the layout instance.</p>
+
+**Kind**: instance method of [<code>LayoutManager</code>](#LayoutManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| quantity | <code>quantity</code> | <p>The amount of aspect ratio to be decreased.</p> |
+
+**Example**  
+```js
+layout.decreaseRowRatio(0.01)
+```
+<a name="LayoutManager+increaseRatio"></a>
+
+### layoutManager.increaseRatio(quantity)
+<p>This function is used to increase the row ratio between the pages in the selected row. This is propagated to the layout instance.</p>
+
+**Kind**: instance method of [<code>LayoutManager</code>](#LayoutManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| quantity | <code>quantity</code> | <p>The amount of aspect ratio to be increased.</p> |
+
+**Example**  
+```js
+layout.increaseRowRatio(0.01)
+```
 <a name="LayoutManager+draw"></a>
 
 ### layoutManager.draw() ⇒ <code>void</code>

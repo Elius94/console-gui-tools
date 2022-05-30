@@ -56,7 +56,8 @@ const layoutOptions = {
     boxed: true, // Set to true to enable boxed layout mode
     showTitle: true, // Set to false to hide titles
     changeFocusKey: 'ctrl+l', // The key or the combination that will change the focus between the two layouts
-    direction: 'vertical', // Set to 'horizontal' to enable horizontal layout
+    type: "double", // Can be "single", "double" or "quad" to choose the layout type
+    direction: 'vertical', // Set to 'horizontal' to enable horizontal layout (only for "double" layout)
     boxColor: 'yellow', // The color of the box
     boxStyle: 'bold', // The style of the box (bold)
 }
@@ -181,14 +182,11 @@ const drawGui = () => {
 
 ## How to draw the application page?
 
-### NEW DRAWING ALGORYTM
-
-![Animation](https://user-images.githubusercontent.com/14907987/164305847-ea699cba-bb40-46a2-88ea-01496d73b8b1.gif)
+### New drawing algorytm
 
 All the page is prerendered before printing on the console to prevent noisy flickering.
 
 Introduced new styling design pattern:
-
 Each page need to be created with the new class
 ```js
 const p = new PageBuilder()
@@ -259,8 +257,46 @@ And so, we can add the PageBuilder to the first page
 GUI.setPage(p, 0)
 ```
 
-The new Screen class is used internally by the ConsoleManager.
+## Layout
+The application instance needs to output the content through a layout class.
+In the "layoutOptions" provided to the ConsoleManager, we can set the layout:
 
+ - boxed: Set to true to enable boxed layout mode (default: true)
+ ![image](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png) "boxed"
+ ![image](https://user-images.githubusercontent.com/14907987/170997089-ef0c1460-1f81-4623-832c-5eee5d26fa17.png) "not boxed"
+ - showTitle: Set to false to hide titles (default: true, on title per page)
+ - changeFocusKey: The key or the combination that will change the focus between the pages of the layout (default: 'ctrl+l')
+ - type: Can be "single", "double" or "quad" to choose the layout type (default: "double")
+ ![image](https://user-images.githubusercontent.com/14907987/170997567-b1260996-cc7e-4c26-8389-39519313f3f6.png) "single"
+ ![image](https://user-images.githubusercontent.com/14907987/170996957-cb28414b-7be2-4aa0-938b-f6d1724cfa4c.png) "double"
+ ![image](https://user-images.githubusercontent.com/14907987/170998201-59880c90-7b1a-491a-8a45-6610e5c33de9.png) "quad"
+ - direction: Set to 'horizontal' to enable horizontal layout (only for "double" layout)
+ ![image](https://user-images.githubusercontent.com/14907987/170997330-b8dab576-ef85-43b2-ae3e-d85a37340fd9.png) "horizontal" example
+ - boxColor: The color of the box (default: 'yellow')
+ - boxStyle: The style of the box (default: 'bold')
+
+ To draw multiple pages, we need to use the setPage or setPages methods:
+
+```js
+GUI.setPage(p, 0) // Add the first page without explicit name (default: application title)
+
+const p1 = new PageBuilder()
+p1.addRow({ text: "SECOND PAGE", color: "green" })
+
+const P2 = new PageBuilder()
+P2.addRow({ text: "THIRD PAGE", color: "cyan" })
+
+GUI.setPage(p1, 1, "Top Right")
+GUI.setPage(P2, 2, "Bottom Left")
+
+// Or if we want to add the pages in the same order (only one render):
+GUI.setPages([p, p1, P2], ["App Title", "Top Right", "Bottom Left"])
+```
+
+If we are in quad layout mode or double horizontal layout, we can change the aspect ratio of the layout rows by pressing the "left" and "right" keys:
+![changeratio](https://user-images.githubusercontent.com/14907987/170999347-868eac7b-6bdf-4147-bcb0-b7465282ed5f.gif)
+ > If you are using the quad layout mode the arrow keys will change the aspect ratio of the layout selected row (the top or the bottom row, depending on the selected page)
+# Widgets
 ## To create an option popup (select)
 ```js
 new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
