@@ -153,12 +153,9 @@ export class FileSelectorPopup extends EventEmitter {
      * @memberof FileSelectorPopup
      */
     public keyListner(_str: string, key: KeyListenerArgs) {
-        if (key.code && key.code === "[M") {
-            this.remainingMouseFrames = 3
-            return
-        }
-        if (this.remainingMouseFrames > 0) {
-            this.remainingMouseFrames--
+        const checkResult = this.CM.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
+        if (typeof checkResult === "number") {
+            this.remainingMouseFrames = checkResult
             return
         }
         const ind = this.options.indexOf(this.selected)

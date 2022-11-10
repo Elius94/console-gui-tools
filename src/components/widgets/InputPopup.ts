@@ -58,12 +58,9 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      */
     public keyListnerNumeric(_str: string, key: KeyListenerArgs): void {
-        if (key.code && key.code === "[M") {
-            this.remainingMouseFrames = 3
-            return
-        }
-        if (this.remainingMouseFrames > 0) {
-            this.remainingMouseFrames--
+        const checkResult = this.CM.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
+        if (typeof checkResult === "number") {
+            this.remainingMouseFrames = checkResult
             return
         }
         let v = Number(this.value)
@@ -138,12 +135,9 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      */
     public keyListnerText(_str: string, key: KeyListenerArgs): void {
-        if (key.code && key.code === "[M") {
-            this.remainingMouseFrames = 3
-            return
-        }
-        if (this.remainingMouseFrames > 0) {
-            this.remainingMouseFrames--
+        const checkResult = this.CM.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
+        if (typeof checkResult === "number") {
+            this.remainingMouseFrames = checkResult
             return
         }
         const v = this.value

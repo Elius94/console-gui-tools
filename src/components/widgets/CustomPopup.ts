@@ -60,12 +60,9 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      */
     public keyListner(_str: string, key : KeyListenerArgs): void {
-        if (key.code && key.code === "[M") {
-            this.remainingMouseFrames = 3
-            return
-        }
-        if (this.remainingMouseFrames > 0) {
-            this.remainingMouseFrames--
+        const checkResult = this.CM.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
+        if (typeof checkResult === "number") {
+            this.remainingMouseFrames = checkResult
             return
         }
         switch (key.name) {
