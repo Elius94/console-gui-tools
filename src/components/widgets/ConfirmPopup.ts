@@ -24,6 +24,14 @@ export class ConfirmPopup extends ButtonPopup {
         super(id, title, message, ["Yes", "No"])
 
         super.keyListner = (_str: string, key : KeyListenerArgs) => {
+            if (key.code && key.code === "[M") {
+                this.remainingMouseFrames = 3
+                return
+            }
+            if (this.remainingMouseFrames > 0) {
+                this.remainingMouseFrames--
+                return
+            }
             switch (key.name) {
             case "left":
                 if (this.selected > 0 && this.selected <= this.buttons.length) {

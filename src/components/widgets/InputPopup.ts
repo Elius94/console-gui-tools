@@ -28,6 +28,7 @@ export class InputPopup extends EventEmitter {
     numeric: boolean
     visible: boolean
     marginTop: number
+    remainingMouseFrames: number
 
     public constructor(id: string, title: string, value: string | number, numeric: boolean, visible = false) {
         super()
@@ -39,6 +40,7 @@ export class InputPopup extends EventEmitter {
         this.numeric = numeric
         this.visible = visible
         this.marginTop = 4
+        this.remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `InputPopup ${this.id} already exists.`
@@ -56,6 +58,14 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      */
     public keyListnerNumeric(_str: string, key: KeyListenerArgs): void {
+        if (key.code && key.code === "[M") {
+            this.remainingMouseFrames = 3
+            return
+        }
+        if (this.remainingMouseFrames > 0) {
+            this.remainingMouseFrames--
+            return
+        }
         let v = Number(this.value)
         if (Number.isNaN(v)) {
             v = 0
@@ -128,6 +138,14 @@ export class InputPopup extends EventEmitter {
      * @memberof InputPopup
      */
     public keyListnerText(_str: string, key: KeyListenerArgs): void {
+        if (key.code && key.code === "[M") {
+            this.remainingMouseFrames = 3
+            return
+        }
+        if (this.remainingMouseFrames > 0) {
+            this.remainingMouseFrames--
+            return
+        }
         const v = this.value
         if (v.toString().length < 20) {
             let tmp = v.toString()

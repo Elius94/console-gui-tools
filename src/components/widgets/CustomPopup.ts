@@ -30,6 +30,7 @@ export class CustomPopup extends EventEmitter {
     width: number
     visible: boolean
     marginTop: number
+    remainingMouseFrames: number
 
     public constructor(id: string, title: string, content: PageBuilder, width: number, visible = false) {
         super()
@@ -41,6 +42,7 @@ export class CustomPopup extends EventEmitter {
         this.width = width
         this.visible = visible
         this.marginTop = 4
+        this.remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `CustomPopup ${this.id} already exists.`
@@ -58,6 +60,14 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      */
     public keyListner(_str: string, key : KeyListenerArgs): void {
+        if (key.code && key.code === "[M") {
+            this.remainingMouseFrames = 3
+            return
+        }
+        if (this.remainingMouseFrames > 0) {
+            this.remainingMouseFrames--
+            return
+        }
         switch (key.name) {
         case "up":
             this.content.increaseScrollIndex()

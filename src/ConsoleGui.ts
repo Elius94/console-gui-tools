@@ -31,6 +31,40 @@ export interface KeyListenerArgs {
     alt: boolean;
     shift: boolean;
     meta: boolean;
+    code: string;
+}
+
+/**
+ * @description This type is used to define the parameters of the Mouse Listener event (mousepress).
+ * @typedef {Object} MouseListenerArgs
+ * @prop {string} name - The name of the key pressed.
+ * @prop {boolean} ctrl - If the ctrl key is pressed.
+ * @prop {boolean} shift - If the shift key is pressed.
+ * @prop {boolean} alt - If the alt key is pressed.
+ * @prop {boolean} meta - If the meta key is pressed.
+ * @prop {boolean} sequence - If the sequence of keys is pressed.
+ * @prop {number} x - The x position of the mouse.
+ * @prop {number} y - The y position of the mouse.
+ * @prop {number} scroll - The scroll of the mouse.
+ * @prop {number | string | null} button - The button of the mouse.
+ * @prop {Buffer} buf - The buffer of the mouse.
+ *
+ * @export
+ * @interface MouseListenerArgs
+ */
+export interface MouseListenerArgs {
+    name?: string;
+    sequence?: string;
+    ctrl?: boolean;
+    alt?: boolean;
+    shift?: boolean;
+    meta?: boolean;
+    code?: string;
+    x?: number;
+    y?: number;
+    scroll?: number;
+    button?: number | string | null;
+    buf?: Buffer;
 }
 
 /**
@@ -51,6 +85,7 @@ export interface ConsoleGuiOptions {
     logPageSize?: number;
     layoutOptions?: LayoutOptions;
     title?: string;
+    enableMouse?: boolean; // enable the mouse support (default: true) - Only for Linux and other Mouse Tracking terminals
 }
 
 /**
@@ -83,6 +118,7 @@ class ConsoleManager extends EventEmitter {
     applicationTitle!: string
     showLogKey!: string
     stdOut!: PageBuilder
+    remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -104,7 +140,7 @@ class ConsoleManager extends EventEmitter {
             this.logLocation = 1
             this.logPageSize = 10
             this.logPageTitle = "LOGS"
-            
+
             this.layoutOptions = {
                 showTitle: true,
                 boxed: true,
@@ -114,12 +150,12 @@ class ConsoleManager extends EventEmitter {
                 type: "double",
                 direction: "vertical",
             }
-            
+
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
             this.changeLayoutKey = this.layoutOptions.changeFocusKey
             this.changeLayoutkeys = this.changeLayoutKey.split("+")
             this.applicationTitle = ""
-            
+
             if (options) {
                 if (options.logLocation !== undefined) {
                     if (typeof options.logLocation === "number") {
@@ -145,8 +181,14 @@ class ConsoleManager extends EventEmitter {
                 if (options.title) {
                     this.applicationTitle = options.title
                 }
+                if (options.enableMouse) {
+                    this.enableMouse()
+                    process.on("exit", () => {
+                        this.disableMouse()
+                    })
+                }
             }
-            
+
             /** @const {Array<PageBuilder>} homePage - The main application */
             switch (this.layoutOptions.type) {
             case "single":
@@ -165,7 +207,7 @@ class ConsoleManager extends EventEmitter {
                 this.pages = [new PageBuilder(), new PageBuilder()]
                 break
             }
-            
+
             /** @const {PageBuilder} stdOut - The logs page */
             this.stdOut = new PageBuilder()
             this.stdOut.setRowsPerPage(this.logPageSize)
@@ -198,6 +240,75 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
+     * Enables "mousepress" events on the *input* stream. Note that `stream` must be
+     * an *output* stream (i.e. a Writable Stream instance), usually `process.stdout`.
+     *
+     * @param {Stream} stream writable stream instance
+     * @api public
+     */
+    private enableMouse() {
+        this.Terminal.write("\x1b[?1000h")
+        this.Terminal.write("\x1b[?1005h")
+        this.Terminal.write("\x1b[?1003h")
+        this.Input.on("data", (b) => {
+            const s = b.toString("utf8")
+            if (s === "\u0003") {
+                //console.error("Ctrl+C")
+                this.Input.pause()
+            // eslint-disable-next-line no-control-regex
+            } else if (/^\u001b\[M/.test(s)) {
+                // mouse event
+                //console.error("s.length:", s.length)
+                // reuse the key array albeit its name
+                // otherwise recompute as the mouse event is structured differently
+                const modifier = s.charCodeAt(3)
+                const key: MouseListenerArgs = {}
+                key.shift = !!(modifier & 4)
+                key.meta = !!(modifier & 8)
+                key.ctrl = !!(modifier & 16)
+                key.x = s.charCodeAt(4) - 32
+                key.y = s.charCodeAt(5) - 32
+                key.button = null
+                key.sequence = s
+                key.buf = Buffer.from(key.sequence)
+                if ((modifier & 96) === 96) {
+                    key.name = "scroll"
+                    key.button = modifier & 1 ? "down" : "up"
+                } else {
+                    key.name = modifier & 64 ? "move" : "click"
+                    switch (modifier & 3) {
+                    case 0 : key.button = "left"; break
+                    case 1 : key.button = "middle"; break
+                    case 2 : key.button = "right"; break
+                    case 3 : key.button = "none"; break
+                    default : return
+                    }
+                }
+                this.log(`Mouse event: ${JSON.stringify(key)}`)
+                // Now we have to propagate the mouse event to the upper layers.
+                // TODO: propagate the mouse event to the upper layers
+            } else {
+                // something else...
+                //console.error(0, s, b)
+            }
+        })
+    }
+
+    /**
+     * Disables "mousepress" events from being sent to the *input* stream.
+     * Note that `stream` must be an *output* stream (i.e. a Writable Stream instance),
+     * usually `process.stdout`.
+     *
+     * @param {Stream} stream writable stream instance
+     * @api public
+     */
+    private disableMouse() {
+        this.Terminal.write("\x1b[?1000l")
+        this.Terminal.write("\x1b[?1005l")
+        this.Terminal.write("\x1b[?1003l")
+    }
+
+    /**
      * @description This method is used to get the log page size.
      * @returns {number} The log page size.
      * @memberof ConsoleManager
@@ -224,6 +335,23 @@ class ConsoleManager extends EventEmitter {
      */
     private addGenericListeners(): void {
         this.Input.addListener("keypress", (_str: string, key: KeyListenerArgs): void => {
+            /* 
+                Use this filter to grab the mouse events "[M" and then skip the rest 3 bytes of the following mouse events
+                The mouse events are handled in the enableMouse() function
+                The trouble is that "readline" doesn't handle the mouse events so I have to do it manually
+                every mouse event acts like a 4 keypress events: the first has the "code" property set to "[M" 
+                and the other 3 have the "code" property set to "undefined" and they acts like normal keys.
+                so they can be confused with normal keys.
+                */
+            //this.log(JSON.stringify(key))
+            if (key.code && key.code === "[M") {
+                this.remainingMouseFrames = 3
+                return
+            }
+            if (this.remainingMouseFrames > 0) {
+                this.remainingMouseFrames--
+                return
+            }
             let change = false
             if (this.changeLayoutkeys.length > 1) {
                 if (this.changeLayoutkeys[0] == "ctrl") {

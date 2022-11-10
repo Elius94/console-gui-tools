@@ -1,4 +1,4 @@
-import { ForegroundColor } from "chalk"
+import { ForegroundColorName } from "chalk"
 import { ConsoleManager } from "../../ConsoleGui.js"
 import PageBuilder from "../PageBuilder.js"
 import DoubleLayout, { DoubleLayoutOptions } from "./DoubleLayout.js"
@@ -24,7 +24,7 @@ import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
 export interface LayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;
-    boxColor?: ForegroundColor | ""; // add color list from chalk
+    boxColor?: ForegroundColorName | ""; // add color list from chalk
     boxStyle?: "bold";
     changeFocusKey: string;
     type: "single" | "double" | "triple" | "quad";

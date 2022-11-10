@@ -17,6 +17,7 @@ const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
     logLocation: 1, // Location of the logs page
+    enableMouse: true, // Enable mouse support
     layoutOptions: {
         boxed: true, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title

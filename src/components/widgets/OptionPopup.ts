@@ -29,6 +29,7 @@ export class OptionPopup extends EventEmitter {
     visible: boolean
     marginTop: number
     startIndex: number
+    remainingMouseFrames: number
 
     public constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible = false) {
         super()
@@ -41,6 +42,7 @@ export class OptionPopup extends EventEmitter {
         this.visible = visible
         this.marginTop = 4
         this.startIndex = 0
+        this.remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `OptionPopup ${this.id} already exists.`
@@ -62,6 +64,14 @@ export class OptionPopup extends EventEmitter {
      * @memberof OptionPopup
      */
     keyListner(_str: string, key: KeyListenerArgs) {
+        if (key.code && key.code === "[M") {
+            this.remainingMouseFrames = 3
+            return
+        }
+        if (this.remainingMouseFrames > 0) {
+            this.remainingMouseFrames--
+            return
+        }
         switch (key.name) {
         case "down":
             this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length])

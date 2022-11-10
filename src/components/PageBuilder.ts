@@ -1,12 +1,12 @@
-import { BackgroundColor, ForegroundColor } from "chalk"
+import { BackgroundColorName, ForegroundColorName } from "chalk"
 
 
 /**
  * @description The type containing all the possible styles for the text.
  * 
  * @typedef {Object} StyleObject
- * @prop {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
- * @prop {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @prop {chalk.ForegroundColorName | ""} [color] - The color of the text taken from the chalk library.
+ * @prop {chalk.BackgroundColorName | ""} [backgroundColor] - The background color of the text taken from the chalk library.
  * @prop {boolean} [italic] - If the text is italic.
  * @prop {boolean} [bold] - If the text is bold.
  * @prop {boolean} [dim] - If the text is dim.
@@ -22,8 +22,8 @@ import { BackgroundColor, ForegroundColor } from "chalk"
  * @interface StyleObject
  */
 export interface StyleObject {
-    color?: ForegroundColor | "";
-    bg?: BackgroundColor | "";
+    color?: ForegroundColorName | "";
+    bg?: BackgroundColorName | "";
     italic?: boolean;
     bold?: boolean;
     dim?: boolean;
@@ -56,8 +56,8 @@ export interface StyledElement {
  * 
  * @typedef {Object} SimplifiedStyledElement
  * @prop {string} text - The text of the styled text.
- * @prop {chalk.ForegroundColor | ""} [color] - The color of the text taken from the chalk library.
- * @prop {chalk.BackgroundColor | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @prop {chalk.ForegroundColorName | ""} [color] - The color of the text taken from the chalk library.
+ * @prop {chalk.BackgroundColorName | ""} [backgroundColor] - The background color of the text taken from the chalk library.
  * @prop {boolean} [italic] - If the text is italic.
  * @prop {boolean} [bold] - If the text is bold.
  * @prop {boolean} [dim] - If the text is dim.
@@ -74,8 +74,8 @@ export interface StyledElement {
  */
 export interface SimplifiedStyledElement {
     text: string;
-    color?: ForegroundColor | "";
-    bg?: BackgroundColor | "";
+    color?: ForegroundColorName | "";
+    bg?: BackgroundColorName | "";
     italic?: boolean;
     bold?: boolean;
     dim?: boolean;
