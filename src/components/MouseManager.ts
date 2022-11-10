@@ -79,7 +79,7 @@ export class MouseManager extends EventEmitter {
                 key.shift = !!(modifier & 4)
                 key.meta = !!(modifier & 8)
                 key.ctrl = !!(modifier & 16)
-                key.x = s.charCodeAt(4) - 32
+                key.x = s.charCodeAt(4) - 32 // TODO: check if this is correct
                 key.y = s.charCodeAt(5) - 32
                 key.button = null
                 key.sequence = s
