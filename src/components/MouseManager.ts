@@ -1,52 +1,58 @@
 import { EventEmitter } from "events"
 
 /**
- * @description This type is used to define the parameters of the Mouse Listener event (mousepress).
- * @typedef {Object} MouseListenerArgs
- * @prop {string} name - The name of the key pressed.
+ * @description This type is used to define the parameters of the Mouse Listener event (mouseevent) data.
+ * @typedef {Object} MouseEventArgs
+ * @prop {string} code - The code of the pressed key.
+ * @prop {boolean} alt - If the alt key is pressed.
  * @prop {boolean} ctrl - If the ctrl key is pressed.
  * @prop {boolean} shift - If the shift key is pressed.
- * @prop {boolean} alt - If the alt key is pressed.
- * @prop {boolean} meta - If the meta key is pressed.
- * @prop {boolean} sequence - If the sequence of keys is pressed.
- * @prop {number} x - The x position of the mouse.
- * @prop {number} y - The y position of the mouse.
- * @prop {number} scroll - The scroll of the mouse.
- * @prop {number | string | null} button - The button of the mouse.
- * @prop {Buffer} buf - The buffer of the mouse.
+ * @prop {boolean} left - If the left mouse key is pressed.
+ * @prop {boolean} right - If the right mouse key is pressed.
+ * @prop {number} x - The x position of the mouse (terminal column).
+ * @prop {number} y - The y position of the mouse (terminal row).
+ * @prop {number | null} xFrom - The original x position of the mouse (terminal column) when the drag started.
+ * @prop {number | null} yFrom - The original y position of the mouse (terminal row) when the drag started.
  *
  * @export
- * @interface MouseListenerArgs
+ * @interface MouseEventArgs
  */
-/*export interface MouseListenerArgs {
-    name?: string;
-    sequence?: string;
-    ctrl?: boolean;
-    alt?: boolean;
-    shift?: boolean;
-    meta?: boolean;
-    code?: string;
-    x?: number;
-    y?: number;
-    scroll?: number;
-    button?: number | string | null;
-    buf?: Buffer;
-}*/
-
 export interface MouseEventArgs {
-    shift: boolean;
+    code: number;
     alt: boolean;
     ctrl: boolean;
+    shift: boolean;
+    left: boolean;
+    right: boolean;
     // , pressed: pressed
     x: number;
     y: number;
-    code: number;
-    left: boolean;
-    right: boolean;
     xFrom: number | null;
     yFrom: number | null;
 }
 
+/**
+ * @description This type is used to define the parameters of the Mouse Listener event (mouseevent).
+ * available event names:
+ * - MOUSE_MOTION: mouse moved (no button pressed / hover)
+ * - MOUSE_DRAG: Valorized xFrom and yFrom. Use left or right to know which button is pressed.
+ * - MOUSE_LEFT_BUTTON_PRESS
+ * - MOUSE_LEFT_BUTTON_RELEASE
+ * - MOUSE_RIGHT_BUTTON_PRESS
+ * - MOUSE_RIGHT_BUTTON_RELEASE
+ * - MOUSE_MIDDLE_BUTTON_PRESS
+ * - MOUSE_MIDDLE_BUTTON_RELEASE
+ * - MOUSE_WHEEL_UP
+ * - MOUSE_WHEEL_DOWN
+ * 
+ * @typedef {Object} MouseEvent
+ * @prop {string} name - The name of the event.
+ * @prop {number} eaten - The number of eaten events.
+ * @prop {MouseEventArgs} args - The arguments of the event.
+ *
+ * @export
+ * @interface MouseEvent
+ */
 export interface MouseEvent {
     name: string;
     eaten: number;
