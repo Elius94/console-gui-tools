@@ -57,7 +57,7 @@ export class FileSelectorPopup extends EventEmitter {
     startIndex: number
     selected: FileItemObject
     options: FileItemObject[]
-    remainingMouseFrames: number
+    parsingMouseFrame = false
 
     public constructor(id: string, title: string, basePath: string, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
         super()
@@ -74,7 +74,6 @@ export class FileSelectorPopup extends EventEmitter {
         this.marginTop = 4
         this.startIndex = 0
         this.selected = { text: "../", name: "../", type: "dir", path: path.join(basePath, "../") }
-        this.remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `FileSelectorPopup ${this.id} already exists.`
@@ -153,11 +152,14 @@ export class FileSelectorPopup extends EventEmitter {
      * @memberof FileSelectorPopup
      */
     public keyListner(_str: string, key: KeyListenerArgs) {
-        const checkResult = this.CM.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
-        if (typeof checkResult === "number") {
-            this.remainingMouseFrames = checkResult
+        const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
+        if (checkResult === 1) {
+            this.parsingMouseFrame = true
             return
-        }
+        } else if (checkResult === -1) {
+            this.parsingMouseFrame = false
+            return
+        } // Continue only if the result is 0
         const ind = this.options.indexOf(this.selected)
         switch (key.name) {
         case "down":

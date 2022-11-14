@@ -30,7 +30,7 @@ export class ButtonPopup extends EventEmitter {
     visible: boolean
     marginTop: number
     startIndex: number
-    remainingMouseFrames: number
+    parsingMouseFrame = false
 
     public constructor(id: string, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
         super()
@@ -44,7 +44,6 @@ export class ButtonPopup extends EventEmitter {
         this.visible = visible
         this.marginTop = 4
         this.startIndex = 0
-        this.remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `ButtonPopup ${this.id} already exists.`
@@ -81,11 +80,14 @@ export class ButtonPopup extends EventEmitter {
      * @memberof ButtonPopup
      */
     public keyListner(_str: string, key : KeyListenerArgs): void {
-        const checkResult = this.CM.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
-        if (typeof checkResult === "number") {
-            this.remainingMouseFrames = checkResult
+        const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
+        if (checkResult === 1) {
+            this.parsingMouseFrame = true
             return
-        }
+        } else if (checkResult === -1) {
+            this.parsingMouseFrame = false
+            return
+        } // Continue only if the result is 0
         switch (key.name) {
         case "left":
             if (this.selected > 0 && this.selected <= this.buttons.length) {

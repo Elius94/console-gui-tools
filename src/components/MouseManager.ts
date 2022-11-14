@@ -18,7 +18,7 @@ import { EventEmitter } from "events"
  * @export
  * @interface MouseListenerArgs
  */
-export interface MouseListenerArgs {
+/*export interface MouseListenerArgs {
     name?: string;
     sequence?: string;
     ctrl?: boolean;
@@ -31,6 +31,26 @@ export interface MouseListenerArgs {
     scroll?: number;
     button?: number | string | null;
     buf?: Buffer;
+}*/
+
+export interface MouseEventArgs {
+    shift: boolean;
+    alt: boolean;
+    ctrl: boolean;
+    // , pressed: pressed
+    x: number;
+    y: number;
+    code: number;
+    left: boolean;
+    right: boolean;
+    xFrom: number | null;
+    yFrom: number | null;
+}
+
+export interface MouseEvent {
+    name: string;
+    eaten: number;
+    data: MouseEventArgs;
 }
 
 /**
@@ -43,11 +63,175 @@ export interface MouseListenerArgs {
 export class MouseManager extends EventEmitter {
     Terminal: NodeJS.WriteStream
     Input: NodeJS.ReadStream
+    prependStdinChunk: null | Buffer
+    keymap = {
+        MOUSE: [
+            { code: "\x1b[<", event: "mouse", handler: "mouseSGRProtocol" },
+            { code: "\x1b[M", event: "mouse", handler: "mouseX11Protocol" }
+        ]
+    }
+    state = {
+        button: {
+            left: null as null | { x: number, y: number },
+            middle: null as null | { x: number, y: number },
+            right: null as null | { x: number, y: number },
+            other: null as null | { x: number, y: number }
+        }
+    }
 
     constructor(_Terminal: NodeJS.WriteStream, _Input: NodeJS.ReadStream) {
         super()
         this.Terminal = _Terminal
         this.Input = _Input
+        this.prependStdinChunk = null
+    }
+
+    mouseX11Protocol = (basename: string, buffer: Buffer) => {
+        const code = buffer[0]
+        const result = {
+            data: {
+                shift: !!(code & 4),
+                alt: !!(code & 8),
+                ctrl: !!(code & 16),
+                x: 0,
+                y: 0,
+                code: 0
+            },
+            name: "",
+            eaten: 0
+        } as MouseEvent
+
+        if (code & 32) {
+            if (code & 64) {
+                result.name = basename + (code & 1 ? "_WHEEL_DOWN" : "_WHEEL_UP")
+            }
+            else {
+                // Button event
+                switch (code & 3) {
+                case 0: result.name = basename + "_LEFT_BUTTON_PRESSED"; break
+                case 1: result.name = basename + "_MIDDLE_BUTTON_PRESSED"; break
+                case 2: result.name = basename + "_RIGHT_BUTTON_PRESSED"; break
+                case 3: result.name = basename + "_BUTTON_RELEASED"; break
+                }
+            }
+        }
+        else if (code & 64) {
+            // Motion event
+            result.name = basename + "_MOTION"
+        }
+
+        result.eaten = 3
+        result.data.code = code
+        result.data.x = buffer[1] - 32
+        result.data.y = buffer[2] - 32
+
+        return result
+    }
+
+    mouseSGRProtocol = (basename: string, buffer: Buffer) => {
+        const matches = buffer.toString().match(/^(-?[0-9]*);?([0-9]*);?([0-9]*)(M|m)/)
+
+        if (!matches || matches[3].length === 0) {
+            return {
+                name: "ERROR",
+                eaten: matches ? matches[0].length : 0,
+                data: { matches }
+            }
+        }
+
+        const code = parseInt(matches[1], 10)
+        const pressed = matches[4] !== "m"
+
+        const result = {
+            data: {
+                shift: !!(code & 4),
+                alt: !!(code & 8),
+                ctrl: !!(code & 16),
+                // , pressed: pressed
+                x: 0,
+                y: 0,
+                code: 0,
+                left: false,
+                right: false,
+                xFrom: null,
+                yFrom: null
+            },
+            name: "",
+            eaten: 0
+        } as MouseEvent
+
+        result.data.x = parseInt(matches[2], 10)
+        result.data.y = parseInt(matches[3], 10)
+        result.eaten = matches[0].length
+
+        if (code & 32) {
+            // Motions / drag event
+
+            switch (code & 3) {
+            case 0:
+                // Left drag, or maybe something else (left+right combo)
+                result.name = basename + "_DRAG"
+                result.data.left = true
+                result.data.right = false
+                result.data.xFrom = this.state.button.left ? this.state.button.left.x : null
+                result.data.yFrom = this.state.button.left ? this.state.button.left.y : null
+                break
+
+                // Doesn"t seem to exist, middle drag does not discriminate from motion
+                //case 1 :
+
+            case 2:
+                // Right drag
+                result.name = basename + "_DRAG"
+                result.data.left = false
+                result.data.right = true
+                result.data.xFrom = this.state.button.right ? this.state.button.right.x : null
+                result.data.yFrom = this.state.button.right ? this.state.button.right.y : null
+                break
+
+            case 3:
+            default:
+                result.name = basename + "_MOTION"
+                break
+            }
+        }
+        else if (code & 64) {
+            result.name = basename + (code & 1 ? "_WHEEL_DOWN" : "_WHEEL_UP")
+        }
+        else {
+            // Button event
+            switch (code & 3) {
+            case 0:
+                result.name = basename + "_LEFT_BUTTON"
+                //if ( this.state.button.left === pressed ) { result.disable = true ; }
+                this.state.button.left = pressed ? result.data : null
+                break
+
+            case 1:
+                result.name = basename + "_MIDDLE_BUTTON"
+                //if ( this.state.button.middle === pressed ) { result.disable = true ; }
+                this.state.button.middle = pressed ? result.data : null
+                break
+
+            case 2:
+                result.name = basename + "_RIGHT_BUTTON"
+                //if ( this.state.button.right === pressed ) { result.disable = true ; }
+                this.state.button.right = pressed ? result.data : null
+                break
+
+            case 3:
+                result.name = basename + "_OTHER_BUTTON"
+                //if ( this.state.button.other === pressed ) { result.disable = true ; }
+                this.state.button.other = pressed ? result.data : null
+                break
+            }
+
+            result.name += pressed ? "_PRESSED" : "_RELEASED"
+        }
+
+        result.data.code = code
+
+        return result
     }
 
     /**
@@ -60,52 +244,10 @@ export class MouseManager extends EventEmitter {
         process.on("exit", () => {
             this.disableMouse()
         })
-        this.Terminal.write("\x1b[?1000h")
-        this.Terminal.write("\x1b[?1005h")
+        //this.Terminal.write("\x1b[?1000h")
+        this.Terminal.write("\x1b[?1006h")
         this.Terminal.write("\x1b[?1003h")
-        this.Input.on("data", (b) => {
-            const s = b.toString("utf8")
-            if (s === "\u0003") {
-                //console.error("Ctrl+C")
-                this.Input.pause()
-            // eslint-disable-next-line no-control-regex
-            } else if (/^\u001b\[M/.test(s)) {
-                // mouse event
-                //console.error("s.length:", s.length)
-                // reuse the key array albeit its name
-                // otherwise recompute as the mouse event is structured differently
-                const modifier = s.charCodeAt(3)
-                const key: MouseListenerArgs = {}
-                key.shift = !!(modifier & 4)
-                key.meta = !!(modifier & 8)
-                key.ctrl = !!(modifier & 16)
-                key.x = s.charCodeAt(4) - 32 // TODO: check if this is correct
-                key.y = s.charCodeAt(5) - 32
-                key.button = null
-                key.sequence = s
-                key.buf = Buffer.from(key.sequence)
-                if ((modifier & 96) === 96) {
-                    key.name = "scroll"
-                    key.button = modifier & 1 ? "down" : "up"
-                } else {
-                    key.name = modifier & 64 ? "move" : "click"
-                    switch (modifier & 3) {
-                    case 0 : key.button = "left"; break
-                    case 1 : key.button = "middle"; break
-                    case 2 : key.button = "right"; break
-                    case 3 : key.button = "none"; break
-                    default : return
-                    }
-                }
-                //this.log(`Mouse event: ${JSON.stringify(key)}`)
-                // Now we have to propagate the mouse event to the upper layers.
-                this.emit("mousepress", key)
-            } else {
-                // something else...
-                //console.error(0, s, b)
-                this.emit("error", s, b)
-            }
-        })
+        this.Input.on("data", this.onStdin)
     }
 
     /**
@@ -116,28 +258,67 @@ export class MouseManager extends EventEmitter {
      * @api public
      */
     public disableMouse() {
-        this.Terminal.write("\x1b[?1000l")
-        this.Terminal.write("\x1b[?1005l")
+        //this.Terminal.write("\x1b[?1000l")
+        this.Input.removeListener("data", this.onStdin)
+        this.Terminal.write("\x1b[?1006l")
         this.Terminal.write("\x1b[?1003l")
     }
 
-    public isMouseFrame(keyCode: string, frameCounter: number) : false | number {
+    onStdin = (chunk: Buffer) => {
+        let i, bytes, handlerResult, index = 0
+        const length = chunk.length
+
+        //if ( shutdown ) { return ; }
+
+        if (this.prependStdinChunk) {
+            chunk = Buffer.concat([this.prependStdinChunk, chunk])
+        }
+
+        while (index < length) {
+            bytes = 1
+
+            if (chunk[index] <= 0x1f || chunk[index] === 0x7f) {
+                // Those are ASCII control character and DEL key
+                //const buffer = chunk.subarray(index)
+                //const keymapCode = buffer.toString()
+                const startBuffer = chunk.subarray(index, 3)
+                const keymapStartCode = startBuffer.toString()
+
+                const mKeymap = this.keymap["MOUSE"].filter(function (e: { code: string }) { return e.code === keymapStartCode })
+                if (mKeymap.length > 0) {
+                    // First test fixed sequences
+                    if (mKeymap[0].handler) {
+                        handlerResult = this[mKeymap[0].handler].call(this, "MOUSE", chunk.subarray(index + 3))
+                        bytes = i + handlerResult.eaten
+
+                        if (!handlerResult.disable) {
+                            //console.log("emit:", mKeymap[0].event, handlerResult.name, handlerResult.data)
+                            this.emit("mouseevent", handlerResult)
+                        }
+                    }
+                }
+            }
+            index += bytes
+        }
+    }
+
+    public isMouseFrame(key: { code: string, sequence: string }, lock: boolean): number {
         /* 
-            Use this filter to grab the mouse events "[M" and then skip the rest 3 bytes of the following mouse events
-            The mouse events are handled in the enableMouse() function
-            The trouble is that "readline" doesn't handle the mouse events so I have to do it manually
-            every mouse event acts like a 4 keypress events: the first has the "code" property set to "[M" 
-            and the other 3 have the "code" property set to "undefined" and they acts like normal keys.
-            so they can be confused with normal keys.
+            The only way we have to detect mouse events is to check the first key code of the sequence. 
+            it should one of the codes listed in: this.keymap["MOUSE"][x].code
+            To capture the end frame of a mouse event, we need to check the last key code of the sequence.
+            it should be "m" or "M" (depending on the mouse mode)
             */
-        //this.log(JSON.stringify(key))
-        if (keyCode && keyCode === "[M") {
-            return 3
+        if (key.code && this.keymap["MOUSE"].filter((e: { code: string }) => e.code === key.sequence).length > 0) {
+            return 1
         }
-        if (frameCounter > 0) {
-            return frameCounter - 1
+        if (lock) {
+            if (key.sequence.toLowerCase() === "m") {
+                return -1
+            }
+            return 1
         }
-        return false
+        return 0
     }
 }
 

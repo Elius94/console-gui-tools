@@ -9,7 +9,7 @@ import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
-import { MouseListenerArgs, MouseManager } from "./components/MouseManager.js"
+import { MouseEvent, MouseManager } from "./components/MouseManager.js"
 
 
 /**
@@ -87,7 +87,7 @@ class ConsoleManager extends EventEmitter {
     showLogKey!: string
     stdOut!: PageBuilder
     mouse!: MouseManager
-    remainingMouseFrames = 0 // used to avoid the mouse event to be triggered multiple times
+    parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -153,8 +153,8 @@ class ConsoleManager extends EventEmitter {
                 if (options.enableMouse) {
                     this.mouse = new MouseManager(this.Terminal, this.Input)
                     this.mouse.enableMouse()
-                    this.mouse.on("mousepress", (event: MouseListenerArgs) => {
-                        this.log(`Mouse event: ${event.name} - ${event.x} - ${event.y}`)
+                    this.mouse.on("mouseevent", (event: MouseEvent ) => {
+                        this.log(`Mouse event: ${JSON.stringify(event)}`)
                     })
                 }
             }
@@ -236,11 +236,15 @@ class ConsoleManager extends EventEmitter {
      */
     private addGenericListeners(): void {
         this.Input.addListener("keypress", (_str: string, key: KeyListenerArgs): void => {
-            const checkResult = this.mouse.isMouseFrame(key.code, this.remainingMouseFrames)
-            if (typeof checkResult === "number") {
-                this.remainingMouseFrames = checkResult
+            //this.log(`Key pressed: ${JSON.stringify(key)}`)
+            const checkResult = this.mouse.isMouseFrame(key, this.parsingMouseFrame)
+            if (checkResult === 1) {
+                this.parsingMouseFrame = true
                 return
-            }
+            } else if (checkResult === -1) {
+                this.parsingMouseFrame = false
+                return
+            } // Continue only if the result is 0
             let change = false
             if (this.changeLayoutkeys.length > 1) {
                 if (this.changeLayoutkeys[0] == "ctrl") {
