@@ -1,8 +1,9 @@
 import { EventEmitter } from "events"
 
 /**
- * @description This type is used to define the parameters of the Mouse Listener event (mouseevent) data.
  * @typedef {Object} MouseEventArgs
+ * @description This type is used to define the parameters of the Mouse Listener event (mouseevent) data.
+ * 
  * @prop {string} code - The code of the pressed key.
  * @prop {boolean} alt - If the alt key is pressed.
  * @prop {boolean} ctrl - If the ctrl key is pressed.
@@ -14,6 +15,8 @@ import { EventEmitter } from "events"
  * @prop {number | null} xFrom - The original x position of the mouse (terminal column) when the drag started.
  * @prop {number | null} yFrom - The original y position of the mouse (terminal row) when the drag started.
  *
+ * @example const mouseEventArgs = { code: "MOUSE", alt: false, ctrl: false, shift: false, left: true, right: false, x: 10, y: 10, xFrom: null, yFrom: null }
+ * 
  * @export
  * @interface MouseEventArgs
  */
@@ -24,7 +27,6 @@ export interface MouseEventArgs {
     shift: boolean;
     left: boolean;
     right: boolean;
-    // , pressed: pressed
     x: number;
     y: number;
     xFrom: number | null;
@@ -32,6 +34,7 @@ export interface MouseEventArgs {
 }
 
 /**
+ * @typedef {Object} MouseEvent
  * @description This type is used to define the parameters of the Mouse Listener event (mouseevent).
  * available event names:
  * - MOUSE_MOTION: mouse moved (no button pressed / hover)
@@ -45,11 +48,12 @@ export interface MouseEventArgs {
  * - MOUSE_WHEEL_UP
  * - MOUSE_WHEEL_DOWN
  * 
- * @typedef {Object} MouseEvent
  * @prop {string} name - The name of the event.
  * @prop {number} eaten - The number of eaten events.
  * @prop {MouseEventArgs} args - The arguments of the event.
  *
+ * @example const mouseEvent = { name: "MOUSE_MOTION", eaten: 0, args: { code: "MOUSE", alt: false, ctrl: false, shift: false, left: true, right: false, x: 10, y: 10, xFrom: null, yFrom: null } }
+ * 
  * @export
  * @interface MouseEvent
  */
@@ -63,6 +67,8 @@ export interface MouseEvent {
  * @class MouseManager
  * @description This class is used to manage the mouse tracking events.
  * @param {object} Terminal - The terminal object (process.stdout).
+ * @emits mouseevent - The mouse event.
+ * 
  * @extends EventEmitter
  * @example const mouse = new MouseManager(process.stdout)
  */
@@ -70,12 +76,14 @@ export class MouseManager extends EventEmitter {
     Terminal: NodeJS.WriteStream
     Input: NodeJS.ReadStream
     prependStdinChunk: null | Buffer
+    /** @const {Object} keymap - Object containing "MOUSE" array of key codes. */ 
     keymap = {
         MOUSE: [
             { code: "\x1b[<", event: "mouse", handler: "mouseSGRProtocol" },
             { code: "\x1b[M", event: "mouse", handler: "mouseX11Protocol" }
         ]
     }
+    /** @const {Object} state - Object containing the state of the mouse buttons. */
     state = {
         button: {
             left: null as null | { x: number, y: number },
@@ -92,6 +100,11 @@ export class MouseManager extends EventEmitter {
         this.prependStdinChunk = null
     }
 
+    /**
+     * @description Manage the mouse events for the x11 protocol.
+     * @param {string} basename - The name of the event.
+     * @param {Buffer} buffer - The data of the event.
+     **/
     mouseX11Protocol = (basename: string, buffer: Buffer) => {
         const code = buffer[0]
         const result = {
@@ -134,6 +147,11 @@ export class MouseManager extends EventEmitter {
         return result
     }
 
+    /**
+     * @description Manage the mouse events for the SGR protocol.
+     * @param {string} basename - The name of the event.
+     * @param {Buffer} buffer - The data of the event.
+     **/
     mouseSGRProtocol = (basename: string, buffer: Buffer) => {
         const matches = buffer.toString().match(/^(-?[0-9]*);?([0-9]*);?([0-9]*)(M|m)/)
 
@@ -241,7 +259,7 @@ export class MouseManager extends EventEmitter {
     }
 
     /**
-     * Enables "mousepress" events on the *input* stream. Note that `stream` must be
+     * @description Enables "mouseevent" event on the *input* stream. Note that `stream` must be
      * an *output* stream (i.e. a Writable Stream instance), usually `process.stdout`.
      *
      * @api public
@@ -257,7 +275,7 @@ export class MouseManager extends EventEmitter {
     }
 
     /**
-     * Disables "mousepress" events from being sent to the *input* stream.
+     * @description Disables "mouseevent" event from being sent to the *input* stream.
      * Note that `stream` must be an *output* stream (i.e. a Writable Stream instance),
      * usually `process.stdout`.
      *
@@ -270,6 +288,10 @@ export class MouseManager extends EventEmitter {
         this.Terminal.write("\x1b[?1003l")
     }
 
+    /**
+     * @description Manage the stdin data to detect mouse events.
+     * @param {Buffer} chunk - The data of the event.
+     **/
     onStdin = (chunk: Buffer) => {
         let i, bytes, handlerResult, index = 0
         const length = chunk.length
@@ -308,6 +330,11 @@ export class MouseManager extends EventEmitter {
         }
     }
 
+    /**
+     * @description Test if the key is a part of the mouse event.
+     * @param {{ code: string, sequence: string }} key - The key object to test.
+     * @return {number} - 1 if the key is the header of a mouse event, -1 if is a body part, 0 otherwise.
+     **/
     public isMouseFrame(key: { code: string, sequence: string }, lock: boolean): number {
         /* 
             The only way we have to detect mouse events is to check the first key code of the sequence. 

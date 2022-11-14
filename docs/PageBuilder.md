@@ -26,8 +26,8 @@
 
 | Name | Type | Description |
 | --- | --- | --- |
-| [color] | <code>chalk.ForegroundColor</code> \| <code>&quot;&quot;</code> | <p>The color of the text taken from the chalk library.</p> |
-| [backgroundColor] | <code>chalk.BackgroundColor</code> \| <code>&quot;&quot;</code> | <p>The background color of the text taken from the chalk library.</p> |
+| [color] | <code>chalk.ForegroundColorName</code> \| <code>&quot;&quot;</code> | <p>The color of the text taken from the chalk library.</p> |
+| [backgroundColor] | <code>chalk.BackgroundColorName</code> \| <code>&quot;&quot;</code> | <p>The background color of the text taken from the chalk library.</p> |
 | [italic] | <code>boolean</code> | <p>If the text is italic.</p> |
 | [bold] | <code>boolean</code> | <p>If the text is bold.</p> |
 | [dim] | <code>boolean</code> | <p>If the text is dim.</p> |
@@ -69,8 +69,8 @@ const styledText = { text: "Hello", style: { color: "red", backgroundColor: "blu
 | Name | Type | Description |
 | --- | --- | --- |
 | text | <code>string</code> | <p>The text of the styled text.</p> |
-| [color] | <code>chalk.ForegroundColor</code> \| <code>&quot;&quot;</code> | <p>The color of the text taken from the chalk library.</p> |
-| [backgroundColor] | <code>chalk.BackgroundColor</code> \| <code>&quot;&quot;</code> | <p>The background color of the text taken from the chalk library.</p> |
+| [color] | <code>chalk.ForegroundColorName</code> \| <code>&quot;&quot;</code> | <p>The color of the text taken from the chalk library.</p> |
+| [backgroundColor] | <code>chalk.BackgroundColorName</code> \| <code>&quot;&quot;</code> | <p>The background color of the text taken from the chalk library.</p> |
 | [italic] | <code>boolean</code> | <p>If the text is italic.</p> |
 | [bold] | <code>boolean</code> | <p>If the text is bold.</p> |
 | [dim] | <code>boolean</code> | <p>If the text is dim.</p> |
