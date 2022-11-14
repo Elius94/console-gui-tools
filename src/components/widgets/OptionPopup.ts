@@ -1,5 +1,6 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { MouseEvent } from "../MouseManager.js"
 
 /**
  * @class OptionPopup
@@ -30,6 +31,24 @@ export class OptionPopup extends EventEmitter {
     marginTop: number
     startIndex: number
     parsingMouseFrame = false
+    /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetX: number
+    /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetY: number
+    private absoluteValues: {
+        x: number
+        y: number
+        width: number
+        height: number
+    }
+    dragging: boolean = false
+    dragStart: {
+        x: number
+        y: number
+    } = {
+        x: 0,
+        y: 0
+    }
 
     public constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible = false) {
         super()
@@ -42,6 +61,14 @@ export class OptionPopup extends EventEmitter {
         this.visible = visible
         this.marginTop = 4
         this.startIndex = 0
+        this.offsetX = 0
+        this.offsetY = 0
+        this.absoluteValues = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        }
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `OptionPopup ${this.id} already exists.`
@@ -208,6 +235,7 @@ export class OptionPopup extends EventEmitter {
     private manageInput(): OptionPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
+        this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }
 
@@ -219,7 +247,41 @@ export class OptionPopup extends EventEmitter {
     private unManageInput(): OptionPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
+        this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
+    }
+
+    private mouseListener = (event: MouseEvent) => {
+        const x = event.data.x
+        const y = event.data.y
+
+        //this.CM.log(event.name)
+        if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+                // The mouse is inside the popup
+                //this.CM.log("Mouse inside popup")
+                // find the selected index of the click and set it as selected
+                const index = y - this.absoluteValues.y - 4
+                if (index >= 0 && index < this.adaptOptions().length) {
+                    this.setSelected(this.options[this.startIndex + index])
+                }
+            }
+        }
+        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false) {
+            // check if the mouse is on the header of the popup (first three lines)
+            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3) {
+                this.dragging = true
+                this.dragStart = { x: x, y: y }
+            }
+        } else if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === true) {
+            this.offsetX += x - this.dragStart.x
+            this.offsetY += y - this.dragStart.y
+            this.dragStart = { x: x, y: y }
+            this.CM.refresh()
+        } else if (event.name === "MOUSE_LEFT_BUTTON_RELEASED" && this.dragging === true) {
+            this.dragging = false
+            this.CM.refresh()
+        }
     }
 
     /**
@@ -257,10 +319,17 @@ export class OptionPopup extends EventEmitter {
         })
 
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split("\n").forEach((line, index) => {
-            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
+        const windowDesignLines = windowDesign.split("\n")
+        windowDesignLines.forEach((line, index) => {
+            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)) + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
+        this.absoluteValues = {
+            x: Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)) + this.offsetX,
+            y: this.marginTop + this.offsetY,
+            width: windowWidth,
+            height: windowDesignLines.length,
+        }
         return this
     }
 }

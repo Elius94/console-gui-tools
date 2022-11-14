@@ -74,7 +74,7 @@ class ConsoleManager extends EventEmitter {
     Screen!: Screen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     widgetsCollection: any[] = []
-    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } = {}
+    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } | { [key: string]: (key: MouseEvent) => void }= {}
     logLocation!: 0 | 1 | 2 | 3 | "popup"
     logPageSize!: number
     logPageTitle!: string
@@ -154,7 +154,10 @@ class ConsoleManager extends EventEmitter {
                     this.mouse = new MouseManager(this.Terminal, this.Input)
                     this.mouse.enableMouse()
                     this.mouse.on("mouseevent", (event: MouseEvent ) => {
-                        this.log(`Mouse event: ${JSON.stringify(event)}`)
+                        //this.log(`Mouse event: ${JSON.stringify(event)}`)
+                        if (event.data !== undefined) {
+                            // TODO
+                        }
                     })
                 }
             }
@@ -324,6 +327,17 @@ class ConsoleManager extends EventEmitter {
      */
     public removeKeyListener(id: string): void {
         this.Input.removeListener("keypress", this.eventListenersContainer[id])
+        delete this.eventListenersContainer[id]
+    }
+
+    // TODO comment
+    public setMouseListener(id: string, manageFunction: (key: MouseEvent) => void): void {
+        this.eventListenersContainer[id] = manageFunction
+        this.mouse.addListener("mouseevent", this.eventListenersContainer[id])
+    }
+
+    public removeMouseListener(id: string): void {
+        this.mouse.removeListener("mouseevent", this.eventListenersContainer[id])
         delete this.eventListenersContainer[id]
     }
 
