@@ -9,6 +9,7 @@ import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
+import { MouseEvent, MouseManager } from "./components/MouseManager.js"
 
 
 /**
@@ -31,6 +32,7 @@ export interface KeyListenerArgs {
     alt: boolean;
     shift: boolean;
     meta: boolean;
+    code: string;
 }
 
 /**
@@ -51,6 +53,7 @@ export interface ConsoleGuiOptions {
     logPageSize?: number;
     layoutOptions?: LayoutOptions;
     title?: string;
+    enableMouse?: boolean; // enable the mouse support (default: true) - Only for Linux and other Mouse Tracking terminals
 }
 
 /**
@@ -71,7 +74,7 @@ class ConsoleManager extends EventEmitter {
     Screen!: Screen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     widgetsCollection: any[] = []
-    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } = {}
+    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } | { [key: string]: (key: MouseEvent) => void }= {}
     logLocation!: 0 | 1 | 2 | 3 | "popup"
     logPageSize!: number
     logPageTitle!: string
@@ -83,6 +86,8 @@ class ConsoleManager extends EventEmitter {
     applicationTitle!: string
     showLogKey!: string
     stdOut!: PageBuilder
+    mouse!: MouseManager
+    parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -104,7 +109,7 @@ class ConsoleManager extends EventEmitter {
             this.logLocation = 1
             this.logPageSize = 10
             this.logPageTitle = "LOGS"
-            
+
             this.layoutOptions = {
                 showTitle: true,
                 boxed: true,
@@ -114,12 +119,12 @@ class ConsoleManager extends EventEmitter {
                 type: "double",
                 direction: "vertical",
             }
-            
+
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
             this.changeLayoutKey = this.layoutOptions.changeFocusKey
             this.changeLayoutkeys = this.changeLayoutKey.split("+")
             this.applicationTitle = ""
-            
+
             if (options) {
                 if (options.logLocation !== undefined) {
                     if (typeof options.logLocation === "number") {
@@ -145,8 +150,12 @@ class ConsoleManager extends EventEmitter {
                 if (options.title) {
                     this.applicationTitle = options.title
                 }
+                if (options.enableMouse) {
+                    this.mouse = new MouseManager(this.Terminal, this.Input)
+                    this.mouse.enableMouse()
+                }
             }
-            
+
             /** @const {Array<PageBuilder>} homePage - The main application */
             switch (this.layoutOptions.type) {
             case "single":
@@ -165,7 +174,7 @@ class ConsoleManager extends EventEmitter {
                 this.pages = [new PageBuilder(), new PageBuilder()]
                 break
             }
-            
+
             /** @const {PageBuilder} stdOut - The logs page */
             this.stdOut = new PageBuilder()
             this.stdOut.setRowsPerPage(this.logPageSize)
@@ -224,6 +233,15 @@ class ConsoleManager extends EventEmitter {
      */
     private addGenericListeners(): void {
         this.Input.addListener("keypress", (_str: string, key: KeyListenerArgs): void => {
+            //this.log(`Key pressed: ${JSON.stringify(key)}`)
+            const checkResult = this.mouse.isMouseFrame(key, this.parsingMouseFrame)
+            if (checkResult === 1) {
+                this.parsingMouseFrame = true
+                return
+            } else if (checkResult === -1) {
+                this.parsingMouseFrame = false
+                return
+            } // Continue only if the result is 0
             let change = false
             if (this.changeLayoutkeys.length > 1) {
                 if (this.changeLayoutkeys[0] == "ctrl") {
@@ -303,6 +321,29 @@ class ConsoleManager extends EventEmitter {
      */
     public removeKeyListener(id: string): void {
         this.Input.removeListener("keypress", this.eventListenersContainer[id])
+        delete this.eventListenersContainer[id]
+    }
+
+    /**
+     * @description This function is used to set a mouse listener for a specific widget. The event listener is stored in the eventListenersContainer object.
+     * @param {string} id - The id of the widget.
+     * @param {function} manageFunction - The function to call when the key is pressed.
+     * @memberof ConsoleManager
+     * @example CM.setMouseListener('inputPopup', popup.mouseListener)
+     */
+    public setMouseListener(id: string, manageFunction: (key: MouseEvent) => void): void {
+        this.eventListenersContainer[id] = manageFunction
+        this.mouse.addListener("mouseevent", this.eventListenersContainer[id])
+    }
+
+    /**
+     * @description This function is used to remove a mouse listener for a specific widget. The event listener is removed from the eventListenersContainer object.
+     * @param {string} id - The id of the widget.
+     * @memberof ConsoleManager
+     * @example CM.removeMouseListener('inputPopup')
+     */
+    public removeMouseListener(id: string): void {
+        this.mouse.removeListener("mouseevent", this.eventListenersContainer[id])
         delete this.eventListenersContainer[id]
     }
 

@@ -17,7 +17,9 @@ It's in embryonic phase, any suggestion will be constructive :D
 Version: >= 14
 
 #### OS
-It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11
+It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11.
+Since 1.1.4 mouse SGW and X11 protocols are supported. It works well on most linux terminals, but it doesn't work on Windows 10 and 11. You can use it on Windows 10 and 11 with [Windows Terminal](https://www.microsoft.com/it-it/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab) or [Cmder](https://cmder.net/) and using WSL (Windows Subsystem for Linux) with Ubuntu LTS or others.
+In this way you can use mouse also on Windows 10 and 11.
 
 #### Windows users
 In windows you can use it in both 10, and 11 but don't use the old Powershell (💩), make you a favor and use [Windows Terminal](https://github.com/microsoft/terminal) with Powershell Core (the last official)
@@ -45,6 +47,11 @@ Choose where the logs are displayed: number (0,1) - to pot them on one of the tw
 
 ### options.showLogKey
 The key that will be used to show the logs popup if the logLocation is set to "popup".
+
+### options.enableMouse
+Enable mouse support. It works well on most linux terminals, but it doesn't work on Windows 10 and 11 unless you use WSL (Windows Subsystem for Linux).
+
+![Mouse Example](https://user-images.githubusercontent.com/14907987/201913001-713ca6e7-c277-42f7-ac1a-5f90ee1b144f.gif)
 
 ### options.layoutOptions
 The options that will be passed to the layout.

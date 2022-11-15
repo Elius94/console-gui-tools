@@ -1,4 +1,4 @@
-import { ForegroundColor } from "chalk"
+import { ForegroundColorName } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
 import { StyledElement } from "../PageBuilder.js"
 
@@ -22,7 +22,7 @@ import { StyledElement } from "../PageBuilder.js"
 export interface QuadLayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;
-    boxColor?: ForegroundColor | ""; // add color list from chalk
+    boxColor?: ForegroundColorName | ""; // add color list from chalk
     boxStyle?: "bold";
     changeFocusKey: string;
     page1Title?: string;

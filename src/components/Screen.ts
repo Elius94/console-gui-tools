@@ -70,25 +70,24 @@ export class Screen extends EventEmitter {
      */
     write(...args: StyledElement[]): void {
         this.currentY++
-
-        let row = ""
-        const newStyleIndex = []
-        for (let i = 0; i < args.length; i++) {
-            const arg = args[i]
-            if (arg.text !== undefined) {
-                const txt = arg.text.toString()
-                const style: StyleIndexObject = { ...arg.style, index: [row.length, row.length + txt.length] }
-                newStyleIndex.push(style)
-                row += txt
+        if (this.cursor.y < this.buffer.length) {
+            let row = ""
+            const newStyleIndex = []
+            for (let i = 0; i < args.length; i++) {
+                const arg = args[i]
+                if (arg.text !== undefined) {
+                    const txt = arg.text.toString()
+                    const style: StyleIndexObject = { ...arg.style, index: [row.length, row.length + txt.length] }
+                    newStyleIndex.push(style)
+                    row += txt
+                }
             }
-        }
-        const currentStyleIndex = this.buffer[this.cursor.y].styleIndex
+            const currentStyleIndex = this.buffer[this.cursor.y].styleIndex
 
-        // Now recalculate the styleIndex for the current row mixing the old one with the new one
-        // Create a new styleIndex merging the old one with the new one
-        const mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
+            // Now recalculate the styleIndex for the current row mixing the old one with the new one
+            // Create a new styleIndex merging the old one with the new one
+            const mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
 
-        if (this.cursor.y < this.buffer.length - 1) {
             this.buffer[this.cursor.y].styleIndex = mergedStyleIndex
             this.buffer[this.cursor.y].text = this.replaceAt(this.buffer[this.cursor.y].text, this.cursor.x, row)
             this.cursorTo(0, this.cursor.y + 1)

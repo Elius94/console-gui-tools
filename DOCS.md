@@ -3,6 +3,7 @@
 To view the documentation for a specific component or class, click on the links below.
 
 * [ConsoleGui](docs/ConsoleGui.md)
+* [MouseManager](docs/MouseManager.md)
 * [PageBuilder](docs/PageBuilder.md)
 * [Screen](docs/Screen.md)
 * [DoubleLayout](docs/DoubleLayout.md)

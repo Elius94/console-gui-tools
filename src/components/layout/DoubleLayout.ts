@@ -1,4 +1,4 @@
-import { ForegroundColor } from "chalk"
+import { ForegroundColorName } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
 import { StyledElement } from "../PageBuilder.js"
 
@@ -7,7 +7,7 @@ import { StyledElement } from "../PageBuilder.js"
  * @typedef {Object} DoubleLayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
- * @prop {ForegroundColor | ""} [boxColor] - The color of the box taken from the chalk library.
+ * @prop {ForegroundColorName | ""} [boxColor] - The color of the box taken from the chalk library.
  * @prop {"bold"} [boxStyle] - If the border of the box should be bold.
  * @prop {string} [changeFocusKey] - The key that should be pressed to change the focus.
  * @prop {"horizontal" | "vertical"} [direction] - The direction of the layout.
@@ -21,7 +21,7 @@ import { StyledElement } from "../PageBuilder.js"
 export interface DoubleLayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;
-    boxColor?: ForegroundColor | ""; // add color list from chalk
+    boxColor?: ForegroundColorName | ""; // add color list from chalk
     boxStyle?: "bold";
     changeFocusKey: string;
     direction?: "horizontal" | "vertical";
@@ -79,7 +79,7 @@ export class DoubleLayout {
      * @param {PageBuilder} page the page to be added
      * @memberof DoubleLayout 
      */
-    public setPage(page: PageBuilder, index: number): void {  // TODO: 
+    public setPage(page: PageBuilder, index: number): void {
         if (index == 0) {
             this.page1 = page
         } else {

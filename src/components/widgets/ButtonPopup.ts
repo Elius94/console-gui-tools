@@ -1,5 +1,14 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { MouseEvent } from "../MouseManager.js"
+
+interface PhisicalValues {
+    x: number
+    y: number
+    width: number
+    height: number
+    id?: number 
+}
 
 /**
  * @class ButtonPopup
@@ -27,9 +36,20 @@ export class ButtonPopup extends EventEmitter {
     message: string
     buttons: string[]
     selected: number
+    hovered: number
     visible: boolean
     marginTop: number
     startIndex: number
+    parsingMouseFrame = false
+    /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetX: number
+    /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetY: number
+    private absoluteValues: PhisicalValues
+    private buttonsAbsoluteValues: PhisicalValues[] = []
+    dragging = false
+    dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    focused = false
 
     public constructor(id: string, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
         super()
@@ -40,9 +60,18 @@ export class ButtonPopup extends EventEmitter {
         this.message = message
         this.buttons = buttons
         this.selected = 0 // The selected option
+        this.hovered = -1 // The selected option
         this.visible = visible
         this.marginTop = 4
         this.startIndex = 0
+        this.offsetX = 0
+        this.offsetY = 0
+        this.absoluteValues = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        }
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `ButtonPopup ${this.id} already exists.`
@@ -68,6 +97,14 @@ export class ButtonPopup extends EventEmitter {
             bottomRight: "╝",
             horizontal: "═",
             vertical: "║"
+        },
+        hovered: {
+            topLeft: "╓",
+            topRight: "╖",
+            bottomLeft: "╙",
+            bottomRight: "╜",
+            horizontal: "─",
+            vertical: "│"
         }
     }
 
@@ -79,6 +116,14 @@ export class ButtonPopup extends EventEmitter {
      * @memberof ButtonPopup
      */
     public keyListner(_str: string, key : KeyListenerArgs): void {
+        const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
+        if (checkResult === 1) {
+            this.parsingMouseFrame = true
+            return
+        } else if (checkResult === -1) {
+            this.parsingMouseFrame = false
+            return
+        } // Continue only if the result is 0
         switch (key.name) {
         case "left":
             if (this.selected > 0 && this.selected <= this.buttons.length) {
@@ -169,6 +214,7 @@ export class ButtonPopup extends EventEmitter {
     private manageInput(): ButtonPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
+        if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }
 
@@ -180,7 +226,69 @@ export class ButtonPopup extends EventEmitter {
     private unManageInput(): ButtonPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
+        if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
+    }
+
+    /**
+     * @description This function is used to manage the mouse events on the OptionPopup.
+     * @param {MouseEvent} event - The string of the input.
+     * @memberof OptionPopup
+     */
+    private mouseListener = (event: MouseEvent) => {
+        const x = event.data.x
+        const y = event.data.y
+
+        //this.CM.log(event.name)
+        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+            // The mouse is inside the popup
+            //this.CM.log("Mouse inside popup")
+            if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+                // find the selected button of the click using the this.buttonsAbsoluteValues array
+                for (let i = 0; i < this.buttonsAbsoluteValues.length; i++) {
+                    const button = this.buttonsAbsoluteValues[i]
+                    if (x > button.x && x < button.x + button.width && y > button.y && y < button.y + button.height) {
+                        this.selected = i
+                        this.CM.refresh()
+                        break
+                    }
+                }
+                this.focused = true
+            }
+            if (event.name === "MOUSE_MOTION") {
+                for (let i = 0; i < this.buttonsAbsoluteValues.length; i++) {
+                    const button = this.buttonsAbsoluteValues[i]
+                    if (x > button.x && x < button.x + button.width && y > button.y && y < button.y + button.height) {
+                        this.hovered = i
+                        this.CM.refresh()
+                        break
+                    }
+                }
+            }
+        } else {
+            this.focused = false
+        }
+        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
+            // check if the mouse is on the header of the popup (first three lines)
+            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3/* 3 = header height */) {
+                this.dragging = true
+                this.dragStart = { x: x, y: y }
+            }
+        } else if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === true) {
+            if ((y - this.dragStart.y) + this.absoluteValues.y < 0) {
+                return // prevent the popup to go out of the top of the screen
+            }
+            if ((x - this.dragStart.x) + this.absoluteValues.x < 0) {
+                return // prevent the popup to go out of the left of the screen
+            }
+            this.offsetX += x - this.dragStart.x
+            this.offsetY += y - this.dragStart.y
+            this.dragStart = { x: x, y: y }
+            this.CM.refresh()
+        } else if (event.name === "MOUSE_LEFT_BUTTON_RELEASED" && this.dragging === true) {
+            this.dragging = false
+            this.CM.refresh()
+        }
     }
 
     /**
@@ -196,7 +304,7 @@ export class ButtonPopup extends EventEmitter {
         const buttonGrid: string[][] = []
         let rowLength = 0
         let rows = 0
-
+        
         this.buttons.forEach((button) => {
             const newButtonLength = button.length + (2 * borderSize) + spaceBetweenButtons
             // Divide into rows and columns the buttons (balance the buttons number between rows and columns)
@@ -227,20 +335,29 @@ export class ButtonPopup extends EventEmitter {
         if (title.length > this.CM.Screen.width - (2 * offset)) {
             title = this.CM.truncate(title, this.CM.Screen.width - (2 * offset), true)
         }
-        let msg = this.message ? `${this.message}` : ""
-        if (msg.length > this.CM.Screen.width - (2 * offset)) {
-            msg = this.CM.truncate(msg, this.CM.Screen.width - (2 * offset), true)
-        }
         let windowWidth = title.length + (2 * offset)
-        if (windowWidth < msg.length) {
-            windowWidth = msg.length + (2 * offset)
+        const msg = this.message ? `${this.message}` : ""
+        let mstLines = msg.split("\n")
+        if (mstLines.length > 0) {
+            mstLines = mstLines.map((line) => {
+                if (line.length > this.CM.Screen.width - (2 * offset)) {
+                    return this.CM.truncate(line, this.CM.Screen.width - (2 * offset), true)
+                }
+                return line
+            })
         }
+        mstLines.forEach((line) => {
+            if (line.length > windowWidth) {
+                windowWidth = line.length
+            }
+        })
+        
         if (windowWidth < maxRowLength) {
             windowWidth = maxRowLength + (2 * offset)
         }
         const halfWidthTitle = Math.round((windowWidth - title.length) / 2)
-        const halfWidthMessage = Math.round((windowWidth - msg.length) / 2)
-
+        const halfWidthMessage = mstLines.map((line) => Math.round((windowWidth - line.length) / 2))
+        
         let header = "┌"
         for (let i = 0; i < windowWidth; i++) {
             header += "─"
@@ -248,7 +365,7 @@ export class ButtonPopup extends EventEmitter {
         header += "┐\n"
         header += `│${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}│\n`
         header += "├" + "─".repeat(windowWidth) + "┤\n"
-
+        
         let footer = "└"
         for (let i = 0; i < windowWidth; i++) {
             footer += "─"
@@ -256,16 +373,24 @@ export class ButtonPopup extends EventEmitter {
         footer += "┘\n"
 
         let content = ""
-        if (msg !== "") {
-            content += `│${" ".repeat(halfWidthMessage)}${msg}${" ".repeat(windowWidth - halfWidthMessage - msg.length)}│\n`
+        if (mstLines.length > 0 && mstLines[0].length > 0) {
+            mstLines.forEach((line, index) => {
+                content += `│${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}│\n`
+            })
         }
+        const buttonsYOffset = mstLines.length + 3 // 3 = header height
+        this.buttonsAbsoluteValues = []
+        const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         buttonGrid.forEach((row) => {
             for (let k = 0; k < 3; k++) {
                 const buttonLength = row.map(button => button.length + (2 * borderSize) + spaceBetweenButtons)
                 const sumRowLength = buttonLength.reduce((a, b) => a + b, 0) - spaceBetweenButtons
                 const emptySpace = windowWidth - sumRowLength >= 0 ? windowWidth - sumRowLength : 0
                 row.forEach((button, colIndex) => {
-                    const btnBoxType = this.selected === this.buttons.indexOf(button) ? "selected" : "normal"
+                    let btnBoxType = this.selected === this.buttons.indexOf(button) ? "selected" : "normal"
+                    if (this.hovered === this.buttons.indexOf(button) && this.selected !== this.buttons.indexOf(button)) {
+                        btnBoxType = "hovered"
+                    }
                     if (colIndex < row.length) {
                         if (colIndex === 0) {
                             content += `│${" ".repeat(emptySpace / 2)}`
@@ -287,17 +412,31 @@ export class ButtonPopup extends EventEmitter {
                     } else if (colIndex === row.length) {
                         content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
                     }
+                    const buttonPh: PhisicalValues = {
+                        id: this.buttons.indexOf(button),
+                        x: centerScreen + this.offsetX + emptySpace / 2 + buttonLength.slice(0, colIndex).reduce((a, b) => a + b, 0) + 1,
+                        y: this.marginTop + this.offsetY - (rows + 1) / 2 + this.buttons.indexOf(button) + buttonsYOffset,
+                        width: buttonLength[colIndex] - spaceBetweenButtons + 1,
+                        height: 3
+                    }
+                    // We have to add the real button size and place to the buttonSizes array
+                    this.buttonsAbsoluteValues.push(buttonPh)
                 })
             }
         })
 
-
-
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split("\n").forEach((line, index) => {
-            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
+        const windowDesignLines = windowDesign.split("\n")
+        windowDesignLines.forEach((line, index) => {
+            this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
+        this.absoluteValues = {
+            x: centerScreen + this.offsetX,
+            y: this.marginTop + this.offsetY,
+            width: windowWidth,
+            height: windowDesignLines.length,
+        }
         return this
     }
 }

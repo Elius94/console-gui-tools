@@ -1,5 +1,6 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { MouseEvent } from "../MouseManager.js"
 import PageBuilder, { StyledElement } from "../PageBuilder.js"
 
 /**
@@ -30,6 +31,20 @@ export class CustomPopup extends EventEmitter {
     width: number
     visible: boolean
     marginTop: number
+    parsingMouseFrame = false
+    /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetX: number
+    /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetY: number
+    private absoluteValues: {
+        x: number
+        y: number
+        width: number
+        height: number
+    }
+    dragging = false
+    dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    focused = false
 
     public constructor(id: string, title: string, content: PageBuilder, width: number, visible = false) {
         super()
@@ -41,6 +56,14 @@ export class CustomPopup extends EventEmitter {
         this.width = width
         this.visible = visible
         this.marginTop = 4
+        this.offsetX = 0
+        this.offsetY = 0
+        this.absoluteValues = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        }
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `CustomPopup ${this.id} already exists.`
@@ -58,6 +81,14 @@ export class CustomPopup extends EventEmitter {
      * @memberof CustomPopup
      */
     public keyListner(_str: string, key : KeyListenerArgs): void {
+        const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
+        if (checkResult === 1) {
+            this.parsingMouseFrame = true
+            return
+        } else if (checkResult === -1) {
+            this.parsingMouseFrame = false
+            return
+        } // Continue only if the result is 0
         switch (key.name) {
         case "up":
             this.content.increaseScrollIndex()
@@ -173,6 +204,7 @@ export class CustomPopup extends EventEmitter {
     private manageInput(): CustomPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
+        if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }
 
@@ -184,6 +216,7 @@ export class CustomPopup extends EventEmitter {
     private unManageInput(): CustomPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id/*, this.keyListner.bind(this)*/)
+        if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
     }
 
@@ -228,6 +261,55 @@ export class CustomPopup extends EventEmitter {
     }
 
     /**
+     * @description This function is used to manage the mouse events on the OptionPopup.
+     * @param {MouseEvent} event - The string of the input.
+     * @memberof OptionPopup
+     */
+    private mouseListener = (event: MouseEvent) => {
+        const x = event.data.x
+        const y = event.data.y
+
+        //this.CM.log(event.name)
+        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+            // The mouse is inside the popup
+            //this.CM.log("Mouse inside popup")
+            if (event.name === "MOUSE_WHEEL_DOWN") {
+                this.content.increaseScrollIndex()
+                this.focused = true
+            } else if (event.name === "MOUSE_WHEEL_UP") {
+                this.content.decreaseScrollIndex()
+                this.focused = true
+            } else if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+                // find the selected index of the click and set it as selected
+                this.focused = true
+            }
+        } else {
+            this.focused = false
+        }
+        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
+            // check if the mouse is on the header of the popup (first three lines)
+            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3/* 3 = header height */) {
+                this.dragging = true
+                this.dragStart = { x: x, y: y }
+            }
+        } else if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === true) {
+            if ((y - this.dragStart.y) + this.absoluteValues.y < 0) {
+                return // prevent the popup to go out of the top of the screen
+            }
+            if ((x - this.dragStart.x) + this.absoluteValues.x < 0) {
+                return // prevent the popup to go out of the left of the screen
+            }
+            this.offsetX += x - this.dragStart.x
+            this.offsetY += y - this.dragStart.y
+            this.dragStart = { x: x, y: y }
+            this.CM.refresh()
+        } else if (event.name === "MOUSE_LEFT_BUTTON_RELEASED" && this.dragging === true) {
+            this.dragging = false
+            this.CM.refresh()
+        }
+    }
+
+    /**
      * @description This function is used to draw the CustomPopup to the screen in the middle.
      * @returns {CustomPopup} The instance of the CustomPopup.
      * @memberof CustomPopup
@@ -246,18 +328,26 @@ export class CustomPopup extends EventEmitter {
         header += "├" + "─".repeat(windowWidth) + "┤\n"
 
         const windowDesign = `${header}`
-        const arrWindowDesign = windowDesign.split("\n")
-        arrWindowDesign.forEach((line, index) => {
-            this.CM.Screen.cursorTo(x, this.marginTop + index)
+        const windowDesignLines = windowDesign.split("\n")
+        const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
+        windowDesignLines.forEach((line, index) => {
+            this.CM.Screen.cursorTo(x + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         const _content = this.content.getContent()
         _content.forEach((line: StyledElement[], index: number) => {
-            this.CM.Screen.cursorTo(x, this.marginTop + index + arrWindowDesign.length - 1)
+            this.CM.Screen.cursorTo(x + this.offsetX, this.marginTop + index + windowDesignLines.length - 1 + this.offsetY)
             this.drawLine(line, windowWidth)
         })
-        this.CM.Screen.cursorTo(x, this.marginTop + _content.length + arrWindowDesign.length - 1)
+        this.CM.Screen.cursorTo(x + this.offsetX, this.marginTop + _content.length + windowDesignLines.length - 1 + this.offsetY)
         this.CM.Screen.write({ text: `└${"─".repeat(windowWidth)}┘`, style: { color: "white" } })
+        
+        this.absoluteValues = {
+            x: centerScreen + this.offsetX,
+            y: this.marginTop + this.offsetY,
+            width: windowWidth,
+            height: windowDesignLines.length,
+        }
         return this
     }
 }

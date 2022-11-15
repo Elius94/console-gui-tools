@@ -22,8 +22,15 @@ import ButtonPopup from "./ButtonPopup.js"
 export class ConfirmPopup extends ButtonPopup {
     public constructor(id: string, title: string | undefined, message: string | undefined) {
         super(id, title, message, ["Yes", "No"])
-
         super.keyListner = (_str: string, key : KeyListenerArgs) => {
+            const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
+            if (checkResult === 1) {
+                this.parsingMouseFrame = true
+                return
+            } else if (checkResult === -1) {
+                this.parsingMouseFrame = false
+                return
+            } // Continue only if the result is 0
             switch (key.name) {
             case "left":
                 if (this.selected > 0 && this.selected <= this.buttons.length) {

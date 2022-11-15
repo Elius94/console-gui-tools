@@ -2,6 +2,7 @@ import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import fs from "fs"
 import path from "path"
+import { MouseEvent } from "../MouseManager.js"
 
 /**
  * @description The file descriptions for the file selector popup.
@@ -57,6 +58,20 @@ export class FileSelectorPopup extends EventEmitter {
     startIndex: number
     selected: FileItemObject
     options: FileItemObject[]
+    parsingMouseFrame = false
+    /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetX: number
+    /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
+    offsetY: number
+    private absoluteValues: {
+        x: number
+        y: number
+        width: number
+        height: number
+    }
+    dragging = false
+    dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    focused = false
 
     public constructor(id: string, title: string, basePath: string, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
         super()
@@ -73,6 +88,14 @@ export class FileSelectorPopup extends EventEmitter {
         this.marginTop = 4
         this.startIndex = 0
         this.selected = { text: "../", name: "../", type: "dir", path: path.join(basePath, "../") }
+        this.offsetX = 0
+        this.offsetY = 0
+        this.absoluteValues = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        }
         if (this.CM.widgetsCollection[this.id]) {
             this.CM.unRegisterWidget(this)
             const message = `FileSelectorPopup ${this.id} already exists.`
@@ -151,6 +174,14 @@ export class FileSelectorPopup extends EventEmitter {
      * @memberof FileSelectorPopup
      */
     public keyListner(_str: string, key: KeyListenerArgs) {
+        const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
+        if (checkResult === 1) {
+            this.parsingMouseFrame = true
+            return
+        } else if (checkResult === -1) {
+            this.parsingMouseFrame = false
+            return
+        } // Continue only if the result is 0
         const ind = this.options.indexOf(this.selected)
         switch (key.name) {
         case "down":
@@ -307,6 +338,7 @@ export class FileSelectorPopup extends EventEmitter {
     private manageInput(): FileSelectorPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
+        if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }
 
@@ -318,7 +350,73 @@ export class FileSelectorPopup extends EventEmitter {
     private unManageInput(): FileSelectorPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
+        if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
+    }
+
+    /**
+     * @description This function is used to manage the mouse events on the OptionPopup.
+     * @param {MouseEvent} event - The string of the input.
+     * @memberof OptionPopup
+     */
+    private mouseListener = (event: MouseEvent) => {
+        const x = event.data.x
+        const y = event.data.y
+
+        //this.CM.log(event.name)
+        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+            // The mouse is inside the popup
+            //this.CM.log("Mouse inside popup")
+            if (event.name === "MOUSE_WHEEL_DOWN") {
+                const ind = this.options.indexOf(this.selected)
+                this.setSelected(this.options[(ind + 1) % this.options.length])
+                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                    if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
+                        this.startIndex++
+                    }
+                } else {
+                    this.startIndex = 0
+                }
+                this.focused = true
+            } else if (event.name === "MOUSE_WHEEL_UP") {
+                const ind = this.options.indexOf(this.selected)
+                this.setSelected(this.options[(ind - 1 + this.options.length) % this.options.length])
+                if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
+                    this.startIndex--
+                }
+                this.focused = true
+            } else if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+                // find the selected index of the click and set it as selected
+                const index = y - this.absoluteValues.y - 4
+                if (index >= 0 && index < this.adaptOptions().length) {
+                    this.setSelected(this.options[this.startIndex + index])
+                }
+                this.focused = true
+            }
+        } else {
+            this.focused = false
+        }
+        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
+            // check if the mouse is on the header of the popup (first three lines)
+            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3/* 3 = header height */) {
+                this.dragging = true
+                this.dragStart = { x: x, y: y }
+            }
+        } else if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === true) {
+            if ((y - this.dragStart.y) + this.absoluteValues.y < 0) {
+                return // prevent the popup to go out of the top of the screen
+            }
+            if ((x - this.dragStart.x) + this.absoluteValues.x < 0) {
+                return // prevent the popup to go out of the left of the screen
+            }
+            this.offsetX += x - this.dragStart.x
+            this.offsetY += y - this.dragStart.y
+            this.dragStart = { x: x, y: y }
+            this.CM.refresh()
+        } else if (event.name === "MOUSE_LEFT_BUTTON_RELEASED" && this.dragging === true) {
+            this.dragging = false
+            this.CM.refresh()
+        }
     }
 
     /**
@@ -358,10 +456,18 @@ export class FileSelectorPopup extends EventEmitter {
         })
 
         const windowDesign = `${header}${content}${footer}`
-        windowDesign.split("\n").forEach((line, index) => {
-            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)), this.marginTop + index)
+        const windowDesignLines = windowDesign.split("\n")
+        const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
+        windowDesignLines.forEach((line, index) => {
+            this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
+        this.absoluteValues = {
+            x: centerScreen + this.offsetX,
+            y: this.marginTop + this.offsetY,
+            width: windowWidth,
+            height: windowDesignLines.length,
+        }
         return this
     }
 }

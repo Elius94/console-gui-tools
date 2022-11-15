@@ -5,6 +5,15 @@
 <dd></dd>
 </dl>
 
+## Members
+
+<dl>
+<dt><a href="#x">x</a> : <code>number</code></dt>
+<dd><p>The x offset of the popup to be drown. If 0 it will be placed on the center</p></dd>
+<dt><a href="#y">y</a> : <code>number</code></dt>
+<dd><p>The y offset of the popup to be drown. If 0 it will be placed on the center</p></dd>
+</dl>
+
 ## Constants
 
 <dl>
@@ -108,6 +117,18 @@ Inside this function are defined all the keys that can be pressed and the action
 
 **Kind**: instance method of [<code>ButtonPopup</code>](#ButtonPopup)  
 **Returns**: [<code>ButtonPopup</code>](#ButtonPopup) - <p>The instance of the ButtonPopup.</p>  
+<a name="x"></a>
+
+## x : <code>number</code>
+<p>The x offset of the popup to be drown. If 0 it will be placed on the center</p>
+
+**Kind**: global variable  
+<a name="y"></a>
+
+## y : <code>number</code>
+<p>The y offset of the popup to be drown. If 0 it will be placed on the center</p>
+
+**Kind**: global variable  
 <a name="CM"></a>
 
 ## CM : <code>ConsoleManager</code>

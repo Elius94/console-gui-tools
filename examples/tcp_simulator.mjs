@@ -17,6 +17,7 @@ const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
     logLocation: 1, // Location of the logs page
+    enableMouse: true, // Enable mouse support
     layoutOptions: {
         boxed: true, // Set to true to enable boxed layout
         showTitle: true, // Set to false to hide title
@@ -175,7 +176,8 @@ GUI.on("keypressed", (key) => {
         break
     case "s":
         new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
-            new ButtonPopup("popupConfirmPeriod", "Confirm period", `Period set to ${_period} ms, apply?`, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
+            const msgMultiLine = `Changing period from ${period} to ${_period} ms.\nThis will restart the simulator.\nDo you want to continue?`
+            new ButtonPopup("popupConfirmPeriod", "Confirm period", msgMultiLine, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
                 if (answer === "Yes") {
                     period = _period
                     GUI.warn(`NEW PERIOD: ${period}`)
