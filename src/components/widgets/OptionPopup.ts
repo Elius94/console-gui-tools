@@ -41,15 +41,10 @@ export class OptionPopup extends EventEmitter {
         width: number
         height: number
     }
-    dragging: boolean = false
-    dragStart: {
-        x: number
-        y: number
-    } = {
-        x: 0,
-        y: 0
-    }
-
+    dragging = false
+    dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    focused = false
+    
     public constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible = false) {
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
@@ -235,7 +230,7 @@ export class OptionPopup extends EventEmitter {
     private manageInput(): OptionPopup {
         // Add a command input listener to change mode
         this.CM.setKeyListener(this.id, this.keyListner.bind(this))
-        this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
+        if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }
 
@@ -247,33 +242,63 @@ export class OptionPopup extends EventEmitter {
     private unManageInput(): OptionPopup {
         // Add a command input listener to change mode
         this.CM.removeKeyListener(this.id)
-        this.CM.removeMouseListener(`${this.id}_mouse`)
+        if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
     }
 
+    /**
+     * @description This function is used to manage the mouse events on the OptionPopup.
+     * @param {MouseEvent} event - The string of the input.
+     * @memberof OptionPopup
+     */
     private mouseListener = (event: MouseEvent) => {
         const x = event.data.x
         const y = event.data.y
 
         //this.CM.log(event.name)
-        if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
-            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
-                // The mouse is inside the popup
-                //this.CM.log("Mouse inside popup")
+        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+            // The mouse is inside the popup
+            //this.CM.log("Mouse inside popup")
+            if (event.name === "MOUSE_WHEEL_DOWN") {
+                this.setSelected(this.options[(this.options.indexOf(this.selected) + 1) % this.options.length])
+                if (this.CM.Screen.height - this.marginTop - 4 < this.options.length) {
+                    if (this.selected === this.options[this.adaptOptions().length + this.startIndex]) {
+                        this.startIndex++
+                    }
+                } else {
+                    this.startIndex = 0
+                }
+                this.focused = true
+            } else if (event.name === "MOUSE_WHEEL_UP") {
+                this.setSelected(this.options[(this.options.indexOf(this.selected) - 1 + this.options.length) % this.options.length])
+                if (this.startIndex > 0 && this.selected === this.adaptOptions()[0]) {
+                    this.startIndex--
+                }
+                this.focused = true
+            } else if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
                 // find the selected index of the click and set it as selected
                 const index = y - this.absoluteValues.y - 4
                 if (index >= 0 && index < this.adaptOptions().length) {
                     this.setSelected(this.options[this.startIndex + index])
                 }
+                this.focused = true
             }
+        } else {
+            this.focused = false
         }
-        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false) {
+        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
             // check if the mouse is on the header of the popup (first three lines)
-            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3) {
+            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3/* 3 = header height */) {
                 this.dragging = true
                 this.dragStart = { x: x, y: y }
             }
         } else if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === true) {
+            if ((y - this.dragStart.y) + this.absoluteValues.y < 0) {
+                return // prevent the popup to go out of the top of the screen
+            }
+            if ((x - this.dragStart.x) + this.absoluteValues.x < 0) {
+                return // prevent the popup to go out of the left of the screen
+            }
             this.offsetX += x - this.dragStart.x
             this.offsetY += y - this.dragStart.y
             this.dragStart = { x: x, y: y }
@@ -320,12 +345,13 @@ export class OptionPopup extends EventEmitter {
 
         const windowDesign = `${header}${content}${footer}`
         const windowDesignLines = windowDesign.split("\n")
+        const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         windowDesignLines.forEach((line, index) => {
-            this.CM.Screen.cursorTo(Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)) + this.offsetX, this.marginTop + index + this.offsetY)
+            this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         this.absoluteValues = {
-            x: Math.round((this.CM.Screen.width / 2) - (windowWidth / 2)) + this.offsetX,
+            x: centerScreen + this.offsetX,
             y: this.marginTop + this.offsetY,
             width: windowWidth,
             height: windowDesignLines.length,
