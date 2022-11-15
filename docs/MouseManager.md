@@ -31,6 +31,12 @@
 
 ### new MouseManager(Terminal)
 <p>This class is used to manage the mouse tracking events.</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/201913001-713ca6e7-c277-42f7-ac1a-5f90ee1b144f.gif" alt="MouseManager"></p>
+<p>Emits the following events:</p>
+<ul>
+<li>&quot;mouseevent&quot; when the user confirm</li>
+<li>&quot;error&quot; when an error occurs</li>
+</ul>
 
 
 | Param | Type | Description |

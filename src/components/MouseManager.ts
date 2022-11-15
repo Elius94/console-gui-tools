@@ -66,6 +66,12 @@ export interface MouseEvent {
 /**
  * @class MouseManager
  * @description This class is used to manage the mouse tracking events.
+ * 
+ * ![MouseManager](https://user-images.githubusercontent.com/14907987/201913001-713ca6e7-c277-42f7-ac1a-5f90ee1b144f.gif)
+ * 
+ * Emits the following events: 
+ * - "mouseevent" when the user confirm
+ * - "error" when an error occurs
  * @param {object} Terminal - The terminal object (process.stdout).
  * @emits mouseevent - The mouse event.
  * 

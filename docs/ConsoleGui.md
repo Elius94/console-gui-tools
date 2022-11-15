@@ -35,6 +35,8 @@
     * [.addGenericListeners()](#ConsoleManager+addGenericListeners)
     * [.setKeyListener(id, manageFunction)](#ConsoleManager+setKeyListener)
     * [.removeKeyListener(id)](#ConsoleManager+removeKeyListener)
+    * [.setMouseListener(id, manageFunction)](#ConsoleManager+setMouseListener)
+    * [.removeMouseListener(id)](#ConsoleManager+removeMouseListener)
     * [.registerWiget(widget)](#ConsoleManager+registerWiget)
     * [.unRegisterWidget(id)](#ConsoleManager+unRegisterWidget)
     * ~~[.setHomePage(page)](#ConsoleManager+setHomePage)~~
@@ -132,6 +134,37 @@ CM.setKeyListener('inputPopup', popup.keyListener)
 **Example**  
 ```js
 CM.removeKeyListener('inputPopup')
+```
+<a name="ConsoleManager+setMouseListener"></a>
+
+### consoleManager.setMouseListener(id, manageFunction)
+<p>This function is used to set a mouse listener for a specific widget. The event listener is stored in the eventListenersContainer object.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the widget.</p> |
+| manageFunction | <code>function</code> | <p>The function to call when the key is pressed.</p> |
+
+**Example**  
+```js
+CM.setMouseListener('inputPopup', popup.mouseListener)
+```
+<a name="ConsoleManager+removeMouseListener"></a>
+
+### consoleManager.removeMouseListener(id)
+<p>This function is used to remove a mouse listener for a specific widget. The event listener is removed from the eventListenersContainer object.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the widget.</p> |
+
+**Example**  
+```js
+CM.removeMouseListener('inputPopup')
 ```
 <a name="ConsoleManager+registerWiget"></a>
 

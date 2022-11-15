@@ -153,12 +153,6 @@ class ConsoleManager extends EventEmitter {
                 if (options.enableMouse) {
                     this.mouse = new MouseManager(this.Terminal, this.Input)
                     this.mouse.enableMouse()
-                    this.mouse.on("mouseevent", (event: MouseEvent ) => {
-                        //this.log(`Mouse event: ${JSON.stringify(event)}`)
-                        if (event.data !== undefined) {
-                            // TODO
-                        }
-                    })
                 }
             }
 
@@ -330,12 +324,24 @@ class ConsoleManager extends EventEmitter {
         delete this.eventListenersContainer[id]
     }
 
-    // TODO comment
+    /**
+     * @description This function is used to set a mouse listener for a specific widget. The event listener is stored in the eventListenersContainer object.
+     * @param {string} id - The id of the widget.
+     * @param {function} manageFunction - The function to call when the key is pressed.
+     * @memberof ConsoleManager
+     * @example CM.setMouseListener('inputPopup', popup.mouseListener)
+     */
     public setMouseListener(id: string, manageFunction: (key: MouseEvent) => void): void {
         this.eventListenersContainer[id] = manageFunction
         this.mouse.addListener("mouseevent", this.eventListenersContainer[id])
     }
 
+    /**
+     * @description This function is used to remove a mouse listener for a specific widget. The event listener is removed from the eventListenersContainer object.
+     * @param {string} id - The id of the widget.
+     * @memberof ConsoleManager
+     * @example CM.removeMouseListener('inputPopup')
+     */
     public removeMouseListener(id: string): void {
         this.mouse.removeListener("mouseevent", this.eventListenersContainer[id])
         delete this.eventListenersContainer[id]

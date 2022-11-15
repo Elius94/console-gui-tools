@@ -79,7 +79,7 @@ export class DoubleLayout {
      * @param {PageBuilder} page the page to be added
      * @memberof DoubleLayout 
      */
-    public setPage(page: PageBuilder, index: number): void {  // TODO: 
+    public setPage(page: PageBuilder, index: number): void {
         if (index == 0) {
             this.page1 = page
         } else {
