@@ -254,6 +254,24 @@ export class ButtonPopup extends EventEmitter {
                     }
                 }
                 this.focused = true
+                return
+            }
+            if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") {
+                if (this.focused) {
+                    if (this.buttons && this.buttons.length === 2 && this.buttons[0].toLowerCase() === "yes" && this.buttons[1].toLowerCase() === "no") { // If the popup is a yes/no popup
+                        if (this.selected === 0) {
+                            this.emit("confirm")
+                        } else {
+                            this.emit("cancel")
+                        }
+                    } else {
+                        this.emit("confirm", this.buttons[this.selected])
+                    }
+                    this.CM.unRegisterWidget(this)
+                    this.hide()
+                    //delete this
+                }
+                return
             }
             if (event.name === "MOUSE_MOTION") {
                 for (let i = 0; i < this.buttonsAbsoluteValues.length; i++) {

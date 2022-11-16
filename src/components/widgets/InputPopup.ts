@@ -315,13 +315,13 @@ export class InputPopup extends EventEmitter {
             //this.CM.log("Mouse inside popup")
             if (event.name === "MOUSE_WHEEL_DOWN") {
                 if (this.numeric) {
-                    this.value = Number(this.value) + 1
+                    this.value = Number(this.value) - 1
                     this.CM.refresh()
                 }
                 this.focused = true
             } else if (event.name === "MOUSE_WHEEL_UP") {
                 if (this.numeric) {
-                    this.value = Number(this.value) - 1
+                    this.value = Number(this.value) + 1
                     this.CM.refresh()
                 }
                 this.focused = true
