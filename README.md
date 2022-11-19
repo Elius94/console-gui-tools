@@ -53,6 +53,9 @@ Enable mouse support. It works well on most linux terminals, but it doesn't work
 
 ![Mouse Example](https://user-images.githubusercontent.com/14907987/201913001-713ca6e7-c277-42f7-ac1a-5f90ee1b144f.gif)
 
+### options.overrideConsole
+Override the console.log, console.info, console.warn, console.error, console.debug functions to print the logs on the screen.
+
 ### options.layoutOptions
 The options that will be passed to the layout.
 ```js
@@ -316,6 +319,31 @@ If we are in quad layout mode or double horizontal layout, we can change the asp
 </details>
  
 # Widgets
+There are two types of widgets: the "popup" widgets and the "control" widgets.
+
+## Control widgets
+The control widgets are the widgets that are displayed on the page and are not "popup" widgets.
+They has an absolute position and size and are not affected by the layout.
+Introduced since the version 1.1.42 of the library.
+Currently there is only the base class for the control widgets, "Conrol" class.
+It is possible to create a custom control widget by extending the Control class and implementing the draw method.
+Example:
+ ```ts
+const widget1 = new InPageWidgetBuilder()
+widget1.addRow({ text: "┌────────┐", color: "yellow", style: "bold" })
+widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })
+widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
+
+const button1 = new Control("btn1", true, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+button1.on("relativeMouse", (event) => {
+    if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") console.log("Button clicked!")
+})
+```
+Result:
+![InPageWidget](https://user-images.githubusercontent.com/14907987/202858694-82ca7f26-2a7a-4210-92da-fbbd40ad10b4.gif)
+In the next versions of the library, more control widgets will be added as Control extensions.
+
+## Popup widgets
 ## To create an option popup (select)
 ```js
 new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
@@ -457,7 +485,8 @@ Emits the following events:
 All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
 
 ## Console.log and other logging tools
-To log you have to use the following functions:
+By default (since version 1.1.42) the console.log|warn|error|info are replaced by a custom function that will show the message in the apposite GUI space. To disable this override you can set the option `overrideConsole` to false in the options object of the constructor.
+They are replaced by theese functions (that are also available in the ConsoleManager instance):
 
 ```js
 GUI.log(`NEW MIN VALUE: ${min}`)
@@ -475,8 +504,7 @@ When the logs exceed the limit, you can scroll up and down with up and down arro
 
 ![Animation](https://user-images.githubusercontent.com/14907987/162482410-bfe26922-88f5-46bd-8659-059fcc698cf8.gif)
 
-This library is in development now. New componets will come asap.
-
+> This library is in development now. New componets will come asap.
 
 ## License and copyright
 
