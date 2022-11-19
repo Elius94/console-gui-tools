@@ -321,11 +321,11 @@ If we are in quad layout mode or double horizontal layout, we can change the asp
 # Widgets
 There are two types of widgets: the "popup" widgets and the "control" widgets.
 
-## Control widgets
+## Control widgets (since 1.1.42) [New!](docs/Control.md)
 The control widgets are the widgets that are displayed on the page and are not "popup" widgets.
 They has an absolute position and size and are not affected by the layout.
 Introduced since the version 1.1.42 of the library.
-Currently there is only the base class for the control widgets, "Conrol" class.
+Currently there is only the base class for the control widgets, "Control" class and the "Button" class.
 It is possible to create a custom control widget by extending the Control class and implementing the draw method.
 Example:
  ```ts
@@ -342,6 +342,32 @@ button1.on("relativeMouse", (event) => {
 Result:
 
 ![InPageWidget](https://user-images.githubusercontent.com/14907987/202858694-82ca7f26-2a7a-4210-92da-fbbd40ad10b4.gif)
+
+### Button (since 1.2.0) [New!](docs/Button.md)
+The button is a control widget that basically do the previous example for you in a simpler way.
+
+`new Button(id, text, width, height, x, y, style, visible, enabled, onClick, onRelease)`
+<p>This class is an overload of Control that is used to create a button.</p>
+<p><img src="https://user-images.githubusercontent.com/14907987/202866824-047503fc-9af6-4990-aa9a-57a3d691f6b0.gif" alt="Button"></p>
+<p>Emits the following events:</p>
+<ul>
+<li>&quot;click&quot; when the user confirm</li>
+<li>&quot;relese&quot; when the user cancel</li>
+</ul>
+
+**Example**  
+```js
+new Button("btnRun", "Run me!", 10, 3, 21, 18, 
+     { 
+         color: "magentaBright", 
+         bold: true, 
+         italic: true,
+         borderColor: "green"
+     },
+     () => {
+         GUI.log("Button clicked!")
+     })
+```
 
 In the next versions of the library, more control widgets will be added as Control extensions.
 
