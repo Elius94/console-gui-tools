@@ -1,7 +1,8 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
-import PageBuilder, { StyledElement } from "../PageBuilder.js"
+import PageBuilder from "../PageBuilder.js"
+import { boxChars, PhisicalValues, StyledElement, truncate } from "../Utils.js"
 
 /**
  * @class CustomPopup
@@ -36,12 +37,7 @@ export class CustomPopup extends EventEmitter {
     offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
     offsetY: number
-    private absoluteValues: {
-        x: number
-        y: number
-        width: number
-        height: number
-    }
+    private absoluteValues: PhisicalValues
     dragging = false
     dragStart: { x: number, y: number } = { x: 0, y: 0 }
     focused = false
@@ -64,13 +60,13 @@ export class CustomPopup extends EventEmitter {
             width: 0,
             height: 0,
         }
-        if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this)
+        if (this.CM.popupCollection[this.id]) {
+            this.CM.unregisterPopup(this)
             const message = `CustomPopup ${this.id} already exists.`
             this.CM.error(message)
             throw new Error(message)
         }
-        this.CM.registerWiget(this)
+        this.CM.registerPopup(this)
     }
 
     /**
@@ -99,7 +95,7 @@ export class CustomPopup extends EventEmitter {
         case "return":
             {
                 this.emit("confirm")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -107,7 +103,7 @@ export class CustomPopup extends EventEmitter {
         case "escape":
             {
                 this.emit("cancel")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -115,7 +111,7 @@ export class CustomPopup extends EventEmitter {
         case "q":
             {
                 this.CM.emit("exit")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -195,6 +191,17 @@ export class CustomPopup extends EventEmitter {
     public isVisible(): boolean {
         return this.visible
     }
+    
+    /**
+     * @description This function is used to return the PhisicalValues of the popup (x, y, width, height).
+     * @memberof CustomPopup
+     * @private
+     * @returns {CustomPopup} The instance of the CustomPopup.
+     * @memberof CustomPopup
+     */
+    public getPosition(): PhisicalValues {
+        return this.absoluteValues
+    }
 
     /**
      * @description This function is used to add the CustomPopup key listener callback to te ConsoleManager.
@@ -239,7 +246,7 @@ export class CustomPopup extends EventEmitter {
             // remove truncated text
             for (let i = newLine.length - 1; i >= 0; i--) {
                 if (newLine[i].text.length > diff + offset) {
-                    newLine[i].text = this.CM.truncate(newLine[i].text, (newLine[i].text.length - diff) - offset, true)
+                    newLine[i].text = truncate(newLine[i].text, (newLine[i].text.length - diff) - offset, true)
                     break
                 } else {
                     diff -= newLine[i].text.length
@@ -252,11 +259,11 @@ export class CustomPopup extends EventEmitter {
                 unformattedLine += element.text
             })
         }
-        newLine.unshift({ text: "│", style: { color: "white" } })
+        newLine.unshift({ text: boxChars["normal"].vertical, style: { color: "white" } })
         if (unformattedLine.length <= width) {
             newLine.push({ text: `${" ".repeat((width - unformattedLine.length))}`, style: { color: "" } })
         }
-        newLine.push({ text: "│", style: { color: "white" } })
+        newLine.push({ text: boxChars["normal"].vertical, style: { color: "white" } })
         this.CM.Screen.write(...newLine)
     }
 
@@ -319,13 +326,13 @@ export class CustomPopup extends EventEmitter {
         const windowWidth = this.title.length > this.width ? this.title.length + (2 * offset) : this.width + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
         const x = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
-        let header = "┌"
+        let header = boxChars["normal"].topLeft
         for (let i = 0; i < windowWidth; i++) {
-            header += "─"
+            header += boxChars["normal"].horizontal
         }
-        header += "┐\n"
-        header += `│${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}│\n`
-        header += "├" + "─".repeat(windowWidth) + "┤\n"
+        header += `${boxChars["normal"].topRight}\n`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
 
         const windowDesign = `${header}`
         const windowDesignLines = windowDesign.split("\n")
@@ -340,7 +347,7 @@ export class CustomPopup extends EventEmitter {
             this.drawLine(line, windowWidth)
         })
         this.CM.Screen.cursorTo(x + this.offsetX, this.marginTop + _content.length + windowDesignLines.length - 1 + this.offsetY)
-        this.CM.Screen.write({ text: `└${"─".repeat(windowWidth)}┘`, style: { color: "white" } })
+        this.CM.Screen.write({ text: `${boxChars["normal"].bottomLeft}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].bottomRight}`, style: { color: "white" } })
         
         this.absoluteValues = {
             x: centerScreen + this.offsetX,

@@ -1,14 +1,7 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
-
-interface PhisicalValues {
-    x: number
-    y: number
-    width: number
-    height: number
-    id?: number 
-}
+import { boxChars, PhisicalValues, truncate } from "../Utils.js"
 
 /**
  * @class ButtonPopup
@@ -72,40 +65,13 @@ export class ButtonPopup extends EventEmitter {
             width: 0,
             height: 0,
         }
-        if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this)
+        if (this.CM.popupCollection[this.id]) {
+            this.CM.unregisterPopup(this)
             const message = `ButtonPopup ${this.id} already exists.`
             this.CM.error(message)
             throw new Error(message)
         }
-        this.CM.registerWiget(this)
-    }
-
-    boxChars = {
-        normal: {
-            topLeft: "┌",
-            topRight: "┐",
-            bottomLeft: "└",
-            bottomRight: "┘",
-            horizontal: "─",
-            vertical: "│"
-        },
-        selected: {
-            topLeft: "╔",
-            topRight: "╗",
-            bottomLeft: "╚",
-            bottomRight: "╝",
-            horizontal: "═",
-            vertical: "║"
-        },
-        hovered: {
-            topLeft: "╓",
-            topRight: "╖",
-            bottomLeft: "╙",
-            bottomRight: "╜",
-            horizontal: "─",
-            vertical: "│"
-        }
+        this.CM.registerPopup(this)
     }
 
     /**
@@ -142,7 +108,7 @@ export class ButtonPopup extends EventEmitter {
         case "return":
             {
                 this.emit("confirm", this.buttons[this.selected])
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -150,7 +116,7 @@ export class ButtonPopup extends EventEmitter {
         case "escape":
             {
                 this.emit("cancel")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -158,7 +124,7 @@ export class ButtonPopup extends EventEmitter {
         case "q":
             {
                 this.CM.emit("exit")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -204,6 +170,17 @@ export class ButtonPopup extends EventEmitter {
      */
     public isVisible(): boolean {
         return this.visible
+    }
+
+    /**
+     * @description This function is used to return the PhisicalValues of the popup (x, y, width, height).
+     * @memberof ButtonPopup
+     * @private
+     * @returns {ButtonPopup} The instance of the ButtonPopup.
+     * @memberof ButtonPopup
+     */
+    public getPosition(): PhisicalValues {
+        return this.absoluteValues
     }
 
     /**
@@ -267,7 +244,7 @@ export class ButtonPopup extends EventEmitter {
                     } else {
                         this.emit("confirm", this.buttons[this.selected])
                     }
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }
@@ -351,7 +328,7 @@ export class ButtonPopup extends EventEmitter {
         })
         let title = `${this.title}`
         if (title.length > this.CM.Screen.width - (2 * offset)) {
-            title = this.CM.truncate(title, this.CM.Screen.width - (2 * offset), true)
+            title = truncate(title, this.CM.Screen.width - (2 * offset), true)
         }
         let windowWidth = title.length + (2 * offset)
         const msg = this.message ? `${this.message}` : ""
@@ -359,7 +336,7 @@ export class ButtonPopup extends EventEmitter {
         if (mstLines.length > 0) {
             mstLines = mstLines.map((line) => {
                 if (line.length > this.CM.Screen.width - (2 * offset)) {
-                    return this.CM.truncate(line, this.CM.Screen.width - (2 * offset), true)
+                    return truncate(line, this.CM.Screen.width - (2 * offset), true)
                 }
                 return line
             })
@@ -376,24 +353,24 @@ export class ButtonPopup extends EventEmitter {
         const halfWidthTitle = Math.round((windowWidth - title.length) / 2)
         const halfWidthMessage = mstLines.map((line) => Math.round((windowWidth - line.length) / 2))
         
-        let header = "┌"
+        let header = boxChars["normal"].topLeft
         for (let i = 0; i < windowWidth; i++) {
-            header += "─"
+            header += boxChars["normal"].horizontal
         }
-        header += "┐\n"
-        header += `│${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}│\n`
-        header += "├" + "─".repeat(windowWidth) + "┤\n"
+        header += `${boxChars["normal"].topRight}\n`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}${boxChars["normal"].vertical}\n`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
         
-        let footer = "└"
+        let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
-            footer += "─"
+            footer += boxChars["normal"].horizontal
         }
-        footer += "┘\n"
+        footer += `${boxChars["normal"].bottomRight}\n`
 
         let content = ""
         if (mstLines.length > 0 && mstLines[0].length > 0) {
             mstLines.forEach((line, index) => {
-                content += `│${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}│\n`
+                content += `${boxChars["normal"].vertical}${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}${boxChars["normal"].vertical}\n`
             })
         }
         const buttonsYOffset = mstLines.length + 3 // 3 = header height
@@ -411,24 +388,24 @@ export class ButtonPopup extends EventEmitter {
                     }
                     if (colIndex < row.length) {
                         if (colIndex === 0) {
-                            content += `│${" ".repeat(emptySpace / 2)}`
+                            content += `${boxChars["normal"].vertical}${" ".repeat(emptySpace / 2)}`
                         }
                         if (k === 0) {
-                            content += `${this.boxChars[btnBoxType].topLeft}${this.boxChars[btnBoxType].horizontal.repeat(borderSize > 1 ? 2 * (borderSize - 1) + button.length : button.length)}${this.boxChars[btnBoxType].topRight}`
+                            content += `${boxChars[btnBoxType].topLeft}${boxChars[btnBoxType].horizontal.repeat(borderSize > 1 ? 2 * (borderSize - 1) + button.length : button.length)}${boxChars[btnBoxType].topRight}`
                         } else if (k === 1) {
-                            content += `${this.boxChars[btnBoxType].vertical}${borderSize > 1 ? " ".repeat(borderSize-1):""}${button}${borderSize > 1 ? " ".repeat(borderSize-1):""}${this.boxChars[btnBoxType].vertical}`
+                            content += `${boxChars[btnBoxType].vertical}${borderSize > 1 ? " ".repeat(borderSize-1):""}${button}${borderSize > 1 ? " ".repeat(borderSize-1):""}${boxChars[btnBoxType].vertical}`
                         } else if (k === 2) {
-                            content += `${this.boxChars[btnBoxType].bottomLeft}${this.boxChars[btnBoxType].horizontal.repeat(borderSize > 1 ? 2 * (borderSize - 1) + button.length : button.length)}${this.boxChars[btnBoxType].bottomRight}`
+                            content += `${boxChars[btnBoxType].bottomLeft}${boxChars[btnBoxType].horizontal.repeat(borderSize > 1 ? 2 * (borderSize - 1) + button.length : button.length)}${boxChars[btnBoxType].bottomRight}`
                         } else {
                             this.CM.error("Error in ButtonPopup draw function")
                         }
                         if (colIndex === row.length - 1) {
-                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
+                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}\n`
                         } else {
                             content += " ".repeat(spaceBetweenButtons)
                         }
                     } else if (colIndex === row.length) {
-                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + "│\n"
+                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}\n`
                     }
                     const buttonPh: PhisicalValues = {
                         id: this.buttons.indexOf(button),
