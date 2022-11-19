@@ -110,7 +110,7 @@ const defineCustomWidget = () => {
     widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
 
     //id: string, visible = false, attributes: PhisicalValues, children: PageBuilder
-    const button1 = new Control("btn1", false, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+    const button1 = new Control("btn1", true, { x: 30, y: 18, width: 10, height: 3 }, widget1)
     button1.on("relativeMouse", (event) => {
         // The relative mouse event is triggered with the mouse position relative to the widget
         //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
@@ -124,7 +124,6 @@ const defineCustomWidget = () => {
             }
         }
     })
-    button1.show()
 }
 
 /**
