@@ -340,7 +340,9 @@ button1.on("relativeMouse", (event) => {
 })
 ```
 Result:
+
 ![InPageWidget](https://user-images.githubusercontent.com/14907987/202858694-82ca7f26-2a7a-4210-92da-fbbd40ad10b4.gif)
+
 In the next versions of the library, more control widgets will be added as Control extensions.
 
 ## Popup widgets
