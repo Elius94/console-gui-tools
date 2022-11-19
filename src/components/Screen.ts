@@ -1,6 +1,6 @@
 import { EventEmitter } from "events"
 import chalk from "chalk"
-import { StyledElement, StyleObject } from "./PageBuilder.js"
+import { StyledElement, StyleObject } from "./Utils.js"
 chalk.level = 1
 
 /**

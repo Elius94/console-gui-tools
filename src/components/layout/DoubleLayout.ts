@@ -1,6 +1,6 @@
 import { ForegroundColorName } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
-import { StyledElement } from "../PageBuilder.js"
+import { boxChars, StyledElement, truncate } from "../Utils.js"
 
 /**
  * @description The type containing all the possible options for the DoubleLayout.
@@ -248,7 +248,7 @@ export class DoubleLayout {
                     // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
                         if (newLine[i][j].text.length > diff + offset) {
-                            newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, false)
+                            newLine[i][j].text = truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, false)
                             break
                         } else {
                             diff -= newLine[i][j].text.length
@@ -262,25 +262,25 @@ export class DoubleLayout {
             })
         }
         if (dir === "vertical") {
-            if (this.options.boxed) newLine[0].unshift({ text: "│", style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
+            if (this.options.boxed) newLine[0].unshift({ text: boxChars["normal"].vertical, style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
             if (unformattedLine[0].length <= this.CM.Screen.width - bsize) {
                 newLine[0].push({ text: `${" ".repeat((this.CM.Screen.width - unformattedLine[0].length) - bsize)}`, style: { color: "" } })
             }
-            if (this.options.boxed) newLine[0].push({ text: "│", style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
+            if (this.options.boxed) newLine[0].push({ text: boxChars["normal"].vertical, style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
             this.CM.Screen.write(...newLine[0])
         } else {
             const ret: StyledElement[] = []
-            if (this.options.boxed) ret.push({ text: "│", style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
+            if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
             ret.push(...newLine[0])
             if (unformattedLine[0].length <= this.realWidth[0] - bsize) {
                 ret.push({ text: `${" ".repeat((this.realWidth[0] - unformattedLine[0].length) - (bsize > 0 ? 2 : 0))}`, style: { color: "" } })
             }
-            if (this.options.boxed) ret.push({ text: "│", style: { color: this.options.boxColor, bold: this.boxBold } })
+            if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.options.boxColor, bold: this.boxBold } })
             ret.push(...newLine[1])
             if (unformattedLine[1].length <= this.realWidth[1] - bsize) {
                 ret.push({ text: `${" ".repeat((this.realWidth[1] - unformattedLine[1].length) - (bsize > 0 ? 1 : 0))}`, style: { color: "" } })
             }
-            if (this.options.boxed) ret.push({ text: "│", style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+            if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
             this.CM.Screen.write(...ret)
         }
     }
@@ -295,25 +295,25 @@ export class DoubleLayout {
         this.isOdd = this.CM.Screen.width % 2 === 1
         if (!this.options.direction || this.options.direction === "vertical") {
             this.realWidth = [Math.round(this.CM.Screen.width * 1), Math.round(this.CM.Screen.width * 1)]
-            const trimmedTitle = [this.CM.truncate(this.page1Title, this.realWidth[0] - 4, false), this.CM.truncate(this.page2Title, this.realWidth[1] - 4, false)]
+            const trimmedTitle = [truncate(this.page1Title, this.realWidth[0] - 4, false), truncate(this.page2Title, this.realWidth[1] - 4, false)]
             if (this.options.boxed) { // Draw pages with borders
                 if (this.options.showTitle) {
-                    this.CM.Screen.write({ text: `┌─${trimmedTitle[0]}${"─".repeat(this.CM.Screen.width - trimmedTitle[0].length - 3)}┐`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${trimmedTitle[0]}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - trimmedTitle[0].length - 3)}${boxChars["normal"].topRight}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
                 } else {
-                    this.CM.Screen.write({ text: `┌─${"─".repeat(this.CM.Screen.width - 3)}┐`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 3)}${boxChars["normal"].topRight}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
                 this.page1.getContent().forEach((line: StyledElement[]) => {
                     this.drawLine(line, undefined, 0)
                 })
                 if (this.options.showTitle) {
-                    this.CM.Screen.write({ text: `├─${trimmedTitle[1]}${"─".repeat(this.CM.Screen.width - trimmedTitle[1].length - 3)}┤`, style: { color: this.options.boxColor, bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${boxChars["normal"].left}${boxChars["normal"].horizontal}${trimmedTitle[1]}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - trimmedTitle[1].length - 3)}${boxChars["normal"].right}`, style: { color: this.options.boxColor, bold: this.boxBold } })
                 } else {
-                    this.CM.Screen.write({ text: `├${"─".repeat(this.CM.Screen.width - 2)}┤`, style: { color: this.options.boxColor, bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 2)}${boxChars["normal"].right}`, style: { color: this.options.boxColor, bold: this.boxBold } })
                 }
                 this.page2.getContent().forEach((line: StyledElement[]) => {
                     this.drawLine(line, undefined, 1)
                 })
-                this.CM.Screen.write({ text: `└${"─".repeat(this.CM.Screen.width - 2)}┘`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+                this.CM.Screen.write({ text: `${boxChars["normal"].bottomLeft}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 2)}${boxChars["normal"].bottomRight}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
             } else { // Draw pages without borders
                 if (this.options.showTitle) {
                     this.CM.Screen.write({ text: `${trimmedTitle[0]}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
@@ -330,21 +330,21 @@ export class DoubleLayout {
             }
         } else { // Draw horizontally  
             this.realWidth = [Math.round(this.CM.Screen.width * this.proportions[0]), Math.round(this.CM.Screen.width * this.proportions[1])]
-            const trimmedTitle = [this.CM.truncate(this.page1Title, this.realWidth[0] - 4, false), this.CM.truncate(this.page2Title, this.realWidth[1] - 3, false)]
+            const trimmedTitle = [truncate(this.page1Title, this.realWidth[0] - 4, false), truncate(this.page2Title, this.realWidth[1] - 3, false)]
             const maxPageHeight = Math.max(this.page1.getViewedPageHeight(), this.page2.getViewedPageHeight())
             const p1 = this.page1.getContent()
             const p2 = this.page2.getContent()
             if (this.options.boxed) { // Draw pages with borders
                 if (this.options.showTitle) {
-                    this.CM.Screen.write({ text: `┌─${trimmedTitle[0]}${"─".repeat(this.realWidth[0] - trimmedTitle[0].length - 3)}┬`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `─${trimmedTitle[1]}${"─".repeat(this.realWidth[1] - trimmedTitle[1].length - 2)}┐`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${trimmedTitle[0]}${boxChars["normal"].horizontal.repeat(this.realWidth[0] - trimmedTitle[0].length - 3)}${boxChars["normal"].top}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `${boxChars["normal"].horizontal}${trimmedTitle[1]}${boxChars["normal"].horizontal.repeat(this.realWidth[1] - trimmedTitle[1].length - 2)}${boxChars["normal"].topRight}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
                 } else {
-                    this.CM.Screen.write({ text: `┌─${"─".repeat(this.realWidth[0] - 3)}┬`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `─${"─".repeat(this.realWidth[1] - 2)}┐`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+                    this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.realWidth[0] - 3)}${boxChars["normal"].top}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.realWidth[1] - 2)}${boxChars["normal"].topRight}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
                 }
                 for (let i = 0; i < maxPageHeight; i++) {
                     this.drawLine(p1[i] || [{ text: "", style: { color: "" } }], p2[i] || [{ text: "", style: { color: "" } }])
                 }
                 // Draw the bottom border
-                this.CM.Screen.write({ text: `└${"─".repeat(this.realWidth[0] - 2)}┴`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `${"─".repeat(this.realWidth[1] - 1)}┘`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+                this.CM.Screen.write({ text: `${boxChars["normal"].bottomLeft}${boxChars["normal"].horizontal.repeat(this.realWidth[0] - 2)}${boxChars["normal"].bottom}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } }, { text: `${boxChars["normal"].horizontal.repeat(this.realWidth[1] - 1)}${boxChars["normal"].bottomRight}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
             } else { // Draw pages without borders
                 if (this.options.showTitle) {
                     this.CM.Screen.write({ text: `${trimmedTitle[0]}${" ".repeat(this.realWidth[0] - trimmedTitle[0].length)}${trimmedTitle[1]}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
