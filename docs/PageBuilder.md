@@ -15,6 +15,7 @@
         * [.setRowsPerPage(rowsPerPage)](#PageBuilder+setRowsPerPage) ⇒ <code>void</code>
         * [.increaseScrollIndex()](#PageBuilder+increaseScrollIndex) ⇒ <code>void</code>
         * [.decreaseScrollIndex()](#PageBuilder+decreaseScrollIndex) ⇒ <code>void</code>
+        * [.clear()](#PageBuilder+clear) ⇒ <code>void</code>
     * _static_
         * [.scrollIndex](#PageBuilder.scrollIndex) : <code>number</code>
         * [.content](#PageBuilder.content) : <code>Array.&lt;Array.&lt;object&gt;&gt;</code>
@@ -139,6 +140,17 @@ page.increaseScrollIndex()
 **Example**  
 ```js
 page.increaseScrollIndex()
+```
+<a name="PageBuilder+clear"></a>
+
+### pageBuilder.clear() ⇒ <code>void</code>
+<p>Clears the page.</p>
+
+**Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
+**Since**: 1.2.0  
+**Example**  
+```js
+page.clear()
 ```
 <a name="PageBuilder.scrollIndex"></a>
 

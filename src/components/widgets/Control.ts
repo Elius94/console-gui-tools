@@ -50,12 +50,13 @@ export class Control extends EventEmitter {
     id: string
     visible: boolean
     private parsingMouseFrame = false
-    absoluteValues: PhisicalValues
+    absoluteValues: PhisicalValues = { x: 0, y: 0, width: 0, height: 0 }
     children: InPageWidgetBuilder
     draggable = true
     dragging = false
     private dragStart: { x: number, y: number } = { x: 0, y: 0 }
     focused = false
+    hovered = false
 
     public constructor(id: string, visible: boolean, attributes: PhisicalValues, children: InPageWidgetBuilder) {
         super()
@@ -105,6 +106,19 @@ export class Control extends EventEmitter {
             break
         }
         this.CM.refresh()
+    }
+
+    /**
+     * getContent()
+     * @description This function is used to get the content of the Control.
+     * @returns {InPageWidgetBuilder} The content of the Control.
+     * @memberof Control
+     * @example ```ts
+     * const content = control.getContent()
+     * ```
+     */
+    public getContent(): InPageWidgetBuilder {
+        return this.children
     }
 
     /**
@@ -221,7 +235,7 @@ export class Control extends EventEmitter {
         const y = event.data.y
 
         //this.CM.log(event.name)
-        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y <= this.absoluteValues.y + this.absoluteValues.height) {
             // The mouse is inside the popup
             //this.CM.log("Mouse inside popup")
             // Check if there is no popup over this control
@@ -255,15 +269,19 @@ export class Control extends EventEmitter {
                 return
             }
             if (event.name === "MOUSE_MOTION") {
-                //TODO check if it's necessary
                 this.focused = true
+                if (!this.hovered) this.hovered = true
             }
         } else {
             if (event.name !== "MOUSE_MOTION") this.focused = false // only if you click outside the widget
+            if (this.hovered) {
+                this.hovered = false
+                this.emit("hoverOut", event)
+            }
         }
         if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
             // check if the mouse is on the header of the popup (first three lines)
-            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3/* 3 = header height */) {
+            if (x > this.absoluteValues.x && x <= this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y <= this.absoluteValues.y + this.absoluteValues.height) {
                 this.dragging = true
                 this.dragStart = { x: x, y: y }
             }

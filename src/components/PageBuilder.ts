@@ -158,6 +158,17 @@ export class PageBuilder {
             this.scrollIndex--
         }
     }
+
+    /**
+     * @description Clears the page.
+     * @returns {void}
+     * @memberOf PageBuilder
+     * @example page.clear()
+     * @since 1.2.0
+     */
+    public clear(): void {
+        this.content = []
+    }
 }
 
 export default PageBuilder

@@ -12,7 +12,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup, Control, InPageWidgetBuilder } from "../dist/ConsoleGui.js"
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup, Control, InPageWidgetBuilder, Button } from "../dist/ConsoleGui.js"
 const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
@@ -110,7 +110,7 @@ const defineCustomWidget = () => {
     widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
 
     //id: string, visible = false, attributes: PhisicalValues, children: PageBuilder
-    const button1 = new Control("btn1", true, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+    const button1 = new Control("btn1", true, { x: 32, y: 18, width: 10, height: 3 }, widget1)
     button1.on("relativeMouse", (event) => {
         // The relative mouse event is triggered with the mouse position relative to the widget
         //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
@@ -124,6 +124,19 @@ const defineCustomWidget = () => {
             }
         }
     })
+}
+
+const defineButton = () => {
+    new Button("btnRun", "Run me!", 10, 3, 21, 18, 
+        { 
+            color: "magentaBright", 
+            bold: true, 
+            italic: true,
+            borderColor: "green"
+        },
+        () => {
+            GUI.log("Button clicked!")
+        })
 }
 
 /**
@@ -263,6 +276,7 @@ const closeApp = () => {
 
 drawGui()
 defineCustomWidget()
+defineButton()
 
 // If GUI.options.overrideConsole is true, the console.log|warn|error|info will be overriden to show the messages in the GUI console
 console.log("Press 'q' to quit")

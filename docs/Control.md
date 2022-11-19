@@ -21,6 +21,7 @@
 * [Control](#Control) ⇐ <code>EventEmitter</code>
     * [new Control(id, visible, attributes, children)](#new_Control_new)
     * [.keyListner(_str, key)](#Control+keyListner)
+    * [.getContent()](#Control+getContent) ⇒ <code>InPageWidgetBuilder</code>
     * [.focus()](#Control+focus) ⇒ [<code>Control</code>](#Control)
     * [.unfocus()](#Control+unfocus) ⇒ [<code>Control</code>](#Control)
     * [.show()](#Control+show) ⇒ [<code>Control</code>](#Control)
@@ -68,6 +69,15 @@ Inside this function are defined all the keys that can be pressed and the action
 | _str | <code>string</code> | <p>The string of the input.</p> |
 | key | <code>any</code> | <p>The key object.</p> |
 
+<a name="Control+getContent"></a>
+
+### control.getContent() ⇒ <code>InPageWidgetBuilder</code>
+<p>This function is used to get the content of the Control.</p>
+
+**Kind**: instance method of [<code>Control</code>](#Control)  
+**Returns**: <code>InPageWidgetBuilder</code> - <p>The content of the Control.</p>  
+**Example**  
+```tsconst content = control.getContent()```
 <a name="Control+focus"></a>
 
 ### control.focus() ⇒ [<code>Control</code>](#Control)
