@@ -53,7 +53,7 @@ export class ConfirmPopup extends ButtonPopup {
                     } else {
                         this.emit("cancel")
                     }
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }
@@ -61,7 +61,7 @@ export class ConfirmPopup extends ButtonPopup {
             case "escape":
                 {
                     this.emit("cancel")
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }
@@ -69,7 +69,7 @@ export class ConfirmPopup extends ButtonPopup {
             case "q":
                 {
                     this.CM.emit("exit")
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }

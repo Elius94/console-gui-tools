@@ -1,6 +1,6 @@
 import { ForegroundColorName } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
-import { StyledElement } from "../PageBuilder.js"
+import { boxChars, StyledElement, truncate } from "../Utils.js"
 
 /**
  * @description The type containing all the possible options for the QuadLayout.
@@ -301,7 +301,7 @@ export class QuadLayout {
                     // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
                         if (newLine[i][j].text.length > diff + offset) {
-                            newLine[i][j].text = this.CM.truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, false)
+                            newLine[i][j].text = truncate(newLine[i][j].text, (newLine[i][j].text.length - diff) - offset, false)
                             break
                         } else {
                             diff -= newLine[i][j].text.length
@@ -315,17 +315,17 @@ export class QuadLayout {
             })
         }
         const ret: StyledElement[] = []
-        if (this.options.boxed) ret.push({ text: "│", style: { color: this.selected === 0 && row === 0 || this.selected === 2 && row === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+        if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.selected === 0 && row === 0 || this.selected === 2 && row === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
         ret.push(...newLine[0])
         if (unformattedLine[0].length <= this.realWidth[row][0] - bsize) {
             ret.push({ text: `${" ".repeat((this.realWidth[row][0] - unformattedLine[0].length) - (bsize > 0 ? 2 : 0))}`, style: { color: "" } })
         }
-        if (this.options.boxed) ret.push({ text: "│", style: { color: ((this.selected < 2 && row === 0) || (this.selected > 1 && row === 1)) ? this.options.boxColor : "white", bold: this.boxBold } })
+        if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: ((this.selected < 2 && row === 0) || (this.selected > 1 && row === 1)) ? this.options.boxColor : "white", bold: this.boxBold } })
         ret.push(...newLine[1])
         if (unformattedLine[1].length <= this.realWidth[row][1] - bsize) {
             ret.push({ text: `${" ".repeat((this.realWidth[row][1] - unformattedLine[1].length) - (bsize > 0 ? 1 : 0))}`, style: { color: "" } })
         }
-        if (this.options.boxed) ret.push({ text: "│", style: { color: this.selected === 1 && row === 0 || this.selected === 3 && row === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
+        if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.selected === 1 && row === 0 || this.selected === 3 && row === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
         this.CM.Screen.write(...ret)
     }
 
@@ -349,12 +349,12 @@ export class QuadLayout {
         ]
         const trimmedTitle = [
             [
-                this.CM.truncate(this.page1Title, this.realWidth[0][0] - 4, false),
-                this.CM.truncate(this.page2Title, this.realWidth[0][1] - 3, false)
+                truncate(this.page1Title, this.realWidth[0][0] - 4, false),
+                truncate(this.page2Title, this.realWidth[0][1] - 3, false)
             ],
             [
-                this.CM.truncate(this.page3Title, this.realWidth[1][0] - 4, false),
-                this.CM.truncate(this.page4Title, this.realWidth[1][1] - 3, false)
+                truncate(this.page3Title, this.realWidth[1][0] - 4, false),
+                truncate(this.page4Title, this.realWidth[1][1] - 3, false)
             ]
         ]
         const maxPageHeight = Math.max(
@@ -376,13 +376,13 @@ export class QuadLayout {
                 if (j === 0) {
                     if (this.options.showTitle) {
                         this.CM.Screen.write(
-                            { text: `┌─${trimmedTitle[j][0]}${"─".repeat(this.realWidth[j][0] - trimmedTitle[j][0].length - 3)}┬`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } },
-                            { text: `─${trimmedTitle[j][1]}${"─".repeat(this.realWidth[j][1] - trimmedTitle[j][1].length - 2)}┐`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } }
+                            { text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${trimmedTitle[j][0]}${boxChars["normal"].horizontal.repeat(this.realWidth[j][0] - trimmedTitle[j][0].length - 3)}${boxChars["normal"].top}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } },
+                            { text: `${boxChars["normal"].horizontal}${trimmedTitle[j][1]}${boxChars["normal"].horizontal.repeat(this.realWidth[j][1] - trimmedTitle[j][1].length - 2)}${boxChars["normal"].topRight}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } }
                         )
                     } else {
                         this.CM.Screen.write(
-                            { text: `┌─${"─".repeat(this.realWidth[j][0] - 3)}┬`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } },
-                            { text: `─${"─".repeat(this.realWidth[j][1] - 2)}┐`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } }
+                            { text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.realWidth[j][0] - 3)}${boxChars["normal"].top}`, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } },
+                            { text: `${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.realWidth[j][1] - 2)}${boxChars["normal"].topRight}`, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } }
                         )
                     }
                 }
@@ -396,51 +396,51 @@ export class QuadLayout {
                     if (this.options.showTitle) {
                         let str
                         if (first === second)
-                            str = `${"─".repeat(first - trimmedTitle[j + 1][0].length - 3)}┼`
+                            str = `${boxChars["normal"].horizontal.repeat(first - trimmedTitle[j + 1][0].length - 3)}${boxChars["normal"].cross}`
                         if (first > second)
-                            str = `${"─".repeat(second - trimmedTitle[j + 1][0].length - 3)}┬`
+                            str = `${boxChars["normal"].horizontal.repeat(second - trimmedTitle[j + 1][0].length - 3)}${boxChars["normal"].top}`
                         if (first < second && trimmedTitle[j + 1][0].length < first - 2)
-                            str = `${"─".repeat(first - trimmedTitle[j + 1][0].length - 3)}┴${"─".repeat(second - first - 1)}┬`
+                            str = `${boxChars["normal"].horizontal.repeat(first - trimmedTitle[j + 1][0].length - 3)}${boxChars["normal"].bottom}${boxChars["normal"].horizontal.repeat(second - first - 1)}${boxChars["normal"].top}`
                         if (first < second && trimmedTitle[j + 1][0].length >= first - 2)
-                            str = `${"─".repeat(second - trimmedTitle[j + 1][0].length - 3)}┬`
+                            str = `${boxChars["normal"].horizontal.repeat(second - trimmedTitle[j + 1][0].length - 3)}${boxChars["normal"].top}`
                         let str2
                         if (first === second || first < second)
-                            str2 = `${"─".repeat(this.realWidth[j + 1][1] - trimmedTitle[j + 1][1].length - 2)}`
+                            str2 = `${boxChars["normal"].horizontal.repeat(this.realWidth[j + 1][1] - trimmedTitle[j + 1][1].length - 2)}`
                         if (first > second) {
                             if (first - second >= trimmedTitle[j + 1][1].length + 2) {
-                                str2 = `${"─".repeat(first - second - (trimmedTitle[j + 1][1].length + 2))}┴${"─".repeat(this.realWidth[j][1] - 1)}`
+                                str2 = `${boxChars["normal"].horizontal.repeat(first - second - (trimmedTitle[j + 1][1].length + 2))}${boxChars["normal"].bottom}${boxChars["normal"].horizontal.repeat(this.realWidth[j][1] - 1)}`
                             } else {
-                                str2 = `${"─".repeat(this.realWidth[j + 1][1] - (trimmedTitle[j + 1][1].length + 2))}`
+                                str2 = `${boxChars["normal"].horizontal.repeat(this.realWidth[j + 1][1] - (trimmedTitle[j + 1][1].length + 2))}`
                             }
                         }
 
                         this.CM.Screen.write(
-                            { text: `├─${trimmedTitle[j + 1][0]}${str}`, style: { color: this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
-                            { text: `─${trimmedTitle[j + 1][1]}${str2}┤`, style: { color: this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
+                            { text: `${boxChars["normal"].left}${boxChars["normal"].horizontal}${trimmedTitle[j + 1][0]}${str}`, style: { color: this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
+                            { text: `${boxChars["normal"].horizontal}${trimmedTitle[j + 1][1]}${str2}${boxChars["normal"].right}`, style: { color: this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
                         )
                     } else {
                         let str
                         if (first === second)
-                            str = `${"─".repeat(first - 2)}┼`
+                            str = `${boxChars["normal"].horizontal.repeat(first - 2)}${boxChars["normal"].cross}`
                         if (first > second)
-                            str = `${"─".repeat(second - 2)}┬`
+                            str = `${boxChars["normal"].horizontal.repeat(second - 2)}${boxChars["normal"].top}`
                         if (first < second)
-                            str = `${"─".repeat(first - 2)}┴${"─".repeat(second - first - 1)}┬`
+                            str = `${boxChars["normal"].horizontal.repeat(first - 2)}${boxChars["normal"].bottom}${boxChars["normal"].horizontal.repeat(second - first - 1)}${boxChars["normal"].top}`
                         let str2
                         if (first <= second)
-                            str2 = `${"─".repeat(this.realWidth[j + 1][1] - 1)}`
+                            str2 = `${boxChars["normal"].horizontal.repeat(this.realWidth[j + 1][1] - 1)}`
                         if (first > second) {
-                            str2 = `${"─".repeat(first - second - 1)}┴${"─".repeat(this.realWidth[j][1] - 1)}`
+                            str2 = `${boxChars["normal"].horizontal.repeat(first - second - 1)}${boxChars["normal"].bottom}${boxChars["normal"].horizontal.repeat(this.realWidth[j][1] - 1)}`
                         }
                         this.CM.Screen.write(
-                            { text: `├${str}`, style: { color: this.selected === 0 || this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
-                            { text: `${str2}┤`, style: { color: this.selected === 1 || this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
+                            { text: `${boxChars["normal"].left}${str}`, style: { color: this.selected === 0 || this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
+                            { text: `${str2}${boxChars["normal"].right}`, style: { color: this.selected === 1 || this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
                         )
                     }
                 } else {
                     this.CM.Screen.write(
-                        { text: `└${"─".repeat(this.realWidth[j][0] - 2)}┴`, style: { color: this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
-                        { text: `${"─".repeat(this.realWidth[j][1] - 1)}┘`, style: { color: this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
+                        { text: `${boxChars["normal"].bottomLeft}${boxChars["normal"].horizontal.repeat(this.realWidth[j][0] - 2)}${boxChars["normal"].bottom}`, style: { color: this.selected === 2 ? this.options.boxColor : "white", bold: this.boxBold } },
+                        { text: `${boxChars["normal"].horizontal.repeat(this.realWidth[j][1] - 1)}${boxChars["normal"].bottomRight}`, style: { color: this.selected === 3 ? this.options.boxColor : "white", bold: this.boxBold } }
                     )
                 }
             } else { // Draw pages without borders

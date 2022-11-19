@@ -12,7 +12,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup } from "../dist/ConsoleGui.js"
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup, Control, InPageWidgetBuilder } from "../dist/ConsoleGui.js"
 const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
@@ -101,6 +101,30 @@ const sendValuesAsCsv = async() => {
     const csv = values.map(v => v.toFixed(4)).join(",")
     clientManager.emit("send", csv)
     drawGui()
+}
+
+const defineCustomWidget = () => {
+    const widget1 = new InPageWidgetBuilder()
+    widget1.addRow({ text: "┌────────┐", color: "yellow", style: "bold" })
+    widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })
+    widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
+
+    //id: string, visible = false, attributes: PhisicalValues, children: PageBuilder
+    const button1 = new Control("btn1", false, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+    button1.on("relativeMouse", (event) => {
+        // The relative mouse event is triggered with the mouse position relative to the widget
+        //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
+        if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") {
+            GUI.log("Button 1 clicked!")
+            if (valueEmitter) {
+                clearInterval(valueEmitter)
+                valueEmitter = null
+            } else {
+                valueEmitter = setInterval(frame, period)
+            }
+        }
+    })
+    button1.show()
 }
 
 /**
@@ -239,3 +263,7 @@ const closeApp = () => {
 }
 
 drawGui()
+defineCustomWidget()
+
+// If GUI.options.overrideConsole is true, the console.log|warn|error|info will be overriden to show the messages in the GUI console
+console.log("Press 'q' to quit")

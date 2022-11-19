@@ -1,6 +1,7 @@
 import { EventEmitter } from "events"
 import readline from "readline"
 import PageBuilder from "./components/PageBuilder.js"
+import InPageWidgetBuilder from "./components/InPageWidgetBuilder.js"
 import Screen from "./components/Screen.js"
 import CustomPopup from "./components/widgets/CustomPopup.js"
 import ButtonPopup from "./components/widgets/ButtonPopup.js"
@@ -8,8 +9,10 @@ import ConfirmPopup from "./components/widgets/ConfirmPopup.js"
 import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
+import { Control } from "./components/widgets/Control.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
 import { MouseEvent, MouseManager } from "./components/MouseManager.js"
+import { PhisicalValues, StyledElement, SimplifiedStyledElement, StyleObject } from "./components/Utils.js"
 
 
 /**
@@ -43,7 +46,9 @@ export interface KeyListenerArgs {
  * @prop {string} [showLogKey] - The key to show the log.
  * @prop {number} [logPageSize] - The size of the log page.
  * @prop {LayoutOptions} [layoutOptions] - The options of the layout.
- *
+ * @prop {boolean} [enableMouse] - If the mouse should be enabled.
+ * @prop {boolean} [overrideConsole = true] - If the console.log|warn|error|info should be overridden.
+ * 
  * @export
  * @interface ConsoleGuiOptions
  */
@@ -54,6 +59,7 @@ export interface ConsoleGuiOptions {
     layoutOptions?: LayoutOptions;
     title?: string;
     enableMouse?: boolean; // enable the mouse support (default: true) - Only for Linux and other Mouse Tracking terminals
+    overrideConsole: boolean; // override the console.log, console.warn, console.error, console.info, console.debug (default: true)
 }
 
 /**
@@ -73,7 +79,8 @@ class ConsoleManager extends EventEmitter {
     static instance: ConsoleManager
     Screen!: Screen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    widgetsCollection: any[] = []
+    popupCollection: any[] = []
+    controlsCollection: Control[] = []
     eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } | { [key: string]: (key: MouseEvent) => void }= {}
     logLocation!: 0 | 1 | 2 | 3 | "popup"
     logPageSize!: number
@@ -102,7 +109,8 @@ class ConsoleManager extends EventEmitter {
                 this.error(err)
             })
 
-            this.widgetsCollection = []
+            this.popupCollection = []
+            this.controlsCollection = []
             this.eventListenersContainer = {}
 
             /** @const {number | 'popup'} logLocation - Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window. */
@@ -153,6 +161,13 @@ class ConsoleManager extends EventEmitter {
                 if (options.enableMouse) {
                     this.mouse = new MouseManager(this.Terminal, this.Input)
                     this.mouse.enableMouse()
+                }
+                if (options.overrideConsole) {
+                    if (options.overrideConsole === true) {
+                        this.overrideConsole()
+                    }
+                } else {
+                    this.overrideConsole()
                 }
             }
 
@@ -274,7 +289,7 @@ class ConsoleManager extends EventEmitter {
             if (key.ctrl && key.name === "c") {
                 this.emit("exit")
             } else {
-                if (Object.keys(this.widgetsCollection).length === 0) {
+                if (Object.keys(this.popupCollection).length === 0) {
                     if (key.name === "down") {
                         this.layout.pages[this.layout.getSelected()].decreaseScrollIndex()
                         this.refresh()
@@ -348,24 +363,46 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
-     * @description This function is used to register a widget. The widget is stored in the widgetsCollection object. That is called by the widgets in show().
-     * @param {Widget} widget - The widget to register.
+     * @description This function is used to register a popup. The popup is stored in the popupCollection object. That is called by the popups in show().
+     * @param {popup} popup - The popup to register.
      * @memberof ConsoleManager
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public registerWiget(widget: any): void {
-        this.widgetsCollection[widget.id] = widget
+    public registerPopup(popup: any): void {
+        this.popupCollection[popup.id] = popup
     }
 
     /**
-     * @description This function is used to unregister a widget. The widget is removed from the widgetsCollection object. That is called by the widgets in hide().
-     * @param {string} id - The id of the widget.
+     * @description This function is used to unregister a popup. The popup is removed from the popupCollection object. That is called by the popups in hide().
+     * @param {string} id - The id of the popup.
      * @memberof ConsoleManager
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public unRegisterWidget(widget: any): void {
-        if (this.widgetsCollection[widget.id]) {
-            delete this.widgetsCollection[widget.id]
+    public unregisterPopup(popup: any): void {
+        if (this.popupCollection[popup.id]) {
+            delete this.popupCollection[popup.id]
+        }
+    }
+
+    /**
+     * @description This function is used to register a control. The control is stored in the controlCollection object. That is called by the controls in show().
+     * @param {control} control - The control to register.
+     * @memberof ConsoleManager
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public registerControl(control: any): void {
+        this.controlsCollection[control.id] = control
+    }
+
+    /**
+     * @description This function is used to unregister a control. The control is removed from the controlCollection object. That is called by the controls in hide().
+     * @param {string} id - The id of the control.
+     * @memberof ConsoleManager
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public unregisterControl(control: any): void {
+        if (this.controlsCollection[control.id]) {
+            delete this.controlsCollection[control.id]
         }
     }
 
@@ -440,9 +477,13 @@ class ConsoleManager extends EventEmitter {
     public refresh(): void {
         this.Screen.update()
         this.layout.draw()
-        for (const widget in this.widgetsCollection) {
-            if (this.widgetsCollection[widget].isVisible())
-                this.widgetsCollection[widget].draw()
+        for (const widget in this.controlsCollection) {
+            if (this.controlsCollection[widget].isVisible())
+                this.controlsCollection[widget].draw()
+        }
+        for (const widget in this.popupCollection) {
+            if (this.popupCollection[widget].isVisible())
+                this.popupCollection[widget].draw()
         }
         this.Screen.print()
     }
@@ -513,31 +554,35 @@ class ConsoleManager extends EventEmitter {
         this.refresh()
     }
 
-    // TODO: move to utils
-    /**
-     * @description This function is used to truncate a string adding ... at the end.
-     * @param {string} str - The string to truncate.
-     * @param {number} n - The number of characters to keep.
-     * @param {boolean} useWordBoundary - If true, the truncation will be done at the end of the word.
-     * @memberof ConsoleManager
-     * @example CM.truncate("Hello world", 5, true) // "Hello..."
-     */
-    public truncate(str: string, n: number, useWordBoundary: boolean): string {
-        if (str.length <= n) { return str }
-        const subString = str.substring(0, n - 1) // the original check
-        return (useWordBoundary ?
-            subString.substring(0, subString.lastIndexOf(" ")) :
-            subString) + "…"
+    private overrideConsole(): void {
+        console.log = (message: string) => {
+            this.log(message)
+        }
+        console.error = (message: string) => {
+            this.error(message)
+        }
+        console.warn = (message: string) => {
+            this.warn(message)
+        }
+        console.info = (message: string) => {
+            this.info(message)
+        }
     }
 }
 
 export {
     PageBuilder,
+    InPageWidgetBuilder,
     ConsoleManager,
     OptionPopup,
     InputPopup,
     ConfirmPopup,
     ButtonPopup,
     CustomPopup,
-    FileSelectorPopup
+    FileSelectorPopup,
+    Control,
+    PhisicalValues,
+    StyledElement,
+    SimplifiedStyledElement,
+    StyleObject
 }

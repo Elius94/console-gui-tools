@@ -1,6 +1,7 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
+import { boxChars, PhisicalValues } from "../Utils.js"
 
 /**
  * @class InputPopup
@@ -34,12 +35,7 @@ export class InputPopup extends EventEmitter {
     offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
     offsetY: number
-    private absoluteValues: {
-        x: number
-        y: number
-        width: number
-        height: number
-    }
+    private absoluteValues: PhisicalValues
     dragging = false
     dragStart: { x: number, y: number } = { x: 0, y: 0 }
     focused = false
@@ -62,13 +58,13 @@ export class InputPopup extends EventEmitter {
             width: 0,
             height: 0,
         }
-        if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this)
+        if (this.CM.popupCollection[this.id]) {
+            this.CM.unregisterPopup(this)
             const message = `InputPopup ${this.id} already exists.`
             this.CM.error(message)
             throw new Error(message)
         }
-        this.CM.registerWiget(this)
+        this.CM.registerPopup(this)
     }
 
     /**
@@ -123,7 +119,7 @@ export class InputPopup extends EventEmitter {
             case "return":
                 {
                     this.emit("confirm", Number(this.value))
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }
@@ -131,7 +127,7 @@ export class InputPopup extends EventEmitter {
             case "escape":
                 {
                     this.emit("cancel")
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }
@@ -139,7 +135,7 @@ export class InputPopup extends EventEmitter {
             case "q":
                 {
                     this.CM.emit("exit")
-                    this.CM.unRegisterWidget(this)
+                    this.CM.unregisterPopup(this)
                     this.hide()
                     //delete this
                 }
@@ -183,7 +179,7 @@ export class InputPopup extends EventEmitter {
         case "return":
             {
                 this.emit("confirm", this.value)
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -191,7 +187,7 @@ export class InputPopup extends EventEmitter {
         case "escape":
             {
                 this.emit("cancel")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -199,7 +195,7 @@ export class InputPopup extends EventEmitter {
         case "q":
             {
                 this.CM.emit("exit")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -266,6 +262,18 @@ export class InputPopup extends EventEmitter {
      */
     public isVisible(): boolean {
         return this.visible
+    }
+
+    
+    /**
+     * @description This function is used to return the PhisicalValues of the popup (x, y, width, height).
+     * @memberof InputPopup
+     * @private
+     * @returns {InputPopup} The instance of the InputPopup.
+     * @memberof InputPopup
+     */
+    public getPosition(): PhisicalValues {
+        return this.absoluteValues
     }
 
     /**
@@ -364,23 +372,23 @@ export class InputPopup extends EventEmitter {
         const offset = 2
         const windowWidth = this.title.length > this.value.toString().length ? this.title.length + (2 * offset) : this.value.toString().length + (2 * offset) + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
-        let header = "┌"
+        let header = boxChars["normal"].topLeft
         for (let i = 0; i < windowWidth; i++) {
-            header += "─"
+            header += boxChars["normal"].horizontal
         }
-        header += "┐\n"
-        header += `│${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}│\n`
-        header += "├" + "─".repeat(windowWidth) + "┤\n"
+        header += `${boxChars["normal"].topRight}\n`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
 
-        let footer = "└"
+        let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
-            footer += "─"
+            footer += boxChars["normal"].horizontal
         }
-        footer += "┘\n"
+        footer += `${boxChars["normal"].bottomRight}\n`
 
         let content = ""
         // Draw an input field
-        content += `│${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}│\n`
+        content += `${boxChars["normal"].vertical}${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical}\n`
 
         const windowDesign = `${header}${content}${footer}`
         const windowDesignLines = windowDesign.split("\n")

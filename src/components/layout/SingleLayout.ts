@@ -1,6 +1,6 @@
 import { ForegroundColorName } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
-import { StyledElement } from "../PageBuilder.js"
+import { boxChars, StyledElement, truncate } from "../Utils.js"
 
 /**
  * @description The type containing all the possible options for the SingleLayout.
@@ -91,32 +91,30 @@ export class SingleLayout {
             unformattedLine += element.text
         })
 
-        if (unformattedLine.length > this.CM.Screen.width - bsize) {
-            if (unformattedLine.length > this.CM.Screen.width - bsize) { // Need to truncate
-                const offset = 2
-                newLine = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
+        if (unformattedLine.length > this.CM.Screen.width - bsize) { // Need to truncate
+            const offset = 2
+            newLine = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
 
-                let diff = unformattedLine.length - this.CM.Screen.width + 1
+            let diff = unformattedLine.length - this.CM.Screen.width + 1
 
-                // remove truncated text
-                for (let j = newLine.length - 1; j >= 0; j--) {
-                    if (newLine[j].text.length > diff + offset) {
-                        newLine[j].text = this.CM.truncate(newLine[j].text, (newLine[j].text.length - diff) - offset, true)
-                        break
-                    } else {
-                        diff -= newLine[j].text.length
-                        newLine.splice(j, 1)
-                    }
+            // remove truncated text
+            for (let j = newLine.length - 1; j >= 0; j--) {
+                if (newLine[j].text.length > diff + offset) {
+                    newLine[j].text = truncate(newLine[j].text, (newLine[j].text.length - diff) - offset, true)
+                    break
+                } else {
+                    diff -= newLine[j].text.length
+                    newLine.splice(j, 1)
                 }
-                // Update unformatted line
-                unformattedLine = newLine.map((element: { text: string; }) => element.text).join("")
             }
+            // Update unformatted line
+            unformattedLine = newLine.map((element: { text: string; }) => element.text).join("")
         }
-        if (this.options.boxed) newLine.unshift({ text: "│", style: { color: this.options.boxColor, bold: this.boxBold } })
+        if (this.options.boxed) newLine.unshift({ text: boxChars["normal"].vertical, style: { color: this.options.boxColor, bold: this.boxBold } })
         if (unformattedLine.length <= this.CM.Screen.width - bsize) {
             newLine.push({ text: `${" ".repeat((this.CM.Screen.width - unformattedLine.length) - bsize)}`, style: { color: "" } })
         }
-        if (this.options.boxed) newLine.push({ text: "│", style: { color: this.options.boxColor, bold: this.boxBold } })
+        if (this.options.boxed) newLine.push({ text: boxChars["normal"].vertical, style: { color: this.options.boxColor, bold: this.boxBold } })
         this.CM.Screen.write(...newLine)
     }
 
@@ -128,17 +126,17 @@ export class SingleLayout {
      */
     public draw(): void {
         this.isOdd = this.CM.Screen.width % 2 === 1
-        const trimmedTitle = this.CM.truncate(this.pageTitle, this.CM.Screen.width - 2, false)
+        const trimmedTitle = truncate(this.pageTitle, this.CM.Screen.width - 2, false)
         if (this.options.boxed) { // Draw pages with borders
             if (this.options.showTitle) {
-                this.CM.Screen.write({ text: `┌─${trimmedTitle}${"─".repeat(this.CM.Screen.width - trimmedTitle.length - 3)}┐`, style: { color: this.options.boxColor, bold: this.boxBold } })
+                this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${trimmedTitle}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - trimmedTitle.length - 3)}${boxChars["normal"].topRight}`, style: { color: this.options.boxColor, bold: this.boxBold } })
             } else {
-                this.CM.Screen.write({ text: `┌─${"─".repeat(this.CM.Screen.width - 3)}┐`, style: { color: this.options.boxColor, bold: this.boxBold } })
+                this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 3)}${boxChars["normal"].topRight}`, style: { color: this.options.boxColor, bold: this.boxBold } })
             }
             this.page.getContent().forEach((line: StyledElement[]) => {
                 this.drawLine(line)
             })
-            this.CM.Screen.write({ text: `└${"─".repeat(this.CM.Screen.width - 2)}┘`, style: { color: this.options.boxColor, bold: this.boxBold } })
+            this.CM.Screen.write({ text: `${boxChars["normal"].bottomLeft}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 2)}${boxChars["normal"].bottomRight}`, style: { color: this.options.boxColor, bold: this.boxBold } })
         } else { // Draw pages without borders
             if (this.options.showTitle) {
                 this.CM.Screen.write({ text: `${trimmedTitle}`, style: { color: this.options.boxColor, bold: this.boxBold } })

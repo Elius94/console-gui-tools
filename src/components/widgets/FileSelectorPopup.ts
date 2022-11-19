@@ -3,6 +3,7 @@ import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import fs from "fs"
 import path from "path"
 import { MouseEvent } from "../MouseManager.js"
+import { boxChars, PhisicalValues } from "../Utils.js"
 
 /**
  * @description The file descriptions for the file selector popup.
@@ -63,12 +64,7 @@ export class FileSelectorPopup extends EventEmitter {
     offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
     offsetY: number
-    private absoluteValues: {
-        x: number
-        y: number
-        width: number
-        height: number
-    }
+    private absoluteValues: PhisicalValues
     dragging = false
     dragStart: { x: number, y: number } = { x: 0, y: 0 }
     focused = false
@@ -96,13 +92,13 @@ export class FileSelectorPopup extends EventEmitter {
             width: 0,
             height: 0,
         }
-        if (this.CM.widgetsCollection[this.id]) {
-            this.CM.unRegisterWidget(this)
+        if (this.CM.popupCollection[this.id]) {
+            this.CM.unregisterPopup(this)
             const message = `FileSelectorPopup ${this.id} already exists.`
             this.CM.error(message)
             throw new Error(message)
         }
-        this.CM.registerWiget(this)
+        this.CM.registerPopup(this)
         this.options = [{ text: "../", name: "../", type: "dir", path: path.join(basePath, "../") }]
         this.updateList(this.basePath)
     }
@@ -229,7 +225,7 @@ export class FileSelectorPopup extends EventEmitter {
                 if (this.selectDirectory) {
                     if (this.selected.type === "dir") {
                         this.emit("confirm", { path: this.selected.path, name: this.selected.name })
-                        this.CM.unRegisterWidget(this)
+                        this.CM.unregisterPopup(this)
                         this.hide()
                         //delete this
                     }
@@ -238,7 +234,7 @@ export class FileSelectorPopup extends EventEmitter {
                         this.updateList(this.selected.path)
                     } else {
                         this.emit("confirm", { path: this.selected.path, name: this.selected.name })
-                        this.CM.unRegisterWidget(this)
+                        this.CM.unregisterPopup(this)
                         this.hide()
                         //delete this
                     }
@@ -253,7 +249,7 @@ export class FileSelectorPopup extends EventEmitter {
         case "escape":
             {
                 this.emit("cancel")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -261,7 +257,7 @@ export class FileSelectorPopup extends EventEmitter {
         case "q":
             {
                 this.CM.emit("exit")
-                this.CM.unRegisterWidget(this)
+                this.CM.unregisterPopup(this)
                 this.hide()
                 //delete this
             }
@@ -328,6 +324,18 @@ export class FileSelectorPopup extends EventEmitter {
      */
     public isVisible(): boolean {
         return this.visible
+    }
+
+    
+    /**
+     * @description This function is used to return the PhisicalValues of the popup (x, y, width, height).
+     * @memberof FileSelectorPopup
+     * @private
+     * @returns {FileSelectorPopup} The instance of the FileSelectorPopup.
+     * @memberof FileSelectorPopup
+     */
+    public getPosition(): PhisicalValues {
+        return this.absoluteValues
     }
 
     /**
@@ -436,23 +444,23 @@ export class FileSelectorPopup extends EventEmitter {
         const windowWidth = maxOptionsLength > this.title.length ? maxOptionsLength + (2 * offset) : this.title.length + (2 * offset)
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
 
-        let header = "┌"
+        let header = boxChars["normal"].topLeft
         for (let i = 0; i < windowWidth; i++) {
-            header += "─"
+            header += boxChars["normal"].horizontal
         }
-        header += "┐\n"
-        header += `│${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}│\n`
-        header += "├" + "─".repeat(windowWidth) + "┤\n"
+        header += `${boxChars["normal"].topRight}\n`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
 
-        let footer = "└"
+        let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
-            footer += "─"
+            footer += boxChars["normal"].horizontal
         }
-        footer += "┘\n"
+        footer += `${boxChars["normal"].bottomRight}\n`
 
         let content = ""
         this.adaptOptions().forEach((option) => {
-            content += `│${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}│\n`
+            content += `${boxChars["normal"].vertical}${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}${boxChars["normal"].vertical}\n`
         })
 
         const windowDesign = `${header}${content}${footer}`
