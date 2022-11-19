@@ -10,6 +10,7 @@ import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
 import { Control } from "./components/widgets/Control.js"
+import { Button } from "./components/widgets/Button.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
 import { MouseEvent, MouseManager } from "./components/MouseManager.js"
 import { PhisicalValues, StyledElement, SimplifiedStyledElement, StyleObject } from "./components/Utils.js"
@@ -554,6 +555,16 @@ class ConsoleManager extends EventEmitter {
         this.refresh()
     }
 
+    /**
+     * @description This function is used to override the console.log, console.error, console.warn and console.info functions.
+     * @memberof ConsoleManager
+     * @example CM.overrideConsole()
+     * @example console.log("Hello world") // Will be logged in the log page.
+     * @example console.error("Anomaly detected") // Will be logged in the log page.
+     * @example console.warn("Anomaly detected") // Will be logged in the log page.
+     * @example console.info("Anomaly detected") // Will be logged in the log page.
+     * @since 1.1.42
+     */
     private overrideConsole(): void {
         console.log = (message: string) => {
             this.log(message)
@@ -581,6 +592,7 @@ export {
     CustomPopup,
     FileSelectorPopup,
     Control,
+    Button,
     PhisicalValues,
     StyledElement,
     SimplifiedStyledElement,

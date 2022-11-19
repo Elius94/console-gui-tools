@@ -51,6 +51,7 @@
     * [.warn(message)](#ConsoleManager+warn)
     * [.info(message)](#ConsoleManager+info)
     * [.updateLogsConsole(resetCursor)](#ConsoleManager+updateLogsConsole)
+    * [.overrideConsole()](#ConsoleManager+overrideConsole)
 
 <a name="new_ConsoleManager_new"></a>
 
@@ -353,6 +354,33 @@ CM.info("Anomaly detected")
 | --- | --- | --- |
 | resetCursor | <code>boolean</code> | <p>If true, the log scroll index is resetted.</p> |
 
+<a name="ConsoleManager+overrideConsole"></a>
+
+### consoleManager.overrideConsole()
+<p>This function is used to override the console.log, console.error, console.warn and console.info functions.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+**Since**: 1.1.42  
+**Example**  
+```js
+CM.overrideConsole()
+```
+**Example**  
+```js
+console.log("Hello world") // Will be logged in the log page.
+```
+**Example**  
+```js
+console.error("Anomaly detected") // Will be logged in the log page.
+```
+**Example**  
+```js
+console.warn("Anomaly detected") // Will be logged in the log page.
+```
+**Example**  
+```js
+console.info("Anomaly detected") // Will be logged in the log page.
+```
 <a name="Screen"></a>
 
 ## Screen : [<code>Screen</code>](#Screen)
