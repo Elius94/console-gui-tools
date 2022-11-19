@@ -50,6 +50,7 @@ export interface ButtonStyle {
  *      () => {
  *          GUI.log("Button clicked!")
  *      })
+ * ```
  */
 export class Button extends Control {
     private text = "TEXT"

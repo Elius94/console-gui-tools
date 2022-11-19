@@ -30,14 +30,4 @@
 | onRelease | <code>function</code> | <p>The function to call when the button is released.</p> |
 
 **Example**  
-```js
-new Button("btnRun", "Run me!", 10, 3, 21, 18, 
-     { 
-         color: "magentaBright", 
-         bold: true, 
-         italic: true,
-         borderColor: "green"
-     },
-     () => {
-         GUI.log("Button clicked!")
-     })
+```jsnew Button("btnRun", "Run me!", 10, 3, 21, 18,      {          color: "magentaBright",          bold: true,          italic: true,         borderColor: "green"     },     () => {         GUI.log("Button clicked!")     })```
