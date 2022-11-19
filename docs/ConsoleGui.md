@@ -37,8 +37,10 @@
     * [.removeKeyListener(id)](#ConsoleManager+removeKeyListener)
     * [.setMouseListener(id, manageFunction)](#ConsoleManager+setMouseListener)
     * [.removeMouseListener(id)](#ConsoleManager+removeMouseListener)
-    * [.registerWiget(widget)](#ConsoleManager+registerWiget)
-    * [.unRegisterWidget(id)](#ConsoleManager+unRegisterWidget)
+    * [.registerPopup(popup)](#ConsoleManager+registerPopup)
+    * [.unregisterPopup(id)](#ConsoleManager+unregisterPopup)
+    * [.registerControl(control)](#ConsoleManager+registerControl)
+    * [.unregisterControl(id)](#ConsoleManager+unregisterControl)
     * ~~[.setHomePage(page)](#ConsoleManager+setHomePage)~~
     * [.setPage(page, [pageNumber], [title])](#ConsoleManager+setPage)
     * [.setPages(pages, [titles])](#ConsoleManager+setPages)
@@ -49,7 +51,6 @@
     * [.warn(message)](#ConsoleManager+warn)
     * [.info(message)](#ConsoleManager+info)
     * [.updateLogsConsole(resetCursor)](#ConsoleManager+updateLogsConsole)
-    * [.truncate(str, n, useWordBoundary)](#ConsoleManager+truncate)
 
 <a name="new_ConsoleManager_new"></a>
 
@@ -166,27 +167,49 @@ CM.setMouseListener('inputPopup', popup.mouseListener)
 ```js
 CM.removeMouseListener('inputPopup')
 ```
-<a name="ConsoleManager+registerWiget"></a>
+<a name="ConsoleManager+registerPopup"></a>
 
-### consoleManager.registerWiget(widget)
-<p>This function is used to register a widget. The widget is stored in the widgetsCollection object. That is called by the widgets in show().</p>
-
-**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| widget | <code>Widget</code> | <p>The widget to register.</p> |
-
-<a name="ConsoleManager+unRegisterWidget"></a>
-
-### consoleManager.unRegisterWidget(id)
-<p>This function is used to unregister a widget. The widget is removed from the widgetsCollection object. That is called by the widgets in hide().</p>
+### consoleManager.registerPopup(popup)
+<p>This function is used to register a popup. The popup is stored in the popupCollection object. That is called by the popups in show().</p>
 
 **Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | <p>The id of the widget.</p> |
+| popup | <code>popup</code> | <p>The popup to register.</p> |
+
+<a name="ConsoleManager+unregisterPopup"></a>
+
+### consoleManager.unregisterPopup(id)
+<p>This function is used to unregister a popup. The popup is removed from the popupCollection object. That is called by the popups in hide().</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the popup.</p> |
+
+<a name="ConsoleManager+registerControl"></a>
+
+### consoleManager.registerControl(control)
+<p>This function is used to register a control. The control is stored in the controlCollection object. That is called by the controls in show().</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| control | <code>control</code> | <p>The control to register.</p> |
+
+<a name="ConsoleManager+unregisterControl"></a>
+
+### consoleManager.unregisterControl(id)
+<p>This function is used to unregister a control. The control is removed from the controlCollection object. That is called by the controls in hide().</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the control.</p> |
 
 <a name="ConsoleManager+setHomePage"></a>
 
@@ -330,23 +353,6 @@ CM.info("Anomaly detected")
 | --- | --- | --- |
 | resetCursor | <code>boolean</code> | <p>If true, the log scroll index is resetted.</p> |
 
-<a name="ConsoleManager+truncate"></a>
-
-### consoleManager.truncate(str, n, useWordBoundary)
-<p>This function is used to truncate a string adding ... at the end.</p>
-
-**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| str | <code>string</code> | <p>The string to truncate.</p> |
-| n | <code>number</code> | <p>The number of characters to keep.</p> |
-| useWordBoundary | <code>boolean</code> | <p>If true, the truncation will be done at the end of the word.</p> |
-
-**Example**  
-```js
-CM.truncate("Hello world", 5, true) // "Hello..."
-```
 <a name="Screen"></a>
 
 ## Screen : [<code>Screen</code>](#Screen)
