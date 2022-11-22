@@ -142,9 +142,9 @@ const defineButton = () => {
         background: "bgBlack",
         borderColor: "white",
         color: "white",
-        boxed: false,
+        boxed: true,
     }
-    const p = new Progress("progress", 20, 3, 3, 21, pStyle, "precision", "horizontal")
+    const p = new Progress("progress", 20, 1, 3, 22, pStyle, "htop", "horizontal")
     setInterval(() => {
         const value = p.value + 0.1
         p.setValue(value)

@@ -1,6 +1,6 @@
 import { BackgroundColorName, ForegroundColorName } from "chalk"
 import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
-import { /*boxChars, */SimplifiedStyledElement/*, truncate*/ } from "../Utils"
+import { boxChars, SimplifiedStyledElement/*, truncate*/ } from "../Utils.js"
 import Control from "./Control.js"
 
 export type TextPosition = "before" | "after" | "right" | "left"
@@ -34,7 +34,8 @@ export const drawingChars = {
         block: {
             full: { char: "▓", color: undefined },
             half: { char: "▒", color: undefined },
-            empty: { char: "░", color: undefined }
+            empty: { char: "░", color: undefined },
+            boxDrawing: boxChars.normal
         },
         text: {
             label: { line: "bottom", position: "left"},
@@ -60,7 +61,11 @@ export const drawingChars = {
         block: {
             full: { char: "█", color: undefined },
             half: { char: "▓", color: undefined },
-            empty: { char: "░", color: undefined }
+            empty: { char: "░", color: undefined },
+            boxDrawing: {
+                left: "[",
+                right: "]"
+            }
         },
         text: {
             label: { line: "inline", position: "before"},
@@ -87,6 +92,11 @@ export const drawingChars = {
             full: { char: "█", color: undefined },
             half: { char: "▓", color: undefined },
             empty: { char: "░", color: undefined },
+            boxDrawing: {
+                color: "white",
+                left: "[",
+                right: "]"
+            }
         },
         text: {
             label: { line: "inline", position: "before"},
@@ -112,7 +122,11 @@ export const drawingChars = {
         block: {
             full: { char: "█", color: undefined },
             half: { char: "▓", color: undefined },
-            empty: { char: "░", color: undefined }
+            empty: { char: "░", color: undefined },
+            boxDrawing: {
+                start: "[",
+                end: "]"
+            }
         },
         text: {
             label: { line: "inline", position: "before"},
@@ -202,8 +216,12 @@ export class Progress extends Control {
         visible = true,
         enabled = true) 
     {
-        const width = orientation === "horizontal" ? length : thickness
-        const height = orientation === "horizontal" ? thickness : length
+        let width = orientation === "horizontal" ? length : thickness
+        let height = orientation === "horizontal" ? thickness : length
+        if (style.boxed) {
+            width += 2
+            height += 2
+        }
         super(id, visible, { x, y, width, height }, new InPageWidgetBuilder())
         this.id = id
         this.theme = theme || this.theme
@@ -292,6 +310,52 @@ export class Progress extends Control {
 
         const progress = this.getProgress()
 
+        if (this.style.boxed) {
+            if (Object.keys(drawingChars[this.theme].block.boxDrawing).includes("start")) {
+                progress[0].unshift({ text: drawingChars[this.theme].block.boxDrawing.start, color: drawingChars[this.theme].block.boxDrawing.color })
+                progress[0].push({ text: drawingChars[this.theme].block.boxDrawing.end, color: drawingChars[this.theme].block.boxDrawing.color })
+            } else {
+                // disable eslint because we need to add the box drawing characters to the progress bar
+                let ch = {} as typeof boxChars.normal
+                if (this.orientation === "vertical") {
+                    const boxC = JSON.parse(JSON.stringify(drawingChars[this.theme].block.boxDrawing))
+                    // rotate the box drawing characters 90 degrees counter clockwise
+                    ch = {
+                        topLeft: boxC.bottomLeft,
+                        topRight: boxC.topLeft,
+                        bottomLeft: boxC.bottomRight,
+                        bottomRight: boxC.topRight,
+                        horizontal: boxC.vertical,
+                        vertical: boxC.horizontal,
+                        cross: boxC.cross,
+                        left: boxC.bottom,
+                        right: boxC.top,
+                        top: boxC.left,
+                        bottom: boxC.right
+                    }
+                } else {
+                    ch = drawingChars[this.theme].block.boxDrawing
+                }
+
+                progress.unshift([{ text: ch.topLeft, color: this.style.borderColor }])
+                for (let i = 0; i < this.length; i++) {
+                    progress[0].push({ text: ch.horizontal, color: this.style.borderColor })
+                }
+                progress[0].push({ text: ch.topRight, color: this.style.borderColor })
+                // add vertical char before and after the progress bar
+                for (let i = 0; i < this.thickness; i++) {
+                    progress[i + 1].unshift({ text: ch.vertical, color: this.style.borderColor })
+                    progress[i + 1].push({ text: ch.vertical, color: this.style.borderColor })
+                }
+                // add the last line
+                progress.push([{ text: ch.bottomLeft, color: this.style.borderColor }])
+                for (let i = 0; i < this.length; i++) {
+                    progress[1 + this.thickness].push({ text: ch.horizontal, color: this.style.borderColor })
+                }
+                progress[1 + this.thickness].push({ text: ch.bottomRight, color: this.style.borderColor })
+            }
+        }
+
         this.getContent().clear()
 
         if (this.orientation === "horizontal") {
@@ -302,7 +366,8 @@ export class Progress extends Control {
             // reverse the progress bar
             for (let i = progress[0].length - 1; i >= 0; i--) {
                 const row: SimplifiedStyledElement[] = []
-                for (let j = 0; j < this.thickness; j++) {
+                const newthickness = progress.length
+                for (let j = 0; j < newthickness; j++) {
                     row.push(progress[j][i])
                 }
                 this.getContent().addRow(... row)
