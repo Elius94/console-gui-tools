@@ -335,7 +335,7 @@ export class Progress extends Control {
                     } else {
                         this.value = this.min
                     }
-                    this.emit("valuechanged", this.value)
+                    this.emit("valueChanged", this.value)
                     this.update()
                 }
                 if (event.name === "MOUSE_WHEEL_UP") {
@@ -344,7 +344,7 @@ export class Progress extends Control {
                     } else {
                         this.value = this.max
                     }
-                    this.emit("valuechanged", this.value)
+                    this.emit("valueChanged", this.value)
                     this.update()
                 }
             })
