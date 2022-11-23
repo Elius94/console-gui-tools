@@ -3,44 +3,38 @@ import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
 import { boxChars, SimplifiedStyledElement/*, truncate*/ } from "../Utils.js"
 import Control from "./Control.js"
 
-export type TextPosition = "before" | "after" | "right" | "left"
-export type TextLine = "top" | "bottom" | "inline"
-
 
 export const drawingChars = {
     "precision": {
         horizontal: {
             100: { char: "█", color: undefined },
-            90: { char: "▉", color: undefined },
+            88: { char: "▉", color: undefined },
             75: { char: "▊", color: undefined },
-            60: { char: "▋", color: undefined },
+            63: { char: "▋", color: undefined },
             50: { char: "▌", color: undefined },
-            40: { char: "▍", color: undefined },
+            38: { char: "▍", color: undefined },
             25: { char: "▎", color: undefined },
-            10: { char: "▏", color: undefined },
+            13: { char: "▏", color: undefined },
             0: { char: " ", color: undefined }
         },
         vertical: {
             100: { char: "█", color: undefined },
-            90: { char: "▇", color: undefined },
+            88: { char: "▇", color: undefined },
             75: { char: "▆", color: undefined },
-            60: { char: "▅", color: undefined },
+            63: { char: "▅", color: undefined },
             50: { char: "▄", color: undefined },
-            40: { char: "▃", color: undefined },
+            38: { char: "▃", color: undefined },
             25: { char: "▂", color: undefined },
-            10: { char: "▁", color: undefined },
+            13: { char: "▁", color: undefined },
             0: { char: " ", color: undefined }
         },
         block: {
             full: { char: "▓", color: undefined },
             half: { char: "▒", color: undefined },
             empty: { char: "░", color: undefined },
-            boxDrawing: boxChars.normal
-        },
-        text: {
-            label: { line: "bottom", position: "left"},
-            value: { line: "bottom", position: "right"},
-            percentage: { line: "bottom", position: "center"}
+            boxDrawing: boxChars.normal,
+            labelStyle: undefined,
+            valueStyle: undefined
         }
     },
     "htop-light": {
@@ -65,12 +59,9 @@ export const drawingChars = {
             boxDrawing: {
                 left: "[",
                 right: "]"
-            }
-        },
-        text: {
-            label: { line: "inline", position: "before"},
-            value: { line: "inline", position: "right"},
-            percentage: { line: "inline", position: "right"}
+            },
+            labelStyle: { color: "cyan", bold: false },
+            valueStyle: { color: "gray", dim: true },
         }
     },
     "htop-heavy": {
@@ -96,12 +87,9 @@ export const drawingChars = {
                 color: "white",
                 left: "[",
                 right: "]"
-            }
-        },
-        text: {
-            label: { line: "inline", position: "before"},
-            value: { line: "inline", position: "right"},
-            percentage: { line: "inline", position: "right"}
+            },
+            labelStyle: { color: "cyan", bold: true },
+            valueStyle: { color: "gray", dim: true }
         }
     },
     "htop": {
@@ -126,12 +114,9 @@ export const drawingChars = {
             boxDrawing: {
                 start: "[",
                 end: "]"
-            }
-        },
-        text: {
-            label: { line: "inline", position: "before"},
-            value: { line: "inline", position: "right"},
-            percentage: { line: "inline", position: "right"}
+            },
+            labelStyle: { color: "cyan", bold: true },
+            valueStyle: { color: "gray", dim: true }
         }
     }
 }
@@ -141,14 +126,14 @@ export type Orientation = "horizontal" | "vertical";
 export interface ProgressStyle {
     background: BackgroundColorName;
     borderColor: ForegroundColorName;
+    textColor?: ForegroundColorName;
     color: ForegroundColorName;
     theme?: keyof typeof drawingChars;
     boxed?: boolean;
     showPercentage?: boolean;
     showValue?: boolean;
-    showMax?: boolean;
-    showMin?: boolean;
-    shotTitle?: boolean;
+    showMinMax?: boolean;
+    showTitle?: boolean;
     bold?: boolean;
     italic?: boolean;
     dim?: boolean;
@@ -183,11 +168,11 @@ export interface ProgressStyle {
  * ```
  */
 export class Progress extends Control {
-    value = 0
-    max = 100
-    min = 0
-    length: number
-    thickness = 1
+    private value = 0
+    private max = 100
+    private min = 0
+    private length: number
+    private thickness = 1
     private orientation: Orientation = "horizontal"
     interactive = false
     text = ""
@@ -197,6 +182,7 @@ export class Progress extends Control {
         background: "bgBlack",
         borderColor: "white",
         color: "white",
+        textColor: "white",
         bold: true,
         boxed: false,
     }
@@ -300,20 +286,12 @@ export class Progress extends Control {
     }
 
     public update = () => {
-        //const absVal = this.absoluteValues
-        /*let truncatedText = truncate(this.text, absVal.width - 2, false)
-        
-        // add a white space to the end of the truncated text if the sum of the length of the text and the width of the button is odd
-        if ((truncatedText.length + (absVal.width - 2)) % 2 === 1) {
-            truncatedText += " "
-        }*/
-
         const progress = this.getProgress()
 
         if (this.style.boxed) {
             if (Object.keys(drawingChars[this.theme].block.boxDrawing).includes("start")) {
-                progress[0].unshift({ text: drawingChars[this.theme].block.boxDrawing.start, color: drawingChars[this.theme].block.boxDrawing.color })
-                progress[0].push({ text: drawingChars[this.theme].block.boxDrawing.end, color: drawingChars[this.theme].block.boxDrawing.color })
+                progress[0].unshift({ text: drawingChars[this.theme].block.boxDrawing.start, color: drawingChars[this.theme].block.boxDrawing.color, bold: true })
+                progress[0].push({ text: drawingChars[this.theme].block.boxDrawing.end, color: drawingChars[this.theme].block.boxDrawing.color, bold: true })
             } else {
                 // disable eslint because we need to add the box drawing characters to the progress bar
                 let ch = {} as typeof boxChars.normal
@@ -356,13 +334,38 @@ export class Progress extends Control {
             }
         }
 
-        this.getContent().clear()
+        // Add the text, value and percentage to the progress bar
+        const size = progress.length
+        const singleLine = size === 1
+        const perc = Math.round((this.value / this.max) * 100)
 
+        this.getContent().clear()
         if (this.orientation === "horizontal") {
+            if (singleLine) {
+                if (this.style.showTitle) progress[0].unshift({ text: this.text, ...drawingChars[this.theme].block.labelStyle })
+                if (this.style.showValue) progress[0].push({ text: this.value.toFixed(2), ...drawingChars[this.theme].block.valueStyle })
+                if (this.style.showPercentage) progress[0].push({ text: `/${perc}%`, ...drawingChars[this.theme].block.valueStyle })
+                if (this.style.showMinMax) progress.push([{ text: `(${this.min}/${this.max})`, ...drawingChars[this.theme].block.valueStyle }])
+            } else {
+                // all texts are added to a new line on the bottom of the progress bar
+                const textLine = [] as SimplifiedStyledElement[]
+                if (this.style.showTitle) textLine.push({ text: this.text, ...drawingChars[this.theme].block.labelStyle })
+                let valuesString = " "
+                if (this.style.showValue) valuesString += this.value.toFixed(2)
+                if (this.style.showPercentage) valuesString += ` ${perc}%`
+                if (this.style.showMinMax) valuesString += ` (${this.min}/${this.max})`
+                if (valuesString.length > 0) textLine.push({ text: valuesString, ...drawingChars[this.theme].block.valueStyle })
+                
+                progress.push(textLine)
+            } 
+            this.absoluteValues.height = progress.length
+            this.absoluteValues.width = progress[0].length
             progress.forEach((row: SimplifiedStyledElement[]) => {
                 this.getContent().addRow(... row)
             })
         } else {
+            this.absoluteValues.height = progress[0].length
+            this.absoluteValues.width = progress.length
             // reverse the progress bar
             for (let i = progress[0].length - 1; i >= 0; i--) {
                 const row: SimplifiedStyledElement[] = []
@@ -372,23 +375,67 @@ export class Progress extends Control {
                 }
                 this.getContent().addRow(... row)
             }
+            const textLine = [] as SimplifiedStyledElement[]
+            if (this.style.showTitle) textLine.push({ text: this.text, ...drawingChars[this.theme].block.labelStyle })
+            let valuesString = " "
+            if (this.style.showValue) valuesString += this.value.toFixed(2)
+            if (this.style.showPercentage) valuesString += ` ${perc}%`
+            if (this.style.showMinMax) valuesString += ` (${this.min}/${this.max})`
+            if (valuesString.length > 0) textLine.push({ text: valuesString, ...drawingChars[this.theme].block.valueStyle })
+            this.getContent().addRow(... textLine)
         }
         this.CM.refresh()
     }
 
-    public setValue = (value: number) => {
-        this.value = value
+    public getMax = () => this.max
+
+    public getMin = () => this.min
+
+    public getValue = () => this.value
+
+    public getLength = () => this.length
+
+    public getThickness = () => this.thickness
+
+    public setLength = (length: number) => {
+        this.length = length
+        if (this.orientation === "horizontal") {
+            this.absoluteValues.width = length + (this.style.boxed ? 2 : 0)
+        } else {
+            this.absoluteValues.height = length + (this.style.boxed ? 2 : 0)
+        }
         this.update()
+    }
+
+    public setThickness = (thickness: number) => {
+        this.thickness = thickness
+        if (this.orientation === "horizontal") {
+            this.absoluteValues.width = thickness + (this.style.boxed ? 2 : 0)
+        } else {
+            this.absoluteValues.height = thickness + (this.style.boxed ? 2 : 0)
+        }
+        this.update()
+    }
+
+    public setValue = (value: number) => {
+        if (value !== this.value) {
+            this.value = value
+            this.update()
+        }
     }
 
     public setMax = (max: number) => {
-        this.max = max
-        this.update()
+        if (max !== this.max) {
+            this.max = max
+            this.update()
+        }
     }
 
     public setMin = (min: number) => {
-        this.min = min
-        this.update()
+        if (min !== this.min) {
+            this.min = min
+            this.update()
+        }
     }
 
     public setText = (text: string) => {
