@@ -20,3 +20,4 @@ To view the documentation for a specific component or class, click on the links 
 * [FileSelectorPopup](docs/FileSelectorPopup.md)
 * [InputPopup](docs/InputPopup.md)
 * [OptionPopup](docs/OptionPopup.md)
+* [ProgressBar](docs/ProgressBar.md)

@@ -191,7 +191,7 @@ export interface ProgressStyle {
  * @param {number} x - The x position of the Progress.
  * @param {number} y - The y position of the Progress.
  * @param {ProgressStyle} style - The style of the Progress.
- * @param {keyof typeof drawingChars} theme - The theme of the Progress.
+ * @param {string} theme - The theme of the Progress.
  * @param {string} orientation - The orientation of the Progress.
  * @param {boolean} interactive - If the Progress is interactive.
  * @param {boolean} visible - If the Progress is visible.
