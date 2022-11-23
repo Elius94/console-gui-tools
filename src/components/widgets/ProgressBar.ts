@@ -3,8 +3,7 @@ import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
 import { boxChars, SimplifiedStyledElement/*, truncate*/ } from "../Utils.js"
 import Control from "./Control.js"
 
-
-export const drawingChars = {
+const drawingChars = {
     "precision": {
         horizontal: {
             100: { char: "█", color: undefined },
@@ -123,6 +122,31 @@ export const drawingChars = {
 
 export type Orientation = "horizontal" | "vertical";
 
+/**
+ * @description Defines the styles and settings for the progress bar
+ * 
+ * @param {BackgroundColorName} background The background color of the progress bar
+ * @param {ForegroundColorName} borderColor The color of the border
+ * @param {ForegroundColorName} [textColor] The color of the text
+ * @param {ForegroundColorName} color The color of the progress bar
+ * @param {keyof typeof drawingChars} [theme] The theme to use for the progress bar
+ * @param {boolean} [boxed] Whether or not to draw a box around the progress bar
+ * @param {boolean} [showPercentage] Whether or not to show the percentage
+ * @param {boolean} [showValue] Whether or not to show the value
+ * @param {boolean} [showMinMax] Whether or not to show the min and max values
+ * @param {boolean} [showTitle] Whether or not to show the title
+ * @param {boolean} [bold] Whether or not to bold the text
+ * @param {boolean} [italic] Whether or not to italicize the text
+ * @param {boolean} [dim] Whether or not to dim the text
+ * @param {boolean} [underline] Whether or not to underline the text
+ * @param {boolean} [inverse] Whether or not to inverse the text
+ * @param {boolean} [hidden] Whether or not to hide the text
+ * @param {boolean} [strikethrough] Whether or not to strikethrough the text
+ * @param {boolean} [overline] Whether or not to overline the text
+ *
+ * @export
+ * @interface ProgressStyle
+ */
 export interface ProgressStyle {
     background: BackgroundColorName;
     borderColor: ForegroundColorName;
@@ -152,8 +176,15 @@ export interface ProgressStyle {
  * ![Progress](https://user-images.githubusercontent.com/14907987/203602965-b66f9eb0-c7a1-4caa-947a-a140badeddc2.gif)
  * 
  * Emits the following events: 
- * - "click" when the user confirm
- * - "relese" when the user cancel
+ * - "valueChanged" when the user changes the value of the progress bar with the scroll wheel (if interactive is true).
+ * - "click" when the user clicks on the progress bar (if interactive is true).
+ * - "relese" when the user releases the mouse button on the progress bar (if interactive is true).
+ * - "rightClick" when the user clicks on the progress bar with right button (if interactive is true).
+ * - "rightRelese" when the user releases the right mouse button on the progress bar (if interactive is true).
+ * 
+ * ### Example of interactive progress bar
+ * ![Progress_Interactive](https://user-images.githubusercontent.com/14907987/203607512-6ce3656c-7ffb-4185-b36e-6c10619b2b6e.gif)
+ * 
  * @param {string} id - The id of the Progress.
  * @param {number} length - The length of the Progress.
  * @param {number} thickness - The thickness of the Progress.
@@ -255,6 +286,58 @@ export class Progress extends Control {
         this.length = length
         this.thickness = thickness
         this.orientation = orientation
+
+        if (this.interactive) {
+            this.on("relativeMouse", (event) => {
+                if (!this.enabled) {
+                    return
+                }
+                if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+                    this.status = "selected"
+                    this.update()
+                    this.emit("click")
+                }
+                if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") {
+                    this.status = "hovered"
+                    this.update()
+                    this.emit("release")
+                }
+                if (event.name === "MOUSE_RIGHT_BUTTON_PRESSED") {
+                    this.emit("rightClick")
+                }
+                if (event.name === "MOUSE_RIGHT_BUTTON_RELEASED") {
+                    this.emit("rightRelease")
+                }
+                if (event.name === "MOUSE_MOTION") {
+                    if (this.status === "normal") {
+                        this.status = "hovered"
+                        //this.update()
+                    }
+                }
+                if (event.name === "MOUSE_WHEEL_DOWN") {
+                    if (this.value > this.min + 1) {
+                        this.value -= 1
+                    } else {
+                        this.value = this.min
+                    }
+                    this.emit("valuechanged", this.value)
+                    this.update()
+                }
+                if (event.name === "MOUSE_WHEEL_UP") {
+                    if (this.value < this.max - 1) {
+                        this.value += 1
+                    } else {
+                        this.value = this.max
+                    }
+                    this.emit("valuechanged", this.value)
+                    this.update()
+                }
+            })
+            this.on("hoverOut", () => {
+                this.status = "normal"
+                //this.update()
+            })
+        }
 
         this.update()
     }
