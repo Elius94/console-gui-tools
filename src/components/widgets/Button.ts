@@ -84,9 +84,9 @@ export class Button extends Control {
         this.onClick = onClick
         this.onRelease = onRelease
         this.style = style
-        super.draggable = draggable
+        this.draggable = draggable
 
-        super.on("relativeMouse", (event) => {
+        this.on("relativeMouse", (event) => {
             if (!this.enabled) {
                 return
             }
@@ -115,7 +115,7 @@ export class Button extends Control {
                 }
             }
         })
-        super.on("hoverOut", () => {
+        this.on("hoverOut", () => {
             this.status = "normal"
             this.update()
         })

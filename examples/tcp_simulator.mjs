@@ -12,7 +12,7 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup, Control, InPageWidgetBuilder, Button } from "../dist/ConsoleGui.js"
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup, Control, InPageWidgetBuilder, Button, Progress } from "../dist/ConsoleGui.js"
 const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
@@ -42,10 +42,10 @@ const server = net.createServer(socket => {
         socket.write(data + "\n")
         tcpCounter++
     })
-    socket.on("error", function(err) {
+    socket.on("error", function (err) {
         lastErr = `Error:  ${err.stack}`
     })
-    socket.on("end", function() {
+    socket.on("end", function () {
         lastErr = "Error: Client disconnected!"
         connectedClients--
     })
@@ -63,7 +63,7 @@ let max = 12
 
 let values = [0, 0, 0, 0, 0, 0]
 
-const frame = async() => {
+const frame = async () => {
     switch (mode) {
     case "random":
         await updateWithRandomValues()
@@ -81,11 +81,11 @@ let valueEmitter = null //setInterval(frame, period)
 let direction = [1, 0, 1, 1, 0, 0] // 1 = Up
 let step = 0.01
 
-const updateWithRandomValues = async() => {
+const updateWithRandomValues = async () => {
     values = values.map(() => Math.random() * (max - min) + min)
 }
 
-const updateWithLinearValues = async() => {
+const updateWithLinearValues = async () => {
     // Generate linear values using direction and max/min values
     values = values.map((value, index) => {
         if (value >= max) {
@@ -97,7 +97,7 @@ const updateWithLinearValues = async() => {
     })
 }
 
-const sendValuesAsCsv = async() => {
+const sendValuesAsCsv = async () => {
     const csv = values.map(v => v.toFixed(4)).join(",")
     clientManager.emit("send", csv)
     drawGui()
@@ -127,23 +127,78 @@ const defineCustomWidget = () => {
 }
 
 const defineButton = () => {
-    new Button("btnRun", "Run me!", 10, 3, 21, 18, 
-        { 
-            color: "magentaBright", 
-            bold: true, 
+    new Button("btnRun", "Run me!", 10, 3, 21, 18,
+        {
+            color: "magentaBright",
+            bold: true,
             italic: true,
             borderColor: "green"
         },
         () => {
             GUI.log("Button clicked!")
         })
+
+    const pStyle = {
+        boxed: true,
+        showTitle: true,
+        showValue: true,
+        showPercentage: true,
+        showMinMax: false,
+    }
+    const p = new Progress("prog1", 20, 1, 3, 23, pStyle, "htop", "horizontal")
+    p.setText("Mem")
+    const incr = setInterval(() => {
+        const value = p.getValue() + 0.25
+        p.setValue(value)
+        if (value >= p.getMax()) {
+            clearInterval(incr)
+        }
+    }, 100)
+
+    const p1Style = {
+        background: "bgBlack",
+        borderColor: "yellow",
+        color: "green",
+        boxed: true,
+        showTitle: true,
+        showValue: true,
+        showPercentage: true,
+        showMinMax: true,
+
+    }
+    const p1 = new Progress("prog2", 25, 2, 3, 25, p1Style, "precision", "horizontal")
+    p1.setText("Precision")
+    const incr1 = setInterval(() => {
+        const value = p1.getValue() + 0.25
+        p1.setValue(value)
+        if (value >= p1.getMax()) {
+            clearInterval(incr1)
+        }
+    }, 100)
+
+    const p2Style = {
+        background: "bgBlack",
+        borderColor: "yellow",
+        color: "magenta",
+        boxed: true,
+        showTitle: true,
+        showValue: true,
+        showPercentage: true,
+        showMinMax: true,
+
+    }
+    const p2 = new Progress("prog3", 25, 2, 3, 31, p2Style, "precision", "horizontal", true)
+    p2.setText("Interactive")
+    p2.on("valueChanged", (value) => {
+        console.log(`Value changed: ${value}`)
+    })
 }
 
 /**
  * @description Updates the console screen
  *
  */
-const updateConsole = async() => {
+const updateConsole = async () => {
     const p = new PageBuilder()
     p.addRow({ text: "TCP server simulator app! Welcome...", color: "yellow" })
     p.addRow({ text: `TCP Server listening on ${HOST}:${PORT}`, color: "green" })

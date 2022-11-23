@@ -11,6 +11,7 @@ import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
 import { Control } from "./components/widgets/Control.js"
 import { Button } from "./components/widgets/Button.js"
+import { Progress } from "./components/widgets/ProgressBar.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
 import { MouseEvent, MouseManager } from "./components/MouseManager.js"
 import { PhisicalValues, StyledElement, SimplifiedStyledElement, StyleObject } from "./components/Utils.js"
@@ -593,6 +594,7 @@ export {
     FileSelectorPopup,
     Control,
     Button,
+    Progress,
     PhisicalValues,
     StyledElement,
     SimplifiedStyledElement,
