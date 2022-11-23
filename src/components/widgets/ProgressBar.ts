@@ -147,24 +147,63 @@ export interface ProgressStyle {
 /**
  * @class Progress
  * @extends Control
- * @description This class is an overload of Control that is used to create a Progress. 
+ * @description This class is an overload of Control that is used to create a Progress bar. 
  * 
- * ![Progress](https://user-images.githubusercontent.com/14907987/202866824-047503fc-9af6-4990-aa9a-57a3d691f6b0.gif)
+ * ![Progress](https://user-images.githubusercontent.com/14907987/203602965-b66f9eb0-c7a1-4caa-947a-a140badeddc2.gif)
  * 
  * Emits the following events: 
  * - "click" when the user confirm
  * - "relese" when the user cancel
  * @param {string} id - The id of the Progress.
- * @param {number} width - The width of the Progress.
- * @param {number} height - The height of the Progress.
+ * @param {number} length - The length of the Progress.
+ * @param {number} thickness - The thickness of the Progress.
  * @param {number} x - The x position of the Progress.
  * @param {number} y - The y position of the Progress.
- * @param {ProgressStyle} style - To set the style of the Progress.
- * @param {boolean} visible - If the Progress is visible. Default is true (make it hide using hide()).
- * @param {boolean} enabled - If the Progress is enabled. Default is true (make it disabled using disable()).
+ * @param {ProgressStyle} style - The style of the Progress.
+ * @param {keyof typeof drawingChars} theme - The theme of the Progress.
+ * @param {string} orientation - The orientation of the Progress.
+ * @param {boolean} interactive - If the Progress is interactive.
+ * @param {boolean} visible - If the Progress is visible.
+ * @param {boolean} enabled - If the Progress is enabled.
  * 
  * @example ```js
- * new Progress("progress1", "Run me!", 10, 3, 21, 18)
+ * const pStyle = {
+ *      boxed: true,
+ *      showTitle: true,
+ *      showValue: true,
+ *      showPercentage: true,
+ *      showMinMax: false,
+ *  }
+ *  const p = new Progress("prog1", 20, 1, 3, 23, pStyle, "htop", "horizontal")
+ *  p.setText("Mem")
+ *  const incr = setInterval(() => {
+ *      const value = p.getValue() + 0.25
+ *      p.setValue(value)
+ *      if (value >= p.getMax()) {
+ *          clearInterval(incr)
+ *      }
+ *  }, 100)
+ *
+ *  const p1Style = {
+ *      background: "bgBlack",
+ *      borderColor: "yellow",
+ *      color: "green",
+ *      boxed: true,
+ *      showTitle: true,
+ *      showValue: true,
+ *      showPercentage: true,
+ *      showMinMax: true,
+ *
+ *  }
+ *  const p1 = new Progress("prog2", 25, 2, 3, 25, p1Style, "precision", "horizontal")
+ *  p1.setText("Precision")
+ *  const incr1 = setInterval(() => {
+ *      const value = p1.getValue() + 0.25
+ *      p1.setValue(value)
+ *      if (value >= p1.getMax()) {
+ *          clearInterval(incr1)
+ *      }
+ *  }, 100)
  * ```
  */
 export class Progress extends Control {
@@ -198,7 +237,6 @@ export class Progress extends Control {
         theme?: keyof typeof drawingChars,
         orientation: Orientation = "horizontal",
         interactive = false,
-        text = "",
         visible = true,
         enabled = true) 
     {
@@ -213,7 +251,6 @@ export class Progress extends Control {
         this.theme = theme || this.theme
         this.style = style
         this.interactive = interactive
-        this.text = text
         this.enabled = enabled
         this.length = length
         this.thickness = thickness
@@ -237,7 +274,7 @@ export class Progress extends Control {
      * ```
      * @memberof Progress
      */
-    private getProgress: () => SimplifiedStyledElement[][] = () => {
+    private getProgress: () => SimplifiedStyledElement[][] = (): SimplifiedStyledElement[][] => {
         const styledProgress = [[]] as SimplifiedStyledElement[][]
         let percentage = (this.value / this.max) * 100
         if (percentage > 100) percentage = 100
@@ -285,6 +322,12 @@ export class Progress extends Control {
         return styledProgress
     }
 
+    /**
+     * @description This method is used to render the Progress. It returns the styled element of the Progress Bar and the container.
+     * 
+     * @returns {SimplifiedStyledElement[][]} The styled element array of the Progress Bar.
+     * @memberof Progress
+     */
     public update = () => {
         const progress = this.getProgress()
 
@@ -387,16 +430,52 @@ export class Progress extends Control {
         this.CM.refresh()
     }
 
-    public getMax = () => this.max
+    /**
+     * @description Get the maximum value of the progress bar
+     * 
+     * @returns {number} The maximum value of the progress bar
+     * @memberof ProgressBar
+     */
+    public getMax = (): number => this.max
 
-    public getMin = () => this.min
+    /**
+     * @description Get the minimum value of the progress bar
+     *
+     * @returns {number} The minimum value of the progress bar
+     * @memberof Progress
+     */
+    public getMin = (): number => this.min
 
-    public getValue = () => this.value
+    /**
+     * @description Get the value of the progress bar
+     *
+     * @returns {number} The value of the progress bar
+     * @memberof Progress
+     */
+    public getValue = (): number => this.value
 
-    public getLength = () => this.length
+    /**
+     * @description Get the length of the progress bar
+     *
+     * @returns {number} The length of the progress bar
+     * @memberof Progress
+     */
+    public getLength = (): number => this.length
 
-    public getThickness = () => this.thickness
+    /**
+     * @description Get the progress bar thickness
+     *
+     * @returns {number} The progress bar thickness
+     * @memberof Progress
+     */
+    public getThickness = (): number => this.thickness
 
+    /**
+     * @description Sets the value of the progress bar
+     *
+     * @param {number} length The length of the progress bar
+     * @memberof Progress
+     */
     public setLength = (length: number) => {
         this.length = length
         if (this.orientation === "horizontal") {
@@ -407,6 +486,12 @@ export class Progress extends Control {
         this.update()
     }
 
+    /**
+     * @description Sets the thickness of the progress bar
+     *
+     * @param {number} thickness The thickness of the progress bar
+     * @memberof Progress
+     */
     public setThickness = (thickness: number) => {
         this.thickness = thickness
         if (this.orientation === "horizontal") {
@@ -417,6 +502,12 @@ export class Progress extends Control {
         this.update()
     }
 
+    /**
+     * @description Sets the value of the progress bar
+     *
+     * @param {number} value The value of the progress bar
+     * @memberof Progress
+     */
     public setValue = (value: number) => {
         if (value !== this.value) {
             this.value = value
@@ -424,6 +515,12 @@ export class Progress extends Control {
         }
     }
 
+    /**
+     * @description Sets the maximum value of the progress bar
+     *
+     * @param {number} max The maximum value of the progress bar
+     * @memberof Progress
+     */
     public setMax = (max: number) => {
         if (max !== this.max) {
             this.max = max
@@ -431,6 +528,12 @@ export class Progress extends Control {
         }
     }
 
+    /**
+     * @description Set the minimum value of the progress bar
+     *
+     * @param {number} min The minimum value of the progress bar
+     * @memberof Progress
+     */
     public setMin = (min: number) => {
         if (min !== this.min) {
             this.min = min
@@ -438,16 +541,34 @@ export class Progress extends Control {
         }
     }
 
+    /**
+     * @description Sets the progress bar text label and updates the progress bar
+     *
+     * @param {string} text The text label of the progress bar
+     * @memberof Progress
+     */
     public setText = (text: string) => {
         this.text = text
         this.update()
     }
 
+    /**
+     * @description Sets the style of the progress bar and updates it
+     *
+     * @param {ProgressStyle} style The style of the progress bar
+     * @memberof Progress
+     */
     public setStyle = (style: ProgressStyle) => {
         this.style = style
         this.update()
     }
 
+    /**
+     * @description Sets the enabled state of the progress bar (if interactive)
+     *
+     * @param {boolean} enabled The enabled state of the progress bar
+     * @memberof Progress
+     */
     public setEnabled = (enabled: boolean) => {
         this.enabled = enabled
         this.update()
