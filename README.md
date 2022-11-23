@@ -355,7 +355,6 @@ The button is a control widget that basically do the previous example for you in
 <li>&quot;relese&quot; when the user cancel</li>
 </ul>
 
-**Example**  
 ```js
 new Button("btnRun", "Run me!", 10, 3, 21, 18, 
      { 
@@ -368,6 +367,32 @@ new Button("btnRun", "Run me!", 10, 3, 21, 18,
          GUI.log("Button clicked!")
      })
 ```
+
+### Progress (since 1.3.0) [New!](docs/ProgressBar.md)
+This is a control widget that is used to draw a customizable progress bar. 
+It can also be used as interactive control (slider) by setting the `interactive` option to `true`.
+
+```js
+const p2Style = {
+    background: "bgBlack",
+    borderColor: "yellow",
+    color: "magenta",
+    boxed: true,
+    showTitle: true,
+    showValue: true,
+    showPercentage: true,
+    showMinMax: true,
+}
+const p2 = new Progress("prog3", 25, 2, 3, 31, p2Style, "precision", "horizontal", true)
+p2.setText("Interactive")
+p2.on("valueChanged", (value) => {
+    console.log(`Value changed: ${value}`)
+})
+```
+
+
+**Example**  
+<p><img src="https://user-images.githubusercontent.com/14907987/203607512-6ce3656c-7ffb-4185-b36e-6c10619b2b6e.gif" alt="Progress_Interactive"></p>
 
 In the next versions of the library, more control widgets will be added as Control extensions.
 
