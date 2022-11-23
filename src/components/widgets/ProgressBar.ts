@@ -198,7 +198,7 @@ export interface ProgressStyle {
  * @param {boolean} enabled - If the Progress is enabled.
  * 
  * @example ```js
- * const pStyle = {
+ *  const pStyle = {
  *      boxed: true,
  *      showTitle: true,
  *      showValue: true,
@@ -235,6 +235,21 @@ export interface ProgressStyle {
  *          clearInterval(incr1)
  *      }
  *  }, 100)
+ *  const p2Style = {
+ *      background: "bgBlack",
+ *      borderColor: "yellow",
+ *      color: "magenta",
+ *      boxed: true,
+ *      showTitle: true,
+ *      showValue: true,
+ *      showPercentage: true,
+ *      showMinMax: true,
+ *  }
+ *  const p2 = new Progress("prog3", 25, 2, 3, 31, p2Style, "precision", "horizontal", true)
+ *  p2.setText("Interactive")
+ *  p2.on("valueChanged", (value) => {
+ *      console.log(`Value changed: ${value}`)
+ *  })
  * ```
  */
 export class Progress extends Control {
