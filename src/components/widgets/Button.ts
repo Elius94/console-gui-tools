@@ -1,12 +1,12 @@
 import { BackgroundColorName, ForegroundColorName } from "chalk/source/vendor/ansi-styles/index.js"
 import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
-import { boxChars, truncate } from "../Utils.js"
+import { boxChars, HEX, RGB, truncate } from "../Utils.js"
 import Control from "./Control.js"
 
 export interface ButtonStyle {
-    background: BackgroundColorName;
-    borderColor: ForegroundColorName;
-    color: ForegroundColorName;
+    background: BackgroundColorName | HEX | RGB | "";
+    borderColor: ForegroundColorName | HEX | RGB | "";
+    color: ForegroundColorName | HEX | RGB | "";
     bold?: boolean;
     italic?: boolean;
     dim?: boolean;

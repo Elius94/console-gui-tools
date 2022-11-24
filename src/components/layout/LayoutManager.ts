@@ -1,6 +1,7 @@
 import { ForegroundColorName } from "chalk"
 import { ConsoleManager } from "../../ConsoleGui.js"
 import PageBuilder from "../PageBuilder.js"
+import { HEX, RGB } from "../Utils.js"
 import DoubleLayout, { DoubleLayoutOptions } from "./DoubleLayout.js"
 import QuadLayout, { QuadLayoutOptions } from "./QuadLayout.js"
 import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
@@ -10,7 +11,7 @@ import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
  * @typedef {Object} LayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
- * @prop {ForegroundColor | ""} [boxColor] - The color of the box taken from the chalk library.
+ * @prop {ForegroundColorName | HEX | RGB | ""} [boxColor] - The color of the box taken from the chalk library.
  * @prop {"bold"} [boxStyle] - If the border of the box should be bold.
  * @prop {"single" | "double" | "triple" | "quad"} [type] - The type of the layout.
  * @prop {string} [changeFocusKey] - The key that should be pressed to change the focus.
@@ -24,7 +25,7 @@ import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
 export interface LayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;
-    boxColor?: ForegroundColorName | ""; // add color list from chalk
+    boxColor?: ForegroundColorName | HEX | RGB | ""; // add color list from chalk
     boxStyle?: "bold";
     changeFocusKey: string;
     type: "single" | "double" | "triple" | "quad";

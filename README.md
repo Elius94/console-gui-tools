@@ -33,7 +33,9 @@ Install with:
 npm i console-gui-tools
 ```
 
-## Options
+<details>
+<summary>OPTIONS</summary>
+
 The library has a few options that can be set in the constructor.
 
 ### options.title
@@ -70,10 +72,14 @@ const layoutOptions = {
 }
 ```
 
-Example of usage:
+</details>
+
+<details>
+<summary>EXAMPLE OF USAGE:</summary>
+
 ```js
 // Import module with ES6 syntax
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup } from '../src/ConsoleGui.js'
+import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup } from 'console-gui-tools'
 const GUI = new ConsoleManager({
     title: 'TCP Simulator', // Title of the console
     logsPageSize: 8, // Number of lines to show in logs page
@@ -187,6 +193,8 @@ const drawGui = () => {
 
 ```
 
+</details>
+
 ## How to draw the application page?
 
 ### New drawing algorytm
@@ -206,7 +214,22 @@ The arguments of that function is an array of object (function arguments syntax,
 
 The styles are converted to the Chalk modificator:
 
-### colors:
+<details>
+  <summary>Chalk Colors and Formatters</summary>
+
+### HEX color (since 1.4.0)
+
+```js
+{ text: `  'm'`, color: '#FF0000' }
+```
+
+### RGB color (since 1.4.0)
+
+```js
+{ text: `  'm'`, color: 'rgb(255,0,0)' }
+```
+
+### Standard Chalk colors:
  - black
  - red
  - green
@@ -224,7 +247,7 @@ The styles are converted to the Chalk modificator:
  - cyanBright
  - whiteBright
 
-### Background colors ('bg')
+### Standard Chalk Background colors ('bg')
  - bgBlack
  - bgRed
  - bgGreen
@@ -257,6 +280,8 @@ eg:
 ```js
 p.addRow({ text: `TCP messages sent:`, color: 'green', bg: 'bgRed', bold: true, italic: true, underline: true }, { text: ` ${tcpCounter}`, color: 'white' })
 ```
+
+</details>
 
 And so, we can add the PageBuilder to the first page
 

@@ -1,6 +1,6 @@
 import { BackgroundColorName, ForegroundColorName } from "chalk"
 import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
-import { boxChars, SimplifiedStyledElement/*, truncate*/ } from "../Utils.js"
+import { boxChars, HEX, RGB, SimplifiedStyledElement/*, truncate*/ } from "../Utils.js"
 import Control from "./Control.js"
 
 const drawingChars = {
@@ -38,17 +38,17 @@ const drawingChars = {
     },
     "htop-light": {
         horizontal: {
-            100: { char: "│", color: "green" },
-            75: { char: "│", color: "yellow" },
-            50: { char: "│", color: "blue" },
-            25: { char: "│", color: "red" },
+            100: { char: "│", color: "#15a121" },
+            75: { char: "│", color: "#c09c22" },
+            50: { char: "│", color: "#0c37d6" },
+            25: { char: "│", color: "#c40c26" },
             0: { char: " ", color: undefined }
         },
         vertical: {
-            100: { char: "─", color: "green" },
-            75: { char: "─", color: "yellow" },
-            50: { char: "─", color: "blue" },
-            25: { char: "─", color: "red" },
+            100: { char: "─", color: "#15a121" },
+            75: { char: "─", color: "#c09c22" },
+            50: { char: "─", color: "#0c37d6" },
+            25: { char: "─", color: "#c40c26" },
             0: { char: " ", color: undefined }
         },
         block: {
@@ -59,23 +59,23 @@ const drawingChars = {
                 left: "[",
                 right: "]"
             },
-            labelStyle: { color: "cyan", bold: false },
+            labelStyle: { color: "#3d96da", bold: false },
             valueStyle: { color: "gray", dim: true },
         }
     },
     "htop-heavy": {
         horizontal: {
-            100: { char: "┃", color: "green" },
-            75: { char: "┃", color: "yellow" },
-            50: { char: "┃", color: "blue" },
-            25: { char: "┃", color: "red" },
+            100: { char: "┃", color: "#15a121" },
+            75: { char: "┃", color: "#c09c22" },
+            50: { char: "┃", color: "#0c37d6" },
+            25: { char: "┃", color: "#c40c26" },
             0: { char: " ", color: undefined }
         },
         vertical: {
-            100: { char: "━", color: "green" },
-            75: { char: "━", color: "yellow" },
-            50: { char: "━", color: "blue" },
-            25: { char: "━", color: "red" },
+            100: { char: "━", color: "#15a121" },
+            75: { char: "━", color: "#c09c22" },
+            50: { char: "━", color: "#0c37d6" },
+            25: { char: "━", color: "#c40c26" },
             0: { char: " ", color: undefined }
         },
         block: {
@@ -87,23 +87,23 @@ const drawingChars = {
                 left: "[",
                 right: "]"
             },
-            labelStyle: { color: "cyan", bold: true },
+            labelStyle: { color: "#3d96da", bold: true },
             valueStyle: { color: "gray", dim: true }
         }
     },
     "htop": {
         horizontal: {
-            100: { char: "|", color: "green" },
-            75: { char: "|", color: "yellow" },
-            50: { char: "|", color: "blue" },
-            25: { char: "|", color: "red" },
+            100: { char: "|", color: "#15a121" },
+            75: { char: "|", color: "#c09c22" },
+            50: { char: "|", color: "#0c37d6" },
+            25: { char: "|", color: "#c40c26" },
             0: { char: " ", color: undefined }
         },
         vertical: {//―⎯
-            100: { char: "―", color: "green" },
-            75: { char: "―", color: "yellow" },
-            50: { char: "―", color: "blue" },
-            25: { char: "―", color: "red" },
+            100: { char: "―", color: "#15a121" },
+            75: { char: "―", color: "#c09c22" },
+            50: { char: "―", color: "#0c37d6" },
+            25: { char: "―", color: "#c40c26" },
             0: { char: " ", color: undefined }
         },
         block: {
@@ -114,7 +114,7 @@ const drawingChars = {
                 start: "[",
                 end: "]"
             },
-            labelStyle: { color: "cyan", bold: true },
+            labelStyle: { color: "#3d96da", bold: true },
             valueStyle: { color: "gray", dim: true }
         }
     }
@@ -125,10 +125,10 @@ export type Orientation = "horizontal" | "vertical";
 /**
  * @description Defines the styles and settings for the progress bar
  * 
- * @param {BackgroundColorName} background The background color of the progress bar
- * @param {ForegroundColorName} borderColor The color of the border
- * @param {ForegroundColorName} [textColor] The color of the text
- * @param {ForegroundColorName} color The color of the progress bar
+ * @param {BackgroundColorName | HEX | RGB} background The background color of the progress bar
+ * @param {ForegroundColorName | HEX | RGB} borderColor The color of the border
+ * @param {ForegroundColorName | HEX | RGB} [textColor] The color of the text
+ * @param {ForegroundColorName | HEX | RGB} color The color of the progress bar
  * @param {keyof typeof drawingChars} [theme] The theme to use for the progress bar
  * @param {boolean} [boxed] Whether or not to draw a box around the progress bar
  * @param {boolean} [showPercentage] Whether or not to show the percentage
@@ -148,10 +148,10 @@ export type Orientation = "horizontal" | "vertical";
  * @interface ProgressStyle
  */
 export interface ProgressStyle {
-    background: BackgroundColorName;
-    borderColor: ForegroundColorName;
-    textColor?: ForegroundColorName;
-    color: ForegroundColorName;
+    background: BackgroundColorName | HEX | RGB;
+    borderColor: ForegroundColorName | HEX | RGB;
+    textColor?: ForegroundColorName | HEX | RGB;
+    color: ForegroundColorName | HEX | RGB;
     theme?: keyof typeof drawingChars;
     boxed?: boolean;
     showPercentage?: boolean;

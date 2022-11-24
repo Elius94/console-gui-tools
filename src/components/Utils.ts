@@ -1,11 +1,14 @@
 import { BackgroundColorName, ForegroundColorName } from "chalk"
 
+export type HEX = `#${string}`;
+export type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${number})`;
+
 /**
  * @description The type containing all the possible styles for the text.
  * 
  * @typedef {Object} StyleObject
- * @prop {chalk.ForegroundColorName | ""} [color] - The color of the text taken from the chalk library.
- * @prop {chalk.BackgroundColorName | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @prop {chalk.ForegroundColorName | HEX | RGB | ""} [color] - The color of the text taken from the chalk library.
+ * @prop {chalk.BackgroundColorName | HEX | RGB | ""} [backgroundColor] - The background color of the text taken from the chalk library.
  * @prop {boolean} [italic] - If the text is italic.
  * @prop {boolean} [bold] - If the text is bold.
  * @prop {boolean} [dim] - If the text is dim.
@@ -21,8 +24,8 @@ import { BackgroundColorName, ForegroundColorName } from "chalk"
  * @interface StyleObject
  */
 export interface StyleObject {
-    color?: ForegroundColorName | "";
-    bg?: BackgroundColorName | "";
+    color?: ForegroundColorName | HEX | RGB | "";
+    bg?: BackgroundColorName | HEX | RGB | "";
     italic?: boolean;
     bold?: boolean;
     dim?: boolean;
@@ -55,8 +58,8 @@ export interface StyledElement {
  * 
  * @typedef {Object} SimplifiedStyledElement
  * @prop {string} text - The text of the styled text.
- * @prop {chalk.ForegroundColorName | ""} [color] - The color of the text taken from the chalk library.
- * @prop {chalk.BackgroundColorName | ""} [backgroundColor] - The background color of the text taken from the chalk library.
+ * @prop {chalk.ForegroundColorName | HEX | RGB | ""} [color] - The color of the text taken from the chalk library.
+ * @prop {chalk.BackgroundColorName | HEX | RGB | "" | ""} [backgroundColor] - The background color of the text taken from the chalk library.
  * @prop {boolean} [italic] - If the text is italic.
  * @prop {boolean} [bold] - If the text is bold.
  * @prop {boolean} [dim] - If the text is dim.
@@ -73,8 +76,8 @@ export interface StyledElement {
  */
 export interface SimplifiedStyledElement {
     text: string;
-    color?: ForegroundColorName | "";
-    bg?: BackgroundColorName | "";
+    color?: ForegroundColorName | HEX | RGB | "";
+    bg?: BackgroundColorName | HEX | RGB | "" | "";
     italic?: boolean;
     bold?: boolean;
     dim?: boolean;

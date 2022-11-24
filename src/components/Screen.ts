@@ -1,7 +1,7 @@
 import { EventEmitter } from "events"
 import chalk from "chalk"
 import { StyledElement, StyleObject } from "./Utils.js"
-chalk.level = 1
+chalk.level = 3
 
 /**
  * @description The type containing all the possible styles for the text and the index array.
@@ -148,8 +148,32 @@ export class Screen extends EventEmitter {
 
             // convert styleIndex to chalk functions and apply them to the row text
             row.styleIndex.forEach(style => {
-                const color = style.color ? chalk[style.color] : (_in: string): string => _in
-                const bg = style.bg ? chalk[style.bg] : (_in: string): string => _in
+                let color
+                if (style.color) {
+                    if (style.color[0] === "#") {
+                        color = chalk.hex(style.color)
+                    } else if (style.color.includes("rgb")) {
+                        const rgb = [...style.color.matchAll(/\d+/g)].map(x => x[0])
+                        color = chalk.rgb(Number(rgb[0]), Number(rgb[1]), Number(rgb[2]))
+                    } else {
+                        color = chalk[style.color]
+                    }
+                } else {
+                    color = (_in: string): string => _in
+                }
+                let bg
+                if (style.bg) {
+                    if (style.bg[0] === "#") {
+                        bg = chalk.bgHex(style.bg)
+                    } else if (style.bg.includes("rgb")) {
+                        const rgb = [...style.bg.matchAll(/\d+/g)].map(x => x[0])
+                        bg = chalk.bgRgb(Number(rgb[0]), Number(rgb[1]), Number(rgb[2]))
+                    } else {
+                        bg = chalk[style.bg]
+                    }
+                } else {
+                    bg = (_in: string): string => _in
+                }
                 const italic = style.italic ? chalk.italic : (_in: string): string => _in
                 const bold = style.bold ? chalk.bold : (_in: string): string => _in
                 const dim = style.dim ? chalk.dim : (_in: string): string => _in

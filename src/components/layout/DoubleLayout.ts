@@ -1,13 +1,13 @@
 import { ForegroundColorName } from "chalk"
 import { ConsoleManager, PageBuilder } from "../../ConsoleGui.js"
-import { boxChars, StyledElement, truncate } from "../Utils.js"
+import { boxChars, HEX, RGB, StyledElement, truncate } from "../Utils.js"
 
 /**
  * @description The type containing all the possible options for the DoubleLayout.
  * @typedef {Object} DoubleLayoutOptions
  * @prop {boolean} [showTitle] - If the title should be shown.
  * @prop {boolean} [boxed] - If the layout should be boxed.
- * @prop {ForegroundColorName | ""} [boxColor] - The color of the box taken from the chalk library.
+ * @prop {ForegroundColorName | HEX | RGB | ""} [boxColor] - The color of the box taken from the chalk library.
  * @prop {"bold"} [boxStyle] - If the border of the box should be bold.
  * @prop {string} [changeFocusKey] - The key that should be pressed to change the focus.
  * @prop {"horizontal" | "vertical"} [direction] - The direction of the layout.
@@ -21,7 +21,7 @@ import { boxChars, StyledElement, truncate } from "../Utils.js"
 export interface DoubleLayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;
-    boxColor?: ForegroundColorName | ""; // add color list from chalk
+    boxColor?: ForegroundColorName | HEX | RGB | ""; // add color list from chalk
     boxStyle?: "bold";
     changeFocusKey: string;
     direction?: "horizontal" | "vertical";
