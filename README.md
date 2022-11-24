@@ -215,7 +215,7 @@ The arguments of that function is an array of object (function arguments syntax,
 The styles are converted to the Chalk modificator:
 
 <details>
-  <summary>Chalk Colors and Formatters</summary>
+  <summary>COLORS AND FORMATTERS</summary>
 
 ### HEX color (since 1.4.0)
 
