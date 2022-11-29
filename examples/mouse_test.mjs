@@ -7,13 +7,13 @@ const opt = {
         type: "single",
     },
     logLocation: "popup",
-    enableMouse: false
+    enableMouse: true
 }
 
 const GUI = new ConsoleManager(opt)
 
-GUI.on("keypressed", (key) => {
-    console.log("Key pressed: " + key)
+GUI.on("exit", () => {
+    process.exit()
 })
 
 const style1 = {
@@ -21,11 +21,11 @@ const style1 = {
     color: "red",
 }
 
-/*const button = new Button("btnClickMe", "Click Me!", 11, 3, 10, 10, style1)
+const button = new Button("btnClickMe", "Click Me!", 11, 3, 10, 10, style1)
 button.on("click", () => {
-    const winSize = { w: GUI.Terminal.width, h: GUI.Terminal.height }
-    button.absoluteValues.x = Math.floor(Math.random() * winSize.w)
-    button.absoluteValues.y = Math.floor(Math.random() * winSize.h)
-})*/
+    button.absoluteValues.x = Math.floor(Math.random() * 30)
+    button.absoluteValues.y = Math.floor(Math.random() * 30)
+    GUI.refresh()
+})
 
 GUI.refresh()
