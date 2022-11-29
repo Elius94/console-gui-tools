@@ -110,7 +110,8 @@ class ConsoleManager extends EventEmitter {
             this.Screen.on("error", (err) => {
                 this.error(err)
             })
-
+            
+            this.mouse = new MouseManager(this.Terminal, this.Input)
             this.popupCollection = []
             this.controlsCollection = []
             this.eventListenersContainer = {}
@@ -129,7 +130,7 @@ class ConsoleManager extends EventEmitter {
                 type: "double",
                 direction: "vertical",
             }
-
+            
             /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
             this.changeLayoutKey = this.layoutOptions.changeFocusKey
             this.changeLayoutkeys = this.changeLayoutKey.split("+")
@@ -161,7 +162,6 @@ class ConsoleManager extends EventEmitter {
                     this.applicationTitle = options.title
                 }
                 if (options.enableMouse) {
-                    this.mouse = new MouseManager(this.Terminal, this.Input)
                     this.mouse.enableMouse()
                 }
                 if (options.overrideConsole) {
