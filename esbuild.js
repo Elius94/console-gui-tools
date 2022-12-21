@@ -2,14 +2,16 @@
 // esbuild.js
 import { execSync } from "child_process"
 import { build } from "esbuild"
-import pkg from "./package.json" assert { type: "json" }
+import fs from "fs"
+
+const pkg = JSON.parse(fs.readFileSync("./package.json"))
 
 const watch = process.argv.includes("--watch")
 
 build({
     bundle: true,
     platform: "node",
-    target: "node16.0",
+    target: "node14.0",
     minify: true,
     sourcemap: true,
     format: "esm",
