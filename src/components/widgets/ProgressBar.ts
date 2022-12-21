@@ -15,7 +15,7 @@ const drawingChars = {
             25: { char: "▎", color: undefined },
             13: { char: "▏", color: undefined },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         vertical: {
             100: { char: "█", color: undefined },
             88: { char: "▇", color: undefined },
@@ -26,7 +26,7 @@ const drawingChars = {
             25: { char: "▂", color: undefined },
             13: { char: "▁", color: undefined },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         block: {
             full: { char: "▓", color: undefined },
             half: { char: "▒", color: undefined },
@@ -43,14 +43,14 @@ const drawingChars = {
             50: { char: "│", color: "#0c37d6" },
             25: { char: "│", color: "#c40c26" },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         vertical: {
             100: { char: "─", color: "#15a121" },
             75: { char: "─", color: "#c09c22" },
             50: { char: "─", color: "#0c37d6" },
             25: { char: "─", color: "#c40c26" },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         block: {
             full: { char: "█", color: undefined },
             half: { char: "▓", color: undefined },
@@ -58,7 +58,7 @@ const drawingChars = {
             boxDrawing: {
                 left: "[",
                 right: "]"
-            },
+            } as typeof boxChars.normal,
             labelStyle: { color: "#3d96da", bold: false },
             valueStyle: { color: "gray", dim: true },
         }
@@ -70,14 +70,14 @@ const drawingChars = {
             50: { char: "┃", color: "#0c37d6" },
             25: { char: "┃", color: "#c40c26" },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         vertical: {
             100: { char: "━", color: "#15a121" },
             75: { char: "━", color: "#c09c22" },
             50: { char: "━", color: "#0c37d6" },
             25: { char: "━", color: "#c40c26" },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         block: {
             full: { char: "█", color: undefined },
             half: { char: "▓", color: undefined },
@@ -86,7 +86,7 @@ const drawingChars = {
                 color: "white",
                 left: "[",
                 right: "]"
-            },
+            } as typeof boxChars.normal,
             labelStyle: { color: "#3d96da", bold: true },
             valueStyle: { color: "gray", dim: true }
         }
@@ -98,14 +98,14 @@ const drawingChars = {
             50: { char: "|", color: "#0c37d6" },
             25: { char: "|", color: "#c40c26" },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         vertical: {//―⎯
             100: { char: "―", color: "#15a121" },
             75: { char: "―", color: "#c09c22" },
             50: { char: "―", color: "#0c37d6" },
             25: { char: "―", color: "#c40c26" },
             0: { char: " ", color: undefined }
-        },
+        } as { [key: number]: { char: string, color: ForegroundColorName | HEX | RGB | undefined } },
         block: {
             full: { char: "█", color: undefined },
             half: { char: "▓", color: undefined },
@@ -113,7 +113,7 @@ const drawingChars = {
             boxDrawing: {
                 start: "[",
                 end: "]"
-            },
+            } as typeof boxChars.normal,
             labelStyle: { color: "#3d96da", bold: true },
             valueStyle: { color: "gray", dim: true }
         }
@@ -262,7 +262,7 @@ export class Progress extends Control {
     interactive = false
     text = ""
     enabled = true
-    theme = "precision"
+    theme: keyof typeof drawingChars = "precision"
     private style: ProgressStyle = {
         background: "bgBlack",
         borderColor: "white",
@@ -391,21 +391,21 @@ export class Progress extends Control {
                 styledProgress[0].push({
                     text: drawingChars[this.theme][this.orientation][100].char,
                     color: drawingChars[this.theme][this.orientation][100].color || this.style.color
-                })
+                } as SimplifiedStyledElement)
             }
         } else {
             const lastBlockPercentageKey = Number(Object.keys(drawingChars[this.theme][this.orientation]).find(key => Number(key) >= lastBlockPercentage))
-            const lastBlockPercentageValue = drawingChars[this.theme][this.orientation][lastBlockPercentageKey].char
+            const lastBlockPercentageValue = drawingChars[this.theme][this.orientation][Number(lastBlockPercentageKey)].char
             for (let i = 0; i < fullBlocks; i++) {
                 styledProgress[0].push({
                     text: drawingChars[this.theme][this.orientation][100].char,
                     color: drawingChars[this.theme][this.orientation][100].color || this.style.color,
-                })
+                } as SimplifiedStyledElement)
             }
             styledProgress[0].push({
                 text: lastBlockPercentageValue,
                 color: drawingChars[this.theme][this.orientation][lastBlockPercentageKey].color || this.style.color
-            })
+            } as SimplifiedStyledElement)
         }
         for (let i = 0; i < emptyBlocks; i++) {
             styledProgress[0].push({
@@ -451,7 +451,7 @@ export class Progress extends Control {
                         right: boxC.top,
                         top: boxC.left,
                         bottom: boxC.right
-                    }
+                    } as typeof boxChars.normal
                 } else {
                     ch = drawingChars[this.theme].block.boxDrawing
                 }
@@ -483,19 +483,19 @@ export class Progress extends Control {
         this.getContent().clear()
         if (this.orientation === "horizontal") {
             if (singleLine) {
-                if (this.style.showTitle) progress[0].unshift({ text: this.text, ...drawingChars[this.theme].block.labelStyle })
-                if (this.style.showValue) progress[0].push({ text: this.value.toFixed(2), ...drawingChars[this.theme].block.valueStyle })
-                if (this.style.showPercentage) progress[0].push({ text: `/${perc}%`, ...drawingChars[this.theme].block.valueStyle })
-                if (this.style.showMinMax) progress.push([{ text: `(${this.min}/${this.max})`, ...drawingChars[this.theme].block.valueStyle }])
+                if (this.style.showTitle) progress[0].unshift({ text: this.text, ...drawingChars[this.theme].block.labelStyle } as SimplifiedStyledElement)
+                if (this.style.showValue) progress[0].push({ text: this.value.toFixed(2), ...drawingChars[this.theme].block.valueStyle } as SimplifiedStyledElement)
+                if (this.style.showPercentage) progress[0].push({ text: `/${perc}%`, ...drawingChars[this.theme].block.valueStyle } as SimplifiedStyledElement)
+                if (this.style.showMinMax) progress.push([{ text: `(${this.min}/${this.max})`, ...drawingChars[this.theme].block.valueStyle } as SimplifiedStyledElement])
             } else {
                 // all texts are added to a new line on the bottom of the progress bar
                 const textLine = [] as SimplifiedStyledElement[]
-                if (this.style.showTitle) textLine.push({ text: this.text, ...drawingChars[this.theme].block.labelStyle })
+                if (this.style.showTitle) textLine.push({ text: this.text, ...drawingChars[this.theme].block.labelStyle } as SimplifiedStyledElement)
                 let valuesString = " "
                 if (this.style.showValue) valuesString += this.value.toFixed(2)
                 if (this.style.showPercentage) valuesString += ` ${perc}%`
                 if (this.style.showMinMax) valuesString += ` (${this.min}/${this.max})`
-                if (valuesString.length > 0) textLine.push({ text: valuesString, ...drawingChars[this.theme].block.valueStyle })
+                if (valuesString.length > 0) textLine.push({ text: valuesString, ...drawingChars[this.theme].block.valueStyle } as SimplifiedStyledElement)
                 
                 progress.push(textLine)
             } 
@@ -517,12 +517,12 @@ export class Progress extends Control {
                 this.getContent().addRow(... row)
             }
             const textLine = [] as SimplifiedStyledElement[]
-            if (this.style.showTitle) textLine.push({ text: this.text, ...drawingChars[this.theme].block.labelStyle })
+            if (this.style.showTitle) textLine.push({ text: this.text, ...drawingChars[this.theme].block.labelStyle } as SimplifiedStyledElement)
             let valuesString = " "
             if (this.style.showValue) valuesString += this.value.toFixed(2)
             if (this.style.showPercentage) valuesString += ` ${perc}%`
             if (this.style.showMinMax) valuesString += ` (${this.min}/${this.max})`
-            if (valuesString.length > 0) textLine.push({ text: valuesString, ...drawingChars[this.theme].block.valueStyle })
+            if (valuesString.length > 0) textLine.push({ text: valuesString, ...drawingChars[this.theme].block.valueStyle } as SimplifiedStyledElement)
             this.getContent().addRow(... textLine)
         }
         this.CM.refresh()

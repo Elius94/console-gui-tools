@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import chalk from "chalk"
+import chalk, { BackgroundColorName, ForegroundColorName } from "chalk"
 import { StyledElement, StyleObject } from "./Utils.js"
 chalk.level = 3
 
@@ -148,7 +148,7 @@ export class Screen extends EventEmitter {
 
             // convert styleIndex to chalk functions and apply them to the row text
             row.styleIndex.forEach(style => {
-                let color
+                let color = (_in: string): string => _in
                 if (style.color) {
                     if (style.color[0] === "#") {
                         color = chalk.hex(style.color)
@@ -156,12 +156,10 @@ export class Screen extends EventEmitter {
                         const rgb = [...style.color.matchAll(/\d+/g)].map(x => x[0])
                         color = chalk.rgb(Number(rgb[0]), Number(rgb[1]), Number(rgb[2]))
                     } else {
-                        color = chalk[style.color]
+                        color = chalk[style.color as ForegroundColorName]
                     }
-                } else {
-                    color = (_in: string): string => _in
                 }
-                let bg
+                let bg = (_in: string): string => _in
                 if (style.bg) {
                     if (style.bg[0] === "#") {
                         bg = chalk.bgHex(style.bg)
@@ -169,10 +167,8 @@ export class Screen extends EventEmitter {
                         const rgb = [...style.bg.matchAll(/\d+/g)].map(x => x[0])
                         bg = chalk.bgRgb(Number(rgb[0]), Number(rgb[1]), Number(rgb[2]))
                     } else {
-                        bg = chalk[style.bg]
+                        bg = chalk[style.bg as BackgroundColorName]
                     }
-                } else {
-                    bg = (_in: string): string => _in
                 }
                 const italic = style.italic ? chalk.italic : (_in: string): string => _in
                 const bold = style.bold ? chalk.bold : (_in: string): string => _in

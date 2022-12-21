@@ -234,16 +234,18 @@ export class DoubleLayout {
                 unformattedLine[1] += element.text
             })
         }
-        if (unformattedLine.filter((e, i) => e.length > this.realWidth[i] - bsize).length > 0) {
+        
+        if (unformattedLine.filter((e, i) => e.length > (typeof this.realWidth === "number" ? this.realWidth : this.realWidth[i]) - bsize).length > 0) {
             unformattedLine = unformattedLine.map((e, i) => {
-                if (e.length > this.realWidth[i] - bsize) { // Need to truncate
+                const width = typeof this.realWidth === "number" ? this.realWidth : this.realWidth[i]
+                if (e.length > width - bsize) { // Need to truncate
                     const offset = 2
                     if (dir === "vertical") {
                         newLine[i] = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
                     } else {
                         newLine[i] = i === 0 ? JSON.parse(JSON.stringify(line)) : JSON.parse(JSON.stringify(secondLine))
                     }
-                    let diff = e.length - this.realWidth[i] + 1
+                    let diff = e.length - width + 1
 
                     // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
@@ -269,16 +271,17 @@ export class DoubleLayout {
             if (this.options.boxed) newLine[0].push({ text: boxChars["normal"].vertical, style: { color: this.selected === index ? this.options.boxColor : "white", bold: this.boxBold } })
             this.CM.Screen.write(...newLine[0])
         } else {
+            const width = typeof this.realWidth === "number" ? [this.realWidth, 0] : [this.realWidth[0], this.realWidth[1]]
             const ret: StyledElement[] = []
             if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.selected === 0 ? this.options.boxColor : "white", bold: this.boxBold } })
             ret.push(...newLine[0])
-            if (unformattedLine[0].length <= this.realWidth[0] - bsize) {
-                ret.push({ text: `${" ".repeat((this.realWidth[0] - unformattedLine[0].length) - (bsize > 0 ? 2 : 0))}`, style: { color: "" } })
+            if (unformattedLine[0].length <= width[0] - bsize) {
+                ret.push({ text: `${" ".repeat((width[0] - unformattedLine[0].length) - (bsize > 0 ? 2 : 0))}`, style: { color: "" } })
             }
             if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.options.boxColor, bold: this.boxBold } })
             ret.push(...newLine[1])
-            if (unformattedLine[1].length <= this.realWidth[1] - bsize) {
-                ret.push({ text: `${" ".repeat((this.realWidth[1] - unformattedLine[1].length) - (bsize > 0 ? 1 : 0))}`, style: { color: "" } })
+            if (unformattedLine[1].length <= width[1] - bsize) {
+                ret.push({ text: `${" ".repeat((width[1] - unformattedLine[1].length) - (bsize > 0 ? 1 : 0))}`, style: { color: "" } })
             }
             if (this.options.boxed) ret.push({ text: boxChars["normal"].vertical, style: { color: this.selected === 1 ? this.options.boxColor : "white", bold: this.boxBold } })
             this.CM.Screen.write(...ret)

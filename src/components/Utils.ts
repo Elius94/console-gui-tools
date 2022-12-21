@@ -109,7 +109,10 @@ export const boxChars = {
         left: "├",
         right: "┤",
         top: "┬",
-        bottom: "┴"
+        bottom: "┴",
+        start: "",
+        end: "",
+        color: "" as ForegroundColorName | HEX | RGB | "",
     },
     selected: {
         topLeft: "╔",
@@ -122,7 +125,10 @@ export const boxChars = {
         left: "╠",
         right: "╣",
         top: "╦",
-        bottom: "╩"
+        bottom: "╩",
+        start: "",
+        end: "",
+        color: "" as ForegroundColorName | HEX | RGB | "",
     },
     hovered: {
         topLeft: "╓",
@@ -135,7 +141,10 @@ export const boxChars = {
         left: "╟",
         right: "╢",
         top: "╥",
-        bottom: "╨"
+        bottom: "╨",
+        start: "",
+        end: "",
+        color: "" as ForegroundColorName | HEX | RGB | "",
     }
 }
 

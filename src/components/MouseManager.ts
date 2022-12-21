@@ -322,6 +322,8 @@ export class MouseManager extends EventEmitter {
                 if (mKeymap.length > 0) {
                     // First test fixed sequences
                     if (mKeymap[0].handler) {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore - TS doesn't like the dynamic call
                         handlerResult = this[mKeymap[0].handler].call(this, "MOUSE", chunk.subarray(index + 3))
                         bytes = i + handlerResult.eaten
 

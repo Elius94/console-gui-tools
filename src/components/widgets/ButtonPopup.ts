@@ -382,7 +382,8 @@ export class ButtonPopup extends EventEmitter {
                 const sumRowLength = buttonLength.reduce((a, b) => a + b, 0) - spaceBetweenButtons
                 const emptySpace = windowWidth - sumRowLength >= 0 ? windowWidth - sumRowLength : 0
                 row.forEach((button, colIndex) => {
-                    let btnBoxType = this.selected === this.buttons.indexOf(button) ? "selected" : "normal"
+                    let btnBoxType: keyof typeof boxChars
+                    btnBoxType = this.selected === this.buttons.indexOf(button) ? "selected" : "normal"
                     if (this.hovered === this.buttons.indexOf(button) && this.selected !== this.buttons.indexOf(button)) {
                         btnBoxType = "hovered"
                     }

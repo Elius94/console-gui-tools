@@ -65,7 +65,7 @@ export class Button extends Control {
     public onRelease: () => void
     private status: "normal" | "hovered" | "selected" = "normal" 
     public constructor(
-        id: string, 
+        id: string,
         text: string, 
         width: number,
         height: number,

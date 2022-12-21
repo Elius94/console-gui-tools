@@ -81,8 +81,8 @@ class ConsoleManager extends EventEmitter {
     static instance: ConsoleManager
     Screen!: Screen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    popupCollection: any[] = []
-    controlsCollection: Control[] = []
+    popupCollection: { [key: string]: any } = {}
+    controlsCollection: { [key: string]: Control } = {}
     eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } | { [key: string]: (key: MouseEvent) => void }= {}
     logLocation!: 0 | 1 | 2 | 3 | "popup"
     logPageSize!: number
@@ -112,8 +112,8 @@ class ConsoleManager extends EventEmitter {
             })
             
             this.mouse = new MouseManager(this.Terminal, this.Input)
-            this.popupCollection = []
-            this.controlsCollection = []
+            this.popupCollection = {}
+            this.controlsCollection = {}
             this.eventListenersContainer = {}
 
             /** @const {number | 'popup'} logLocation - Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window. */
