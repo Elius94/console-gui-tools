@@ -1,0 +1,15 @@
+{
+  "name": "test-cgt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Elia Lazzari",
+  "license": "ISC",
+  "dependencies": {
+    "console-gui-tools": "^2.1.1"
+  }
+}

@@ -31,6 +31,19 @@ Install with:
 npm i console-gui-tools
 ```
 
+## Importing the library
+The library is transpiled to ESM and CJS, so you can import it with both syntax.
+
+### ESM syntax
+```js
+import { ConsoleManager } from 'console-gui-tools'
+```
+
+### CommonJS syntax
+```js
+const { ConsoleManager } = require('console-gui-tools')
+```
+
 <details>
 <summary>OPTIONS</summary>
 
