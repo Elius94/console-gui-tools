@@ -2,14 +2,17 @@
   "compilerOptions": {
     "target": "es2020",
     "lib": ["es2020", "esnext", "es2021", "es2022"],
-    "module": "es2022",
+    "module": "es2020",
     "declaration": true,
-    "outDir": "./dist/",
+    "outDir": "./dist",
+    // match output dir to input dir. e.g. dist/index instead of dist/src/index
+    //"rootDir": "./src",
     "strict": true,
     "allowJs": false,
     "declarationMap": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    //"inlineSources": true,
     "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
@@ -28,6 +31,7 @@
     "skipLibCheck": true,
     // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
     //"noEmit": true,
+    "useDefineForClassFields": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*", "dist"]
