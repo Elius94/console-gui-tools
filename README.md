@@ -1,7 +1,7 @@
 # console-gui-tools 
 [![npm version](https://badge.fury.io/js/console-gui-tools.svg)](https://npmjs.com/package/console-gui-tools) [![npm](https://img.shields.io/npm/dt/console-gui-tools)](https://npmjs.com/package/console-gui-tools) ![GitHub](https://img.shields.io/github/license/elius94/console-gui-tools)
 
-A simple ([PURE ESM](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c)) Node.js library to create Console Apps like a wizard (or maybe if you like old style colored screen or something like "teletext" programs 😂)
+A simple Node.js library to create Console Apps like a wizard (or maybe if you like old style colored screen or something like "teletext" programs 😂)
 Apart from jokes, it is a library that allows you to create a screen divided into a part with everything you want to see (such as variable values) and another in which the logs run.
 Moreover in this way the application is managed by the input event "keypressed" to which each key corresponds to a bindable command.
 For example, to change variables you can open popups with an option selector or with a textbox.
@@ -11,10 +11,8 @@ It's in embryonic phase, any suggestion will be constructive :D
 
 ## Requirements
 
-> This is a Typescript module that is compiled as ES module. It should be used in other ES application. If you want to use it in a Commonjs app you can learn on the internet how to wrap it in, or you can clone this repo and change the tsconfig.json -> module: commonjs and package.json -> type: commonjs than build it for your project.
-
 #### Node.js
-Version: >= 14
+Version: >= 14.17
 
 #### OS
 It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11.
