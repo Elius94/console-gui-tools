@@ -132,11 +132,7 @@ class ConsoleManager extends EventEmitter {
             }
 
             this.applicationTitle = ""
-
-            /** @const {PageBuilder} stdOut - The logs page */
-            this.stdOut = new PageBuilder()
-            this.stdOut.setRowsPerPage(this.logPageSize)
-
+            
             if (options) {
                 if (options.logLocation !== undefined) {
                     if (typeof options.logLocation === "number") {
@@ -170,6 +166,11 @@ class ConsoleManager extends EventEmitter {
                     this.setLayoutOptions(options.layoutOptions, false)
                 }
             }
+            
+            /** @const {PageBuilder} stdOut - The logs page */
+            this.stdOut = new PageBuilder()
+            this.stdOut.setRowsPerPage(this.logPageSize)
+            
             this.updateLayout()
             this.addGenericListeners()
 
