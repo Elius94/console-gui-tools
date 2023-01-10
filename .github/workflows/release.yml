@@ -42,10 +42,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 17
           registry-url: "https://registry.npmjs.org"
@@ -54,7 +54,7 @@ jobs:
         run: npm ci
 
       - id: check
-        uses: EndBug/version-check@v1
+        uses: EndBug/version-check@v2
         with:
           file-url: "https://unpkg.com/console-gui-tools@latest/package.json"
           static-checking: localIsNew
