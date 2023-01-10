@@ -133,6 +133,10 @@ class ConsoleManager extends EventEmitter {
 
             this.applicationTitle = ""
 
+            /** @const {PageBuilder} stdOut - The logs page */
+            this.stdOut = new PageBuilder()
+            this.stdOut.setRowsPerPage(this.logPageSize)
+
             if (options) {
                 if (options.logLocation !== undefined) {
                     if (typeof options.logLocation === "number") {
@@ -218,10 +222,6 @@ class ConsoleManager extends EventEmitter {
             this.pages = [new PageBuilder(), new PageBuilder()]
             break
         }
-
-        /** @const {PageBuilder} stdOut - The logs page */
-        this.stdOut = new PageBuilder()
-        this.stdOut.setRowsPerPage(this.logPageSize)
 
         /** @const {LayoutManager} layout - The layout instance */
         this.layout = new LayoutManager(this.pages, this.layoutOptions)
