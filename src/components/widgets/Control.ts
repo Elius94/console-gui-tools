@@ -272,6 +272,7 @@ export class Control extends EventEmitter {
                 this.emit("hoverOut", event)
             }
         }
+        if (!this.draggable) return
         if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
             // check if the mouse is on the header of the popup (first three lines)
             if (x > this.absoluteValues.x && x <= this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y <= this.absoluteValues.y + this.absoluteValues.height) {
