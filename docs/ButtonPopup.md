@@ -29,7 +29,7 @@
 
 * [ButtonPopup](#ButtonPopup) ⇐ <code>EventEmitter</code>
     * [new ButtonPopup(id, title, message, buttons, visible)](#new_ButtonPopup_new)
-    * [.keyListner(_str, key)](#ButtonPopup+keyListner)
+    * [.keyListener(_str, key)](#ButtonPopup+keyListener)
     * [.show()](#ButtonPopup+show) ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
     * [.hide()](#ButtonPopup+hide) ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
     * [.isVisible()](#ButtonPopup+isVisible) ⇒ <code>boolean</code>
@@ -62,9 +62,9 @@
 ```js
 const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
 ```
-<a name="ButtonPopup+keyListner"></a>
+<a name="ButtonPopup+keyListener"></a>
 
-### buttonPopup.keyListner(_str, key)
+### buttonPopup.keyListener(_str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the popup is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 

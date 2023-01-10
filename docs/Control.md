@@ -20,7 +20,7 @@
 
 * [Control](#Control) ⇐ <code>EventEmitter</code>
     * [new Control(id, visible, attributes, children)](#new_Control_new)
-    * [.keyListner(_str, key)](#Control+keyListner)
+    * [.keyListener(_str, key)](#Control+keyListener)
     * [.getContent()](#Control+getContent) ⇒ <code>InPageWidgetBuilder</code>
     * [.focus()](#Control+focus) ⇒ [<code>Control</code>](#Control)
     * [.unfocus()](#Control+unfocus) ⇒ [<code>Control</code>](#Control)
@@ -56,9 +56,9 @@ absolute position on the screen. It's a base class for all the controls (widgets
 
 **Example**  
 ```tsconst widget1 = new InPageWidgetBuilder()widget1.addRow({ text: "┌────────┐", color: "yellow", style: "bold" })widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })const button1 = new Control("btn1", false, { x: 30, y: 18, width: 10, height: 3 }, widget1)button1.on("relativeMouse", (event) => {    // The relative mouse event is triggered with the mouse position relative to the widget    //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)    if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") {        GUI.log("Button 1 clicked!")        if (valueEmitter) {            clearInterval(valueEmitter)            valueEmitter = null        } else {            valueEmitter = setInterval(frame, period)        }    }})button1.show()```
-<a name="Control+keyListner"></a>
+<a name="Control+keyListener"></a>
 
-### control.keyListner(_str, key)
+### control.keyListener(_str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the popup is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 

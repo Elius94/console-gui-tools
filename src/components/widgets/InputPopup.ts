@@ -74,7 +74,7 @@ export class InputPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof InputPopup
      */
-    public keyListnerNumeric(_str: string, key: KeyListenerArgs): void {
+    public keyListenerNumeric(_str: string, key: KeyListenerArgs): void {
         const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
         if (checkResult === 1) {
             this.parsingMouseFrame = true
@@ -154,7 +154,7 @@ export class InputPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof InputPopup
      */
-    public keyListnerText(_str: string, key: KeyListenerArgs): void {
+    public keyListenerText(_str: string, key: KeyListenerArgs): void {
         const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
         if (checkResult === 1) {
             this.parsingMouseFrame = true
@@ -284,9 +284,9 @@ export class InputPopup extends EventEmitter {
     private manageInput(): InputPopup {
         // Add a command input listener to change mode
         if (this.numeric) {
-            this.CM.setKeyListener(this.id, this.keyListnerNumeric.bind(this))
+            this.CM.setKeyListener(this.id, this.keyListenerNumeric.bind(this))
         } else {
-            this.CM.setKeyListener(this.id, this.keyListnerText.bind(this))
+            this.CM.setKeyListener(this.id, this.keyListenerText.bind(this))
         }
         if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
@@ -300,9 +300,9 @@ export class InputPopup extends EventEmitter {
     private unManageInput(): InputPopup {
         // Add a command input listener to change mode
         if (this.numeric) {
-            this.CM.removeKeyListener(this.id/*, this.keyListnerNumeric.bind(this)*/)
+            this.CM.removeKeyListener(this.id/*, this.keyListenerNumeric.bind(this)*/)
         } else {
-            this.CM.removeKeyListener(this.id/*, this.keyListnerText.bind(this)*/)
+            this.CM.removeKeyListener(this.id/*, this.keyListenerText.bind(this)*/)
         }
         if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this

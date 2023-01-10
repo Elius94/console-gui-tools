@@ -29,8 +29,8 @@
 
 * [InputPopup](#InputPopup) ⇐ <code>EventEmitter</code>
     * [new InputPopup(id, title, value, numeric, visible)](#new_InputPopup_new)
-    * [.keyListnerNumeric(_str, key)](#InputPopup+keyListnerNumeric)
-    * [.keyListnerText(_str, key)](#InputPopup+keyListnerText)
+    * [.keyListenerNumeric(_str, key)](#InputPopup+keyListenerNumeric)
+    * [.keyListenerText(_str, key)](#InputPopup+keyListenerText)
     * [.getValue()](#InputPopup+getValue) ⇒ <code>string</code> \| <code>number</code>
     * [.setValue(newValue)](#InputPopup+setValue) ⇒ [<code>InputPopup</code>](#InputPopup)
     * [.show()](#InputPopup+show) ⇒ [<code>InputPopup</code>](#InputPopup)
@@ -65,9 +65,9 @@
 ```js
 const popup = new InputPopup("popup1", "Choose the number", selectedNumber, true).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
 ```
-<a name="InputPopup+keyListnerNumeric"></a>
+<a name="InputPopup+keyListenerNumeric"></a>
 
-### inputPopup.keyListnerNumeric(_str, key)
+### inputPopup.keyListenerNumeric(_str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 
@@ -78,9 +78,9 @@ Inside this function are defined all the keys that can be pressed and the action
 | _str | <code>string</code> | <p>The string of the input.</p> |
 | key | <code>Object</code> | <p>The key object.</p> |
 
-<a name="InputPopup+keyListnerText"></a>
+<a name="InputPopup+keyListenerText"></a>
 
-### inputPopup.keyListnerText(_str, key)
+### inputPopup.keyListenerText(_str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 

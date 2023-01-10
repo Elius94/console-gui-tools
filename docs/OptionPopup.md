@@ -29,7 +29,7 @@
 
 * [OptionPopup](#OptionPopup) ⇐ <code>EventEmitter</code>
     * [new OptionPopup(id, title, options, selected, visible)](#new_OptionPopup_new)
-    * [.keyListner(str, key)](#OptionPopup+keyListner)
+    * [.keyListener(str, key)](#OptionPopup+keyListener)
     * [.getSelected()](#OptionPopup+getSelected) ⇒ <code>string</code> \| <code>number</code>
     * [.setSelected(selected)](#OptionPopup+setSelected) ⇒ [<code>OptionPopup</code>](#OptionPopup)
     * [.show()](#OptionPopup+show) ⇒ [<code>OptionPopup</code>](#OptionPopup)
@@ -64,9 +64,9 @@
 ```js
 const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
 ```
-<a name="OptionPopup+keyListner"></a>
+<a name="OptionPopup+keyListener"></a>
 
-### optionPopup.keyListner(str, key)
+### optionPopup.keyListener(str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the popup is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 

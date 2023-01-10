@@ -31,7 +31,7 @@
     * [new FileSelectorPopup(id, title, basePath, [limitToPath], [allowedExtensions], visible)](#new_FileSelectorPopup_new)
     * [.listDir(dir)](#FileSelectorPopup+listDir) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
     * [.updateList(_path)](#FileSelectorPopup+updateList)
-    * [.keyListner(str, key)](#FileSelectorPopup+keyListner)
+    * [.keyListener(str, key)](#FileSelectorPopup+keyListener)
     * [.getSelected()](#FileSelectorPopup+getSelected) ⇒ <code>FileItemObject</code>
     * [.setSelected(selected)](#FileSelectorPopup+setSelected) ⇒ [<code>FileSelectorPopup</code>](#FileSelectorPopup)
     * [.show()](#FileSelectorPopup+show) ⇒ [<code>FileSelectorPopup</code>](#FileSelectorPopup)
@@ -94,9 +94,9 @@ it return a promise with the list of files and directories. The list is an array
 | --- | --- | --- |
 | _path | <code>string</code> | <p>The path to load the list.</p> |
 
-<a name="FileSelectorPopup+keyListner"></a>
+<a name="FileSelectorPopup+keyListener"></a>
 
-### fileSelectorPopup.keyListner(str, key)
+### fileSelectorPopup.keyListener(str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the popup is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 

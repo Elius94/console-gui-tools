@@ -169,7 +169,7 @@ export class FileSelectorPopup extends EventEmitter {
      * @param {Object} key - The key object.
      * @memberof FileSelectorPopup
      */
-    public keyListner(_str: string, key: KeyListenerArgs) {
+    public keyListener(_str: string, key: KeyListenerArgs) {
         const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
         if (checkResult === 1) {
             this.parsingMouseFrame = true
@@ -345,7 +345,7 @@ export class FileSelectorPopup extends EventEmitter {
      */
     private manageInput(): FileSelectorPopup {
         // Add a command input listener to change mode
-        this.CM.setKeyListener(this.id, this.keyListner.bind(this))
+        this.CM.setKeyListener(this.id, this.keyListener.bind(this))
         if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }

@@ -86,7 +86,7 @@ export class Control extends EventEmitter {
      * @param {any} key - The key object.
      * @memberof Control
      */
-    public keyListner(_str: string, key: KeyListenerArgs): void {
+    public keyListener(_str: string, key: KeyListenerArgs): void {
         const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
         if (checkResult === 1) {
             this.parsingMouseFrame = true
@@ -203,7 +203,7 @@ export class Control extends EventEmitter {
      */
     private manageInput(mouse: boolean): Control {
         if (!mouse) {
-            this.CM.setKeyListener(this.id, this.keyListner.bind(this))
+            this.CM.setKeyListener(this.id, this.keyListener.bind(this))
             return this
         }
         if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))

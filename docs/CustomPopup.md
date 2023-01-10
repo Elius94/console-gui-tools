@@ -29,7 +29,7 @@
 
 * [CustomPopup](#CustomPopup) ⇐ <code>EventEmitter</code>
     * [new CustomPopup(id, title, content, width, visible)](#new_CustomPopup_new)
-    * [.keyListner(str, key)](#CustomPopup+keyListner)
+    * [.keyListener(str, key)](#CustomPopup+keyListener)
     * [.getContent()](#CustomPopup+getContent) ⇒ <code>PageBuilder</code>
     * [.setContent(newContent)](#CustomPopup+setContent) ⇒ [<code>CustomPopup</code>](#CustomPopup)
     * [.setWidth(newWidth)](#CustomPopup+setWidth) ⇒ [<code>CustomPopup</code>](#CustomPopup)
@@ -67,9 +67,9 @@
 ```js
 const popup = new CustomPopup("popup1", "See that values", new PageBuilder()).show()
 ```
-<a name="CustomPopup+keyListner"></a>
+<a name="CustomPopup+keyListener"></a>
 
-### customPopup.keyListner(str, key)
+### customPopup.keyListener(str, key)
 <p>This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
 Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.</p>
 
