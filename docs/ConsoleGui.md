@@ -30,6 +30,9 @@
 
 * [ConsoleManager](#ConsoleManager) ⇐ <code>EventEmitter</code>
     * [new ConsoleManager(options)](#new_ConsoleManager_new)
+    * [.setLayoutOptions(options, [update])](#ConsoleManager+setLayoutOptions)
+    * [.updateLayout()](#ConsoleManager+updateLayout)
+    * [.getLayoutOptions()](#ConsoleManager+getLayoutOptions) ⇒ <code>LayoutOptions</code>
     * [.getLogPageSize()](#ConsoleManager+getLogPageSize) ⇒ <code>number</code>
     * [.setLogPageSize(size)](#ConsoleManager+setLogPageSize) ⇒ <code>void</code>
     * [.addGenericListeners()](#ConsoleManager+addGenericListeners)
@@ -72,6 +75,48 @@ Emits the following events:</p>
 **Example**  
 ```js
 const CM = new ConsoleManager({ logPageSize: 10, layoutBorder: true, changeLayoutKey: 'ctrl+l', title: 'Console Application' })
+```
+<a name="ConsoleManager+setLayoutOptions"></a>
+
+### consoleManager.setLayoutOptions(options, [update])
+<p>This method is used to change the layout options.
+if update is true, the layout will be updated.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| options | <code>LayoutOptions</code> |  | 
+| [update] | <code>boolean</code> | <code>true</code> | 
+
+**Example**  
+```js
+CM.setLayoutOptions({ showTitle: true, boxed: true, boxColor: 'cyan', boxStyle: 'bold', changeFocusKey: 'ctrl+l', type: 'double', direction: 'vertical' })
+```
+**Example**  
+```js
+CM.setLayoutOptions({ ...CM.getLayoutOptions(), type: "quad" })
+```
+<a name="ConsoleManager+updateLayout"></a>
+
+### consoleManager.updateLayout()
+<p>This method is used to update the layout</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+<a name="ConsoleManager+getLayoutOptions"></a>
+
+### consoleManager.getLayoutOptions() ⇒ <code>LayoutOptions</code>
+<p>This method is used to get the layout options.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+**Returns**: <code>LayoutOptions</code> - <p>The layout options.</p>  
+**Example**  
+```js
+CM.getLayoutOptions()
+```
+**Example**  
+```js
+CM.getLayoutOptions().boxed
 ```
 <a name="ConsoleManager+getLogPageSize"></a>
 

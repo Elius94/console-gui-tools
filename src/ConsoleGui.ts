@@ -83,7 +83,7 @@ class ConsoleManager extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     popupCollection: { [key: string]: any } = {}
     controlsCollection: { [key: string]: Control } = {}
-    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } | { [key: string]: (key: MouseEvent) => void }= {}
+    eventListenersContainer: { [key: string]: (_str: string, key: KeyListenerArgs) => void } | { [key: string]: (key: MouseEvent) => void } = {}
     logLocation!: 0 | 1 | 2 | 3 | "popup"
     logPageSize!: number
     logPageTitle!: string
@@ -110,7 +110,7 @@ class ConsoleManager extends EventEmitter {
             this.Screen.on("error", (err) => {
                 this.error(err)
             })
-            
+
             this.mouse = new MouseManager(this.Terminal, this.Input)
             this.popupCollection = {}
             this.controlsCollection = {}
@@ -130,10 +130,7 @@ class ConsoleManager extends EventEmitter {
                 type: "double",
                 direction: "vertical",
             }
-            
-            /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
-            this.changeLayoutKey = this.layoutOptions.changeFocusKey
-            this.changeLayoutkeys = this.changeLayoutKey.split("+")
+
             this.applicationTitle = ""
 
             if (options) {
@@ -152,12 +149,6 @@ class ConsoleManager extends EventEmitter {
                 if (options.logPageSize) {
                     this.logPageSize = options.logPageSize
                 }
-                if (typeof options.layoutOptions !== "undefined") {
-                    this.layoutOptions = options.layoutOptions
-                    if (options.layoutOptions.changeFocusKey) {
-                        this.changeLayoutKey = options.layoutOptions.changeFocusKey
-                    }
-                }
                 if (options.title) {
                     this.applicationTitle = options.title
                 }
@@ -171,49 +162,11 @@ class ConsoleManager extends EventEmitter {
                 } else {
                     this.overrideConsole()
                 }
+                if (typeof options.layoutOptions !== "undefined") {
+                    this.setLayoutOptions(options.layoutOptions, false)
+                }
             }
-
-            /** @const {Array<PageBuilder>} homePage - The main application */
-            switch (this.layoutOptions.type) {
-            case "single":
-                this.pages = [new PageBuilder()]
-                break
-            case "double":
-                this.pages = [new PageBuilder(), new PageBuilder()]
-                break
-            case "triple":
-                this.pages = [new PageBuilder(), new PageBuilder(), new PageBuilder()]
-                break
-            case "quad":
-                this.pages = [new PageBuilder(), new PageBuilder(), new PageBuilder(), new PageBuilder()]
-                break
-            default:
-                this.pages = [new PageBuilder(), new PageBuilder()]
-                break
-            }
-
-            /** @const {PageBuilder} stdOut - The logs page */
-            this.stdOut = new PageBuilder()
-            this.stdOut.setRowsPerPage(this.logPageSize)
-
-            /** @const {LayoutManager} layout - The layout instance */
-            this.layout = new LayoutManager(this.pages, this.layoutOptions)
-
-            if (this.logLocation === "popup") {
-                this.setPages(this.pages)
-            } else if (typeof this.logLocation === "number") {
-                this.setPage(this.stdOut, this.logLocation)
-                this.pages.forEach((page, index) => {
-                    if (index !== this.logLocation) {
-                        this.setPage(page, index)
-                    }
-                })
-                this.layout.setTitle(this.logPageTitle, this.logLocation)
-            } else {
-                this.setPages([...this.pages, this.stdOut])
-                this.layout.setTitle(this.applicationTitle, 0)
-                this.layout.setTitle(this.logPageTitle, 1)
-            }
+            this.updateLayout()
             this.addGenericListeners()
 
             // I use readline to manage the keypress event
@@ -221,6 +174,84 @@ class ConsoleManager extends EventEmitter {
             this.Input.setRawMode(true) // With this I only get the key value
         }
         return ConsoleManager.instance
+    }
+
+    /**
+     * @description This method is used to change the layout options.
+     * if update is true, the layout will be updated.
+     *
+     * @param {LayoutOptions} options
+     * @param {boolean} [update=true]
+     * @memberof ConsoleManager
+     * 
+     * @example CM.setLayoutOptions({ showTitle: true, boxed: true, boxColor: 'cyan', boxStyle: 'bold', changeFocusKey: 'ctrl+l', type: 'double', direction: 'vertical' })
+     * @example CM.setLayoutOptions({ ...CM.getLayoutOptions(), type: "quad" })
+     */
+    public setLayoutOptions(options: LayoutOptions, update = true): void {
+        this.layoutOptions = options
+        if (update) this.updateLayout()
+    }
+
+    /** 
+     * @description This method is used to update the layout
+     * @memberof ConsoleManager
+     */
+    public updateLayout(): void {
+        /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
+        this.changeLayoutKey = this.layoutOptions.changeFocusKey
+        this.changeLayoutkeys = this.changeLayoutKey.split("+")
+        /** @const {Array<PageBuilder>} homePage - The main application */
+        switch (this.layoutOptions.type) {
+        case "single":
+            this.pages = [new PageBuilder()]
+            break
+        case "double":
+            this.pages = [new PageBuilder(), new PageBuilder()]
+            break
+        case "triple":
+            this.pages = [new PageBuilder(), new PageBuilder(), new PageBuilder()]
+            break
+        case "quad":
+            this.pages = [new PageBuilder(), new PageBuilder(), new PageBuilder(), new PageBuilder()]
+            break
+        default:
+            this.pages = [new PageBuilder(), new PageBuilder()]
+            break
+        }
+
+        /** @const {PageBuilder} stdOut - The logs page */
+        this.stdOut = new PageBuilder()
+        this.stdOut.setRowsPerPage(this.logPageSize)
+
+        /** @const {LayoutManager} layout - The layout instance */
+        this.layout = new LayoutManager(this.pages, this.layoutOptions)
+
+        if (this.logLocation === "popup") {
+            this.setPages(this.pages)
+        } else if (typeof this.logLocation === "number") {
+            this.setPage(this.stdOut, this.logLocation)
+            this.pages.forEach((page, index) => {
+                if (index !== this.logLocation) {
+                    this.setPage(page, index)
+                }
+            })
+            this.layout.setTitle(this.logPageTitle, this.logLocation)
+        } else {
+            this.setPages([...this.pages, this.stdOut])
+            this.layout.setTitle(this.applicationTitle, 0)
+            this.layout.setTitle(this.logPageTitle, 1)
+        }
+    }
+
+    /**
+     * @description This method is used to get the layout options.
+     * @returns {LayoutOptions} The layout options.
+     * @memberof ConsoleManager
+     * @example CM.getLayoutOptions()
+     * @example CM.getLayoutOptions().boxed
+     */
+    public getLayoutOptions(): LayoutOptions {
+        return this.layoutOptions
     }
 
     /**
