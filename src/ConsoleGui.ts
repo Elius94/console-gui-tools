@@ -336,15 +336,16 @@ class ConsoleManager extends EventEmitter {
                     }
                     if (this.layoutOptions.type !== "single") {
                         if (key.name === "left") {
+                            this.emit("layoutratiochanged", key)
                             this.layout.decreaseRatio(0.01)
                             this.refresh()
                             return
                         } else if (key.name === "right") {
+                            this.emit("layoutratiochanged", key)
                             this.layout.increaseRatio(0.01)
                             this.refresh()
                             return
                         }
-                        this.emit("layoutratiochanged", key)
                     }
                     this.emit("keypressed", key)
                 }
