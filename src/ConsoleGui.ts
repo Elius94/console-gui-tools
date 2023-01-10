@@ -199,7 +199,7 @@ class ConsoleManager extends EventEmitter {
     public updateLayout(): void {
         /** @const {string} changeLayoutKey - The key or combination to switch the selected page */
         this.changeLayoutKey = this.layoutOptions.changeFocusKey
-        this.changeLayoutkeys = this.changeLayoutKey.split("+")
+        this.changeLayoutkeys = this.changeLayoutKey ? this.changeLayoutKey.split("+") : []
         /** @const {Array<PageBuilder>} homePage - The main application */
         switch (this.layoutOptions.type) {
         case "single":

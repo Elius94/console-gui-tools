@@ -74,7 +74,7 @@ export class Control extends EventEmitter {
         }
         this.CM.registerControl(this)
         if (this.visible) {
-            this.manageInput(true)
+            this.manageInput()
             this.CM.refresh()
         }
     }
@@ -105,6 +105,7 @@ export class Control extends EventEmitter {
         default:
             break
         }
+        this.emit("keypress", key)
         this.CM.refresh()
     }
 
@@ -129,7 +130,7 @@ export class Control extends EventEmitter {
     public focus(): Control {
         if (this.visible && !this.focused) {
             this.focused = true
-            this.manageInput(false)
+            this.manageInput()
             //this.CM.refresh()
         }
         return this
@@ -142,7 +143,7 @@ export class Control extends EventEmitter {
      */
     public unfocus(): Control {
         if (this.visible && this.focused) {
-            this.unManageInput(false)
+            this.unManageInput()
             this.focused = false
             //this.CM.refresh()
         }
@@ -156,7 +157,7 @@ export class Control extends EventEmitter {
      */
     public show(): Control {
         if (!this.visible) {
-            this.manageInput(true)
+            this.manageInput()
             this.visible = true
             this.CM.refresh()
         }
@@ -170,7 +171,7 @@ export class Control extends EventEmitter {
      */
     public hide(): Control {
         if (this.visible) {
-            this.unManageInput(true)
+            this.unManageInput()
             this.visible = false
             this.CM.refresh()
         }
@@ -197,30 +198,22 @@ export class Control extends EventEmitter {
 
     /**
      * @description This function is used to add the Control key listener callback to te ConsoleManager.
-     * @param {boolean} [mouse] - Register only mouse event listener.
      * @returns {Control} The instance of the Control.
      * @memberof Control
      */
-    private manageInput(mouse: boolean): Control {
-        if (!mouse) {
-            this.CM.setKeyListener(this.id, this.keyListener.bind(this))
-            return this
-        }
+    private manageInput(): Control {
+        this.CM.setKeyListener(this.id, this.keyListener.bind(this))
         if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
         return this
     }
 
     /**
      * @description This function is used to remove the Control key listener callback to te ConsoleManager.
-     * @param {boolean} [mouse] - Register only mouse event listener.
      * @returns {Control} The instance of the Control.
      * @memberof Control
      */
-    private unManageInput(mouse: boolean): Control {
-        if (!mouse) {
-            this.CM.removeKeyListener(this.id)
-            return this
-        }
+    private unManageInput(): Control {
+        this.CM.removeKeyListener(this.id)
         if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
     }
