@@ -12,12 +12,12 @@
 <dd><p>The screen instance</p></dd>
 <dt><a href="#logLocation">logLocation</a> : <code>number</code> | <code>&#x27;popup&#x27;</code></dt>
 <dd><p>Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string (&quot;popup&quot;) - to put them on a CustomPopup that can be displayed on the window.</p></dd>
+<dt><a href="#stdOut">stdOut</a> : <code>PageBuilder</code></dt>
+<dd><p>The logs page</p></dd>
 <dt><a href="#changeLayoutKey">changeLayoutKey</a> : <code>string</code></dt>
 <dd><p>The key or combination to switch the selected page</p></dd>
 <dt><a href="#homePage">homePage</a> : <code>Array.&lt;PageBuilder&gt;</code></dt>
 <dd><p>The main application</p></dd>
-<dt><a href="#stdOut">stdOut</a> : <code>PageBuilder</code></dt>
-<dd><p>The logs page</p></dd>
 <dt><a href="#layout">layout</a> : <code>LayoutManager</code></dt>
 <dd><p>The layout instance</p></dd>
 </dl>
@@ -64,6 +64,7 @@ This is a singleton class, so you can use it like this: const CM = new ConsoleMa
 Emits the following events:</p>
 <ul>
 <li>&quot;keypressed&quot; to propagate the key pressed event to the application</li>
+<li>&quot;layoutratiochanged&quot; when the layout ratio is changed</li>
 <li>&quot;exit&quot; when the user wants to exit the application</li>
 </ul>
 
@@ -438,6 +439,12 @@ console.info("Anomaly detected") // Will be logged in the log page.
 <p>Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string (&quot;popup&quot;) - to put them on a CustomPopup that can be displayed on the window.</p>
 
 **Kind**: global constant  
+<a name="stdOut"></a>
+
+## stdOut : <code>PageBuilder</code>
+<p>The logs page</p>
+
+**Kind**: global constant  
 <a name="changeLayoutKey"></a>
 
 ## changeLayoutKey : <code>string</code>
@@ -448,12 +455,6 @@ console.info("Anomaly detected") // Will be logged in the log page.
 
 ## homePage : <code>Array.&lt;PageBuilder&gt;</code>
 <p>The main application</p>
-
-**Kind**: global constant  
-<a name="stdOut"></a>
-
-## stdOut : <code>PageBuilder</code>
-<p>The logs page</p>
 
 **Kind**: global constant  
 <a name="layout"></a>

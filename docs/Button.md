@@ -31,15 +31,4 @@
 | enabled | <code>boolean</code> | <p>If the button is enabled. Default is true (make it disabled using disable()).</p> |
 
 **Example**  
-```js
-new Button("btnRun", "Run me!", 10, 3, 21, 18, 
-     { 
-         color: "magentaBright", 
-         bold: true, 
-         italic: true,
-         borderColor: "green"
-     },
-     () => {
-         GUI.log("Button clicked!")
-     })
-```
+```jsnew Button("btnRun", "Run me!", 10, 3, 21, 18,      {          color: "magentaBright",          bold: true,          italic: true,         borderColor: "green"     },     () => {         GUI.log("Button clicked!")     })```

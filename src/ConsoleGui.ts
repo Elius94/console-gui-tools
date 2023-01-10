@@ -71,6 +71,7 @@ export interface ConsoleGuiOptions {
  * This is a singleton class, so you can use it like this: const CM = new ConsoleManager()
  * Emits the following events: 
  * - "keypressed" to propagate the key pressed event to the application
+ * - "layoutratiochanged" when the layout ratio is changed
  * - "exit" when the user wants to exit the application
  * @param {object} options - The options of the ConsoleManager.
  * @example const CM = new ConsoleManager({ logPageSize: 10, layoutBorder: true, changeLayoutKey: 'ctrl+l', title: 'Console Application' })
@@ -170,7 +171,7 @@ class ConsoleManager extends EventEmitter {
             /** @const {PageBuilder} stdOut - The logs page */
             this.stdOut = new PageBuilder()
             this.stdOut.setRowsPerPage(this.logPageSize)
-            
+
             this.updateLayout()
             this.addGenericListeners()
 
@@ -343,6 +344,7 @@ class ConsoleManager extends EventEmitter {
                             this.refresh()
                             return
                         }
+                        this.emit("layoutratiochanged", key)
                     }
                     this.emit("keypressed", key)
                 }
