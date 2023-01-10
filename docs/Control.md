@@ -28,8 +28,8 @@
     * [.hide()](#Control+hide) ⇒ [<code>Control</code>](#Control)
     * [.isVisible()](#Control+isVisible) ⇒ <code>boolean</code>
     * [.isFocused()](#Control+isFocused) ⇒ <code>boolean</code>
-    * [.manageInput([mouse])](#Control+manageInput) ⇒ [<code>Control</code>](#Control)
-    * [.unManageInput([mouse])](#Control+unManageInput) ⇒ [<code>Control</code>](#Control)
+    * [.manageInput()](#Control+manageInput) ⇒ [<code>Control</code>](#Control)
+    * [.unManageInput()](#Control+unManageInput) ⇒ [<code>Control</code>](#Control)
     * [.drawLine(line)](#Control+drawLine) ⇒ <code>void</code>
     * [.draw()](#Control+draw) ⇒ [<code>Control</code>](#Control)
 
@@ -122,28 +122,18 @@ Inside this function are defined all the keys that can be pressed and the action
 **Returns**: <code>boolean</code> - <p>The focused status of the Control.</p>  
 <a name="Control+manageInput"></a>
 
-### control.manageInput([mouse]) ⇒ [<code>Control</code>](#Control)
+### control.manageInput() ⇒ [<code>Control</code>](#Control)
 <p>This function is used to add the Control key listener callback to te ConsoleManager.</p>
 
 **Kind**: instance method of [<code>Control</code>](#Control)  
 **Returns**: [<code>Control</code>](#Control) - <p>The instance of the Control.</p>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [mouse] | <code>boolean</code> | <p>Register only mouse event listener.</p> |
-
 <a name="Control+unManageInput"></a>
 
-### control.unManageInput([mouse]) ⇒ [<code>Control</code>](#Control)
+### control.unManageInput() ⇒ [<code>Control</code>](#Control)
 <p>This function is used to remove the Control key listener callback to te ConsoleManager.</p>
 
 **Kind**: instance method of [<code>Control</code>](#Control)  
 **Returns**: [<code>Control</code>](#Control) - <p>The instance of the Control.</p>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [mouse] | <code>boolean</code> | <p>Register only mouse event listener.</p> |
-
 <a name="Control+drawLine"></a>
 
 ### control.drawLine(line) ⇒ <code>void</code>

@@ -2,6 +2,14 @@ import { BackgroundColorName, ForegroundColorName } from "chalk/source/vendor/an
 import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
 import { boxChars, HEX, RGB, truncate } from "../Utils.js"
 import Control from "./Control.js"
+import { KeyListenerArgs } from "../../ConsoleGui.js"
+
+export interface ButtonKey {
+    name: string, 
+    ctrl?: boolean, 
+    shift?: boolean, 
+    meta?: boolean 
+}
 
 export interface ButtonStyle {
     background: BackgroundColorName | HEX | RGB | "";
@@ -34,10 +42,11 @@ export interface ButtonStyle {
  * @param {number} x - The x position of the button.
  * @param {number} y - The y position of the button.
  * @param {ButtonStyle} style - To set the style of the button.
+ * @param {ButtonKey | undefined} key - To set a key to press to click the button.
+ * @param {function} onClick - The function to call when the button is clicked.
+ * @param {function} onRelease - The function to call when the button is released.
  * @param {boolean} visible - If the button is visible. Default is true (make it hide using hide()).
  * @param {boolean} enabled - If the button is enabled. Default is true (make it disabled using disable()).
- * @param {function} onClick - The function to call when the button is clicked.
- * @param {function} onRelease - The function to call when the button is released. 
  * 
  * @example ```js
  * new Button("btnRun", "Run me!", 10, 3, 21, 18, 
@@ -64,6 +73,8 @@ export class Button extends Control {
     public onClick: () => void
     public onRelease: () => void
     private status: "normal" | "hovered" | "selected" = "normal" 
+    private key: ButtonKey | undefined
+
     public constructor(
         id: string,
         text: string, 
@@ -72,6 +83,7 @@ export class Button extends Control {
         x: number,
         y: number,
         style: ButtonStyle,
+        key: ButtonKey | undefined = undefined,
         onClick: () => void,
         onRelease: () => void,
         visible = true,
@@ -85,6 +97,21 @@ export class Button extends Control {
         this.onRelease = onRelease
         this.style = style
         this.draggable = draggable
+        this.key = key ? { name: key.name, ctrl: key.ctrl || false, shift: key.shift || false, meta: key.meta || false} : undefined
+
+        this.on("keypress", (event: KeyListenerArgs) => {
+            if (this.key) {
+                if (event.name === this.key.name && event.ctrl === this.key.ctrl && event.shift === this.key.shift && event.meta === this.key.meta) {
+                    this.status = "selected"
+                    this.update()
+                    if (this.onClick) this.onClick.call(this)
+                    this.emit("click")
+                    return
+                }
+                this.status = "normal"
+                this.update()
+            }
+        })
 
         this.on("relativeMouse", (event) => {
             if (!this.enabled) {
