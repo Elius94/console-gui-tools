@@ -80,6 +80,17 @@ export class Control extends EventEmitter {
     }
 
     /**
+     * @description This function is used to delete the Control and remove it from the ConsoleManager.
+     *
+     * @memberof Control
+     */
+    public delete() {
+        this.unfocus()
+        this.hide()
+        this.CM.unregisterControl(this)
+    }
+
+    /**
      * @description This function is used to make the ConsoleManager handle the key events when the popup is showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @param {string} _str - The string of the input.
