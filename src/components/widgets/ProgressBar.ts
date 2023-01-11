@@ -259,6 +259,7 @@ export class Progress extends Control {
     private length: number
     private thickness = 1
     private orientation: Orientation = "horizontal"
+    private increment = 1
     interactive = false
     text = ""
     enabled = true
@@ -331,7 +332,7 @@ export class Progress extends Control {
                 }
                 if (event.name === "MOUSE_WHEEL_DOWN") {
                     if (this.value > this.min + 1) {
-                        this.value -= 1
+                        this.value -= this.increment
                     } else {
                         this.value = this.min
                     }
@@ -340,7 +341,7 @@ export class Progress extends Control {
                 }
                 if (event.name === "MOUSE_WHEEL_UP") {
                     if (this.value < this.max - 1) {
-                        this.value += 1
+                        this.value += this.increment
                     } else {
                         this.value = this.max
                     }
@@ -567,6 +568,29 @@ export class Progress extends Control {
      * @memberof Progress
      */
     public getThickness = (): number => this.thickness
+    
+    /**
+     * @description Get the increment value
+     *
+     * @returns {number} The increment value
+     * @memberof Progress
+     */
+    public getIncrement = (): number => this.increment    
+
+    /**
+     * @description Sets the increment value
+     *
+     * @param {number} value The increment value
+     * @memberof Progress
+     */
+    public setIncrement = (value: number) => {
+        {
+            const notNonNegativeNumber = typeof value !== "number" || Number.isNaN(value) || value <= 0
+            if (notNonNegativeNumber) throw new TypeError("The \"increment\" value must a nonnegative number.")
+        }
+
+        this.increment = value
+    }
 
     /**
      * @description Sets the value of the progress bar
