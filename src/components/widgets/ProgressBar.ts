@@ -586,7 +586,7 @@ export class Progress extends Control {
     public setIncrement = (value: number) => {
         {
             const notNonNegativeNumber = typeof value !== "number" || Number.isNaN(value) || value <= 0
-            if (notNonNegativeNumber) throw new TypeError(`The "increment" value must a nonnegative number.`)
+            if (notNonNegativeNumber) throw new TypeError("The \"increment\" value must a nonnegative number.")
         }
 
         this.increment = value
