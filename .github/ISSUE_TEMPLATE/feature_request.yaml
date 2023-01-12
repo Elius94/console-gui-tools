@@ -41,6 +41,4 @@ body:
       description: Tell us, if you are interested in developing this feature
       options:
         - label: Yes, I am interested in developing this feature
-          required: true
         - label: No, I am not interested in developing this feature
-          required: true

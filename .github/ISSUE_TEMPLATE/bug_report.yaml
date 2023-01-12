@@ -81,4 +81,4 @@ body:
       description: Are you interested in fixing this bug?
       options:
         - label: I would like to fix this bug!
-          required: true
+          required: false
