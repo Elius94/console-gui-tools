@@ -1,0 +1,46 @@
+name: 🚀 Feature Request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature!
+  - type: textarea
+    id: what-do-you-want
+    attributes:
+      label: What do you want?
+      description: Tell us, what do you want to happen?
+      placeholder: Tell us what you want!
+      value: "A new feature!"
+    validations:
+      required: true
+  - type: textarea
+    id: why-do-you-want
+    attributes:
+      label: Why do you want it?
+      description: Tell us, why do you want this feature?
+      placeholder: Tell us why you want this feature!
+      value: "A new feature!"
+    validations:
+      required: true
+  - type: textarea
+    id: how-do-you-implement-it
+    attributes:
+      label: How do you implement it?
+      description: Tell us, how do you want to implement this feature?
+      placeholder: Tell us how you want to implement this feature!
+      value: "A new feature!"
+    validations:
+      required: false
+  - type: checkboxes
+    id: interest-to-develop
+    attributes:
+      label: Are you interested in developing this feature?
+      description: Tell us, if you are interested in developing this feature
+      options:
+        - label: Yes, I am interested in developing this feature
+          required: true
+        - label: No, I am not interested in developing this feature
+          required: true

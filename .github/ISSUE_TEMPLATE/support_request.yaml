@@ -1,0 +1,65 @@
+name: 📖 Support Request
+description: Request support for this project
+title: "[Support]: "
+labels: ["question", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to request support for this project!
+  - type: textarea
+    id: what-do-you-want
+    attributes:
+      label: What are you trying to do?
+      description: Tell us, what do you want to happen?
+      placeholder: Tell us what you want!
+      value: "To get support!"
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: Code
+      description: Please provide a code that you are trying to run
+      placeholder: |
+        ```js
+        // Your code here
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Library Version
+      description: What version of the lib are you using?
+      placeholder: "2.6.0"
+    validations:
+      required: true
+  - type: textarea
+    id: node-version
+    attributes:
+      label: Node Version
+      description: What version of Node.js are you using?
+      placeholder: "16.6.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: What operating system are you using?
+      options:
+        - Windows
+        - macOS
+        - Ubuntu
+        - Other Linux
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: terminal
+    attributes:
+      label: Terminal
+      description: What terminal are you using?
+      placeholder: "Windows Terminal"
+    validations:
+      required: true
