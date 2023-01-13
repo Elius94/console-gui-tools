@@ -608,3 +608,6 @@ Colors and styles are managed using [Chalk](https://github.com/chalk/chalk)
 To see the code documentation, please click on the following link:
 
 [Code documentation](DOCS.md)
+
+## How To Contribute
+Any kind of contribution is welcome! Feel free to help, but first read [CONTRIBUTING.md](./CONTRIBUTING.md)
