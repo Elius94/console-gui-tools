@@ -26,11 +26,11 @@ Always start from an issue, the workflow starts from that. You can choose from t
 
 #### Create a new issue
 
-If you spot a problem with the library, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/github/docs/issues/new/choose). 
+If you spot a problem with the library, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/elius94/console-gui-tools/issues/new/choose). 
 
 #### Solve an issue
 
-Scan through our [existing issues](https://github.com/github/docs/issues) to find one that interests you. You can narrow down the search using `labels` as filters. See [Labels](/contributing/how-to-use-labels.md) for more information. As a general rule, we don’t assign issues to anyone. If you find an issue to work on, you are welcome to open a PR with a fix.
+Scan through our [existing issues](https://github.com/elius94/console-gui-tools/issues) to find one that interests you. You can narrow down the search using `labels` as filters. If you find an issue to work on, you are welcome to open a PR with a fix.
 
 ### Make Changes
 
@@ -122,7 +122,7 @@ To develop on the library, after cloning the repository it is good to keep the f
           data: MouseEventArgs;
       }
       ```
-    - The syntax of the code must adhere to the rules set on the [.eslintrc.cjs](./.eslingrc.cjs) file; the code must be formatted according to these rules. 
+    - The syntax of the code must adhere to the rules set on the [.eslintrc.cjs](.eslintrc.cjs) file; the code must be formatted according to these rules. 
   2. All code must be documented using docstrings compatible with the [jsdoc](https://jsdoc.app/) standard. By browsing through the code, one can see how the various existing points have been commented out. 
      To generate the documentation pages automatically, the jsdoc2md library is used, using the `npm run docs` command, which will depend on the settings in [jsdoc2md.json](./jsdoc2md.json) 
   3. The following commands are available to develop on the library: 
@@ -132,18 +132,15 @@ To develop on the library, after cloning the repository it is good to keep the f
 #### Modifying an existing part of code 
 
 If you modify an existing part of code, you usually should not create new files, unless it is right to do so for reasons of simplification or modularity.
-Either way, remember to update the docstrings and any modified types. 137 Any modification to old code requires that everything that uses it be tested: look for where this code is called and create practical examples to test how it works.
+Either way, remember to update the docstrings and any modified types. 
+Any modification to old code requires that everything that uses it be tested: look for where this code is called and create practical examples to test how it works.
 
 #### Add a new component
 
 The library is based on ESM classes, so it is important that new components, graphical and otherwise, are created following the same style as existing ones. 
-If it is a user-accessible class, after creating it, remember to import it into the main file [ConsoleManager.ts](./ConsoleManager.ts), and then export it to the bottom of it. 
+If it is a user-accessible class, after creating it, remember to import it into the main file [ConsoleManager.ts](./src/ConsoleGui.ts), and then export it to the bottom of it. 
 
 In the case of a graphical class, i.e., a component that is visible on the terminal interface (such as a button), add in the docstring a small gif uploaded on github.
-The syntax of the code must adhere to the rules set on the [.eslintrc.cjs](./.eslingrc.cjs) file; the code must be formatted according to these rules. 
-
-Either way, remember to update the docstrings and any modified types. 
-Any modification to old code requires that everything that uses it be tested: look for where this code is called and create practical examples to test how it works.
 
 > To capture gifs I use the handy and opensource [Screen To Gif](https://github.com/NickeManarin/ScreenToGif/). It directly captures your screen, focusing it on the terminal, or even better on the created component; 
   Export it to .gif and upload it to Github. 147 To do this just drag the created gif to any GitHub textarea. The system will turn it into a link, copy and paste it into the docstring, under the parameter "@description"
