@@ -36,7 +36,16 @@ const style1 = {
     color: "red",
 }
 
-const button = new Button("btnClickMe", "Click Me!", 11, 3, 10, 10, style1, { name: "r", ctrl: true })
+const btnProps = {
+    id: "btnClickMe", 
+    text: "Click Me!", 
+    x: 10, 
+    y: 15, 
+    style: style1,
+    key: { name: "r", ctrl: true },
+}
+
+const button = new Button(btnProps)
 button.on("click", () => {
     button.absoluteValues.x = Math.floor(Math.random() * 30)
     button.absoluteValues.y = Math.floor(Math.random() * 30)

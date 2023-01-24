@@ -17,11 +17,11 @@ GUI.on("exit", () => {
 
 GUI.on("keypressed", (key) => {
     switch (key.name) {
-        case "q":
-            new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
-            break
-        default:
-            break
+    case "q":
+        new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+        break
+    default:
+        break
     }
 })
 

@@ -127,16 +127,22 @@ const defineCustomWidget = () => {
 }
 
 const defineButton = () => {
-    new Button("btnRun", "Run me!", 10, 3, 21, 18,
-        {
+    new Button({
+        id: "btnRun", 
+        text: "Run me!", 
+        x: 21, 
+        y: 18,
+        style: {
             color: "magentaBright",
             bold: true,
             italic: true,
             borderColor: "green"
         },
-        () => {
+        onRelease: () => {
             GUI.log("Button clicked!")
-        })
+        },
+        draggable: true,
+    })
 
     const pStyle = {
         boxed: true,

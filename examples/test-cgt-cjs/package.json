@@ -10,6 +10,6 @@
   "author": "Elia Lazzari",
   "license": "ISC",
   "dependencies": {
-    "console-gui-tools": "^2.1.1"
+    "console-gui-tools": "file:../../"
   }
 }

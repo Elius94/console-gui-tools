@@ -1,20 +1,37 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { BackgroundColorName, ForegroundColorName } from "chalk/source/vendor/ansi-styles/index.js"
 import InPageWidgetBuilder from "../InPageWidgetBuilder.js"
-import { boxChars, HEX, RGB, truncate } from "../Utils.js"
+import { boxChars, HEX, PhisicalValues, RGB, truncate } from "../Utils.js"
 import Control from "./Control.js"
 import { KeyListenerArgs } from "../../ConsoleGui.js"
 
+export interface ButtonConfig {
+    id: string,
+    text: string,
+    width: number,
+    height: number,
+    x: number,
+    y: number,
+    style: ButtonStyle | undefined,
+    key?: ButtonKey | undefined,
+    onClick?: () => void,
+    onRelease?: () => void,
+    visible?: boolean,
+    enabled?: boolean,
+    draggable?: boolean,
+}
+
 export interface ButtonKey {
-    name: string, 
-    ctrl?: boolean, 
-    shift?: boolean, 
-    meta?: boolean 
+    name: string,
+    ctrl?: boolean,
+    shift?: boolean,
+    meta?: boolean
 }
 
 export interface ButtonStyle {
-    background: BackgroundColorName | HEX | RGB | "";
-    borderColor: ForegroundColorName | HEX | RGB | "";
-    color: ForegroundColorName | HEX | RGB | "";
+    background?: BackgroundColorName | HEX | RGB | "";
+    borderColor?: ForegroundColorName | HEX | RGB | "";
+    color?: ForegroundColorName | HEX | RGB | "";
     bold?: boolean;
     italic?: boolean;
     dim?: boolean;
@@ -72,32 +89,31 @@ export class Button extends Control {
     }
     public onClick: () => void
     public onRelease: () => void
-    private status: "normal" | "hovered" | "selected" = "normal" 
+    private status: "normal" | "hovered" | "selected" = "normal"
     private key: ButtonKey | undefined
 
-    public constructor(
-        id: string,
-        text: string, 
-        width: number,
-        height: number,
-        x: number,
-        y: number,
-        style: ButtonStyle,
-        key: ButtonKey | undefined = undefined,
-        onClick: () => void,
-        onRelease: () => void,
-        visible = true,
-        enabled = true,
-        draggable = false) 
-    {
-        super(id, visible, { x, y, width, height }, new InPageWidgetBuilder())
-        this.text = text
-        this.enabled = enabled
-        this.onClick = onClick
-        this.onRelease = onRelease
-        this.style = style
-        this.draggable = draggable
-        this.key = key ? { name: key.name, ctrl: key.ctrl || false, shift: key.shift || false, meta: key.meta || false} : undefined
+    public constructor(config: ButtonConfig) {
+        const tmpSizes = { width: 0, height: 0 }
+        if (!config.width) {
+            tmpSizes.width = config.text.length + 4
+        } else {
+            tmpSizes.width = config.width
+        }
+        if (!config.height) {
+            tmpSizes.height = 3
+        } else {
+            tmpSizes.height = config.height
+        }            
+        if (!config.id) throw new Error("The id is required")
+        if (!config.x || !config.y) throw new Error("The x and y values are required")
+        super(config.id, config.visible || true, { x: config.x, y: config.y, width: tmpSizes.width, height: tmpSizes.height } as PhisicalValues, new InPageWidgetBuilder())
+        this.text = config.text || "TEXT"
+        this.enabled = config.enabled || true
+        this.onClick = config.onClick || (() => { })
+        this.onRelease = config.onRelease || (() => { })
+        this.style = config.style? { ...this.style, ...config.style } : this.style
+        this.draggable = config.draggable || false
+        this.key = config.key ? { name: config.key.name, ctrl: config.key.ctrl || false, shift: config.key.shift || false, meta: config.key.meta || false } : undefined
 
         this.on("keypress", (event: KeyListenerArgs) => {
             if (this.key) {
@@ -152,7 +168,7 @@ export class Button extends Control {
     public update = () => {
         const absVal = this.absoluteValues
         let truncatedText = truncate(this.text, absVal.width - 2, false)
-        
+
         // add a white space to the end of the truncated text if the sum of the length of the text and the width of the button is odd
         if ((truncatedText.length + (absVal.width - 2)) % 2 === 1) {
             truncatedText += " "
@@ -161,16 +177,16 @@ export class Button extends Control {
         this.getContent().clear()
         this.getContent().addRow({ text: `${boxChars[this.status].topLeft}${boxChars[this.status].horizontal.repeat(absVal.width - 2)}${boxChars[this.status].topRight}`, bg: this.style.background, color: this.style.borderColor, bold: this.style.bold })
         this.getContent().addRow(
-            { 
-                text: `${boxChars[this.status].vertical}`, 
-                bg: this.style.background, 
-                color: this.style.borderColor, 
-                bold: this.style.bold 
-            }, 
-            { 
+            {
+                text: `${boxChars[this.status].vertical}`,
+                bg: this.style.background,
+                color: this.style.borderColor,
+                bold: this.style.bold
+            },
+            {
                 text: `${" ".repeat(((absVal.width - 2) - truncatedText.length) / 2)}${truncatedText}${" ".repeat(((absVal.width - 2) - truncatedText.length) / 2)}`,
-                bg: this.style.background, 
-                color: this.style.color, 
+                bg: this.style.background,
+                color: this.style.color,
                 bold: this.style.bold,
                 italic: this.style.italic,
                 dim: this.style.dim,
@@ -180,11 +196,11 @@ export class Button extends Control {
                 strikethrough: this.style.strikethrough,
                 overline: this.style.overline
             },
-            { 
-                text: `${boxChars[this.status].vertical}`, 
-                bg: this.style.background, 
-                color: this.style.borderColor, 
-                bold: this.style.bold 
+            {
+                text: `${boxChars[this.status].vertical}`,
+                bg: this.style.background,
+                color: this.style.borderColor,
+                bold: this.style.bold
             }
         )
         this.getContent().addRow({ text: `${boxChars[this.status].bottomLeft}${boxChars[this.status].horizontal.repeat(absVal.width - 2)}${boxChars[this.status].bottomRight}`, bg: this.style.background, color: this.style.borderColor, bold: this.style.bold })
