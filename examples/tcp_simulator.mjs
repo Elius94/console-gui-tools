@@ -143,61 +143,6 @@ const defineButton = () => {
         },
         draggable: true,
     })
-
-    const pStyle = {
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: false,
-    }
-    const p = new Progress("prog1", 20, 1, 3, 23, pStyle, "htop", "horizontal")
-    p.setText("Mem")
-    const incr = setInterval(() => {
-        const value = p.getValue() + 0.25
-        p.setValue(value)
-        if (value >= p.getMax()) {
-            clearInterval(incr)
-        }
-    }, 100)
-
-    const p1Style = {
-        background: "bgBlack",
-        borderColor: "yellow",
-        color: "green",
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: true,
-
-    }
-    const p1 = new Progress("prog2", 25, 2, 3, 25, p1Style, "precision", "horizontal")
-    p1.setText("Precision")
-    const incr1 = setInterval(() => {
-        const value = p1.getValue() + 0.25
-        p1.setValue(value)
-        if (value >= p1.getMax()) {
-            clearInterval(incr1)
-        }
-    }, 100)
-
-    const p2Style = {
-        background: "bgBlack",
-        borderColor: "yellow",
-        color: "magenta",
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: true,
-
-    }
-    const p2 = new Progress("prog3", 25, 2, 3, 31, p2Style, "precision", "horizontal", true)
-    p2.setText("Interactive")
-    p2.on("valueChanged", (value) => {
-        console.log(`Value changed: ${value}`)
-    })
 }
 
 /**

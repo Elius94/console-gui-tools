@@ -5,15 +5,35 @@ import { boxChars, HEX, PhisicalValues, RGB, truncate } from "../Utils.js"
 import Control from "./Control.js"
 import { KeyListenerArgs } from "../../ConsoleGui.js"
 
+/**
+ * @description The configuration object for the Button class
+ * 
+ * @property {string} id The id of the button (required)
+ * @property {string} text The text of the button (if not specified, it will be "TEXT")
+ * @property {number} width The width of the button (if not specified, it will be the length of the text + 4)
+ * @property {number} height The height of the button (if not specified, it will be 3)
+ * @property {number} x The x position of the button (required)
+ * @property {number} y The y position of the button (required)
+ * @property {ButtonStyle} style The style of the button (if not specified, it will be { background: "bgBlack", borderColor: "white", color: "white", bold: true })
+ * @property {ButtonKey} key The key to press to trigger the button
+ * @property {function} onClick The function to call when the button is clicked
+ * @property {function} onRelease The function to call when the button is released
+ * @property {boolean} visible If the button is visible or not (default: true)
+ * @property {boolean} enabled If the button is enabled or not (default: true)
+ * @property {boolean} draggable If the button is draggable or not (default: false)
+ *
+ * @export
+ * @interface ButtonConfig
+ */
 export interface ButtonConfig {
     id: string,
     text: string,
-    width: number,
-    height: number,
+    width?: number,
+    height?: number,
     x: number,
     y: number,
-    style: ButtonStyle | undefined,
-    key?: ButtonKey | undefined,
+    style?: ButtonStyle,
+    key?: ButtonKey,
     onClick?: () => void,
     onRelease?: () => void,
     visible?: boolean,
@@ -21,6 +41,14 @@ export interface ButtonConfig {
     draggable?: boolean,
 }
 
+/**
+ * The configuration object for the ButtonKey class
+ * @export ButtonKey
+ * @interface ButtonKey
+ * @property {string} name The name of the key (required)
+ * @property {boolean} ctrl If the key is pressed with the ctrl key (default: false)
+ * @property {boolean} shift If the key is pressed with the shift key (default: false)
+ */
 export interface ButtonKey {
     name: string,
     ctrl?: boolean,
@@ -28,6 +56,24 @@ export interface ButtonKey {
     meta?: boolean
 }
 
+/**
+ * @description The configuration object for the ButtonStyle class
+ * 
+ * @property {BackgroundColorName | HEX | RGB | ""} background The background color of the button (if not specified, it will be "bgBlack")
+ * @property {ForegroundColorName | HEX | RGB | ""} borderColor The border color of the button (if not specified, it will be "white")
+ * @property {ForegroundColorName | HEX | RGB | ""} color The text color of the button (if not specified, it will be "white")
+ * @property {boolean} bold If the text is bold or not (default: true)
+ * @property {boolean} italic If the text is italic or not (default: false)
+ * @property {boolean} dim If the text is dim or not (default: false)
+ * @property {boolean} underline If the text is underlined or not (default: false)
+ * @property {boolean} inverse If the text is inverted or not (default: false)
+ * @property {boolean} hidden If the text is hidden or not (default: false)
+ * @property {boolean} strikethrough If the text is strikethrough or not (default: false)
+ * @property {boolean} overline If the text is overlined or not (default: false)
+ *
+ * @export
+ * @interface ButtonStyle
+ */
 export interface ButtonStyle {
     background?: BackgroundColorName | HEX | RGB | "";
     borderColor?: ForegroundColorName | HEX | RGB | "";
@@ -52,30 +98,25 @@ export interface ButtonStyle {
  * Emits the following events: 
  * - "click" when the user confirm
  * - "relese" when the user cancel
- * @param {string} id - The id of the button.
- * @param {string} text - The text of the button.
- * @param {number} width - The width of the button.
- * @param {number} height - The height of the button.
- * @param {number} x - The x position of the button.
- * @param {number} y - The y position of the button.
- * @param {ButtonStyle} style - To set the style of the button.
- * @param {ButtonKey | undefined} key - To set a key to press to click the button.
- * @param {function} onClick - The function to call when the button is clicked.
- * @param {function} onRelease - The function to call when the button is released.
- * @param {boolean} visible - If the button is visible. Default is true (make it hide using hide()).
- * @param {boolean} enabled - If the button is enabled. Default is true (make it disabled using disable()).
+ * @param {ButtonConfig} config The configuration object
  * 
  * @example ```js
- * new Button("btnRun", "Run me!", 10, 3, 21, 18, 
- *      { 
- *          color: "magentaBright", 
- *          bold: true, 
- *          italic: true,
- *          borderColor: "green"
- *      },
- *      () => {
- *          GUI.log("Button clicked!")
- *      })
+ * new Button({
+        id: "btnRun", 
+        text: "Run me!", 
+        x: 21, 
+        y: 18,
+        style: {
+            color: "magentaBright",
+            bold: true,
+            italic: true,
+            borderColor: "green"
+        },
+        onRelease: () => {
+            GUI.log("Button clicked!")
+        },
+        draggable: true,
+    })
  * ```
  */
 export class Button extends Control {

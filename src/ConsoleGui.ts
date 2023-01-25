@@ -10,8 +10,8 @@ import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
 import { Control } from "./components/widgets/Control.js"
-import { Button } from "./components/widgets/Button.js"
-import { Progress } from "./components/widgets/ProgressBar.js"
+import { Button, ButtonConfig, ButtonKey, ButtonStyle } from "./components/widgets/Button.js"
+import { Progress, ProgressConfig, Orientation, ProgressStyle } from "./components/widgets/ProgressBar.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
 import { MouseEvent, MouseManager } from "./components/MouseManager.js"
 import { PhisicalValues, StyledElement, SimplifiedStyledElement, StyleObject } from "./components/Utils.js"
@@ -628,8 +628,8 @@ export {
     CustomPopup,
     FileSelectorPopup,
     Control,
-    Button,
-    Progress,
+    Button, ButtonConfig, ButtonStyle, ButtonKey,
+    Progress, ProgressConfig, ProgressStyle, Orientation,
     PhisicalValues,
     StyledElement,
     SimplifiedStyledElement,

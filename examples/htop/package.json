@@ -1,0 +1,21 @@
+{
+  "name": "test-cgt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx tsc && node out/index.js"
+  },
+  "author": "Elia Lazzari",
+  "license": "ISC",
+  "dependencies": {
+    "console-gui-tools": "file:../../",
+    "ps-list": "^8.1.1",
+    "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.17"
+  }
+}
