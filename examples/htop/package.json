@@ -1,7 +1,7 @@
 {
-  "name": "test-cgt",
+  "name": "node-htop",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple htop like tool for nodejs. It uses console-gui-tools to render the UI.",
   "main": "index.js",
   "type": "module",
   "scripts": {
