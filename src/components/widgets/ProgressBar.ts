@@ -319,7 +319,7 @@ export class Progress extends Control {
 
     public constructor(config: ProgressConfig) {
         if (!config.id) throw new Error("The id is required")
-        if (!config.x || !config.y) throw new Error("The x and y values are required")
+        if (config.x === undefined || config.y === undefined) throw new Error("The x and y values are required")
         const orientation = config.orientation || "horizontal"
         const length = config.length || 20
         const thickness = config.thickness || 1
@@ -330,7 +330,9 @@ export class Progress extends Control {
             height += 2
         }
         const pv = { x: config.x, y: config.y, width, height } as PhisicalValues
-        super(config.id, config.visible || true, pv, new InPageWidgetBuilder())
+        super({
+            id: config.id, visible: config.visible || true, attributes: pv, children: new InPageWidgetBuilder()
+        })
         this.id = config.id
         this.theme = config.style?.theme || this.theme
         this.enabled = config.enabled || true

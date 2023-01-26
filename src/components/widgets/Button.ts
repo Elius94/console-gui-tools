@@ -146,8 +146,11 @@ export class Button extends Control {
             tmpSizes.height = config.height
         }            
         if (!config.id) throw new Error("The id is required")
-        if (!config.x || !config.y) throw new Error("The x and y values are required")
-        super(config.id, config.visible || true, { x: config.x, y: config.y, width: tmpSizes.width, height: tmpSizes.height } as PhisicalValues, new InPageWidgetBuilder())
+        if (config.x === undefined || config.y === undefined) throw new Error("The x and y values are required")
+        const pv = { x: config.x, y: config.y, width: tmpSizes.width, height: tmpSizes.height } as PhisicalValues
+        super({
+            id: config.id, visible: config.visible || true, attributes: pv, children: new InPageWidgetBuilder()
+        })
         this.text = config.text || "TEXT"
         this.enabled = config.enabled || true
         this.onClick = config.onClick || (() => { })
