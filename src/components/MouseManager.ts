@@ -64,6 +64,26 @@ export interface MouseEvent {
 }
 
 /**
+ * @typedef {Object} RelativeMouseEvent
+ * @description This type is used to define the parameters of the Mouse Listener event (mouseevent) data, relative to a widget.
+ * 
+ * @prop {string} name - The name of the event.
+ * @prop {object} data - The data of the event.
+ * @prop {number} data.x - The x position of the mouse (terminal column).
+ * @prop {number} data.y - The y position of the mouse (terminal row).
+ *
+ * @export
+ * @interface RelativeMouseEvent
+ */
+export interface RelativeMouseEvent {
+    name: string;
+    data: {
+        x: number;
+        y: number;
+    }
+}
+
+/**
  * @class MouseManager
  * @description This class is used to manage the mouse tracking events.
  * 
