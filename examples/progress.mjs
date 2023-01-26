@@ -32,8 +32,7 @@ const closeApp = () => {
 
 GUI.refresh()
 
-
-const mem = new Progress({
+new Progress({
     id: "htop-mem",
     x: 2,
     y: 1,
