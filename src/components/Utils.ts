@@ -162,3 +162,37 @@ export function truncate(str: string, n: number, useWordBoundary: boolean): stri
         subString.substring(0, subString.lastIndexOf(" ")) :
         subString) + "…"
 }
+
+export function styledToSimplifiedStyled(styled: StyledElement): SimplifiedStyledElement {
+    return {
+        text: styled.text,
+        color: styled.style?.color,
+        bg: styled.style?.bg,
+        italic: styled.style?.italic,
+        bold: styled.style?.bold,
+        dim: styled.style?.dim,
+        underline: styled.style?.underline,
+        inverse: styled.style?.inverse,
+        hidden: styled.style?.hidden,
+        strikethrough: styled.style?.strikethrough,
+        overline: styled.style?.overline,
+    }
+}
+
+export function simplifiedStyledToStyled(simplifiedStyled: SimplifiedStyledElement): StyledElement {
+    return {
+        text: simplifiedStyled.text,
+        style: {
+            color: simplifiedStyled?.color,
+            bg: simplifiedStyled?.bg,
+            italic: simplifiedStyled?.italic,
+            bold: simplifiedStyled?.bold,
+            dim: simplifiedStyled?.dim,
+            underline: simplifiedStyled?.underline,
+            inverse: simplifiedStyled?.inverse,
+            hidden: simplifiedStyled?.hidden,
+            strikethrough: simplifiedStyled?.strikethrough,
+            overline: simplifiedStyled?.overline,
+        }
+    }
+}

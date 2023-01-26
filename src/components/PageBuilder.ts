@@ -1,4 +1,4 @@
-import { SimplifiedStyledElement, StyledElement } from "./Utils.js"
+import { SimplifiedStyledElement, StyledElement, simplifiedStyledToStyled } from "./Utils.js"
 
 /**
  * @class PageBuilder
@@ -41,25 +41,7 @@ export class PageBuilder {
      */
     public addRow(...args: SimplifiedStyledElement[]): void {
         // each argument is an object like {text: string, color: string}
-        const _row: StyledElement[] = []
-        for (let i = 0; i < args.length; i++) {
-            const arg: SimplifiedStyledElement = args[i]
-            _row.push({
-                text: arg.text,
-                style: {
-                    color: arg.color ? arg.color : undefined,
-                    bg: arg.bg ? arg.bg : undefined,
-                    italic: arg.italic ? arg.italic : undefined,
-                    bold: arg.bold ? arg.bold : undefined,
-                    dim: arg.dim ? arg.dim : undefined,
-                    underline: arg.underline ? arg.underline : undefined,
-                    inverse: arg.inverse ? arg.inverse : undefined,
-                    hidden: arg.hidden ? arg.hidden : undefined,
-                    strikethrough: arg.strikethrough ? arg.strikethrough : undefined,
-                    overline: arg.overline ? arg.overline : undefined,
-                }
-            })
-        }
+        const _row: StyledElement[] = args.map((arg) => simplifiedStyledToStyled(arg)) // convert to StyledElement
         this.content.push(_row)
     }
 
