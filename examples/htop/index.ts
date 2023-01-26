@@ -12,6 +12,7 @@ import {
     OptionPopup
 } from "console-gui-tools"
 import { RelativeMouseEvent } from "console-gui-tools/dist/types/components/MouseManager"
+import _ from "lodash"
 import os from "node:os"
 import psList, { ProcessDescriptor } from "ps-list"
 
@@ -88,12 +89,12 @@ const mem = new Progress({
 
 const tableData = {
     selectedRow: 0,
-    psList: [] as ProcessDescriptor[],
+    psTab: [] as ProcessDescriptor[],
     header: [] as string[],
     table: new InPageWidgetBuilder(100),
     maxSizes: [] as number[],
     spacing: 2,
-    sortBy: "pid",
+    sortBy: "name",
 }
 
 const Table = new Box({ 
@@ -114,15 +115,15 @@ Table.on("keypress", (key: KeyListenerArgs) => {
         }
         break
     case "down": 
-        if (tableData.selectedRow < tableData.psList.length - 1) {
+        if (tableData.selectedRow < tableData.psTab.length - 1) {
             tableData.selectedRow += 1
             drawTable()
         }
         break
     case "f9":
         // Kill process
-        if (tableData.psList.length > 0) {
-            const selectedProcess = tableData.psList[tableData.selectedRow]
+        if (tableData.psTab.length > 0) {
+            const selectedProcess = tableData.psTab[tableData.selectedRow]
             new ConfirmPopup("popupKill", `Are you sure you want to kill process ${selectedProcess.name} (${selectedProcess.pid})?`, undefined).show().on("confirm", () => {
                 process.kill(selectedProcess.pid)
             })
@@ -131,8 +132,8 @@ Table.on("keypress", (key: KeyListenerArgs) => {
     case "f6":
         // Sort by
         {
-            const sortOptions = ["pid", "name", "cpu", "memory", "command"]
-            new OptionPopup("popupSort", "Sort by", sortOptions, tableData.sortBy).show().on("select", (option: string) => {
+            const sortOptions = Object.keys(tableData.psTab[0])
+            new OptionPopup("popupSort", "Sort by", sortOptions, tableData.sortBy).show().on("confirm", (option: string) => {
                 tableData.sortBy = option
                 drawTable()
             })
@@ -154,17 +155,17 @@ Table.on("relativeMouse", (e: RelativeMouseEvent) => {
             drawTable()
         }
     } else if (e.name === "MOUSE_WHEEL_DOWN") {
-        if (tableData.selectedRow < tableData.psList.length - 1) {
+        if (tableData.selectedRow < tableData.psTab.length - 1) {
             tableData.selectedRow += 1
             drawTable()
         }
     } else if (e.name === "MOUSE_LEFT_BUTTON_PRESSED") {
-        if (tableData.psList.length <= Table.absoluteValues.height) {
+        if (tableData.psTab.length <= Table.absoluteValues.height) {
             tableData.selectedRow = e.data.y - 1
             drawTable()
             return
         }
-        const realStartIndex = mapToRange(Table.content.scrollIndex, tableData.psList.length - Table.absoluteValues.height, 0, 0, tableData.psList.length - Table.absoluteValues.height)
+        const realStartIndex = mapToRange(Table.content.scrollIndex, tableData.psTab.length - Table.absoluteValues.height, 0, 0, tableData.psTab.length - Table.absoluteValues.height)
         tableData.selectedRow = e.data.y + realStartIndex - 1
         drawTable()
     }
@@ -255,15 +256,7 @@ async function getData() {
     const uptimeText = `${hours}:${minutes}:${seconds}s`
     //const limit = 10
     const psTable = await psList({all: true})
-    // Sort by CPU usage
-    if (psTable.length > 0 && psTable[0].cpu) {
-        psTable.sort((a, b) => {
-            return (b.cpu || 0) - (a.cpu || 0)
-        })
-    }
-    /*psTable.sort((a, b) => {
-        b.cpu - a.cpu
-    })*/
+
     // Limit to 20 processes
     //psTable.splice(limit)
     if (psTable.length === 0) return
@@ -300,8 +293,34 @@ async function getData() {
 }
 
 const drawTable = () => {
+    let orderDirection = ""
+    switch (tableData.sortBy.toUpperCase()) {
+    case "PID":
+    case "PPID":
+    case "CPU":
+    case "MEMORY":
+    case "UID":
+        orderDirection = "desc"
+        break
+    default:
+        orderDirection = "asc"
+        break
+    }
+    
+    tableData.psTab = _.orderBy(tableData.psTab, (obj: ProcessDescriptor) => {
+        switch (tableData.sortBy.toUpperCase()) {
+        case "PID":
+        case "PPID":
+        case "CPU":
+        case "MEMORY":
+        case "UID":
+            return Number(Object.values(obj)[Object.keys(obj).indexOf(tableData.sortBy)])
+        default:
+            return Object.values(obj)[Object.keys(obj).indexOf(tableData.sortBy)]
+        }
+    }, orderDirection as "asc" | "desc")
     tableData.table.clear()    
-    tableData.psList.forEach((row, index) => {
+    tableData.psTab.forEach((row, index) => {
         const background = index === tableData.selectedRow ? "bgCyan" : undefined
         tableData.table.addRow(
             ...tableData.header.map((_, i) => {
@@ -313,7 +332,7 @@ const drawTable = () => {
 }
 
 const updateTable = (psTable: ProcessDescriptor[], header: string[], maxSizes: number[], spacing: number) => {
-    tableData.psList = psTable
+    tableData.psTab = psTable
     tableData.header = header
     tableData.maxSizes = maxSizes
     tableData.spacing = spacing
