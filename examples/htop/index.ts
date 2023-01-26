@@ -6,10 +6,14 @@ import {
     ConfirmPopup, 
     PageBuilder, 
     KeyListenerArgs,
-    SimplifiedStyledElement
+    SimplifiedStyledElement,
+    InPageWidgetBuilder,
+    Box,
+    OptionPopup
 } from "console-gui-tools"
+import { RelativeMouseEvent } from "console-gui-tools/dist/types/components/MouseManager"
 import os from "node:os"
-import psList from "ps-list"
+import psList, { ProcessDescriptor } from "ps-list"
 
 const opt = {
     title: "Progress Bar Test",
@@ -29,6 +33,7 @@ GUI.on("exit", () => {
 GUI.on("keypressed", (key: KeyListenerArgs) => {
     switch (key.name) {
     case "q":
+    case "f10":
         new ConfirmPopup("popupQuit", "Are you sure you want to quit?", undefined).show().on("confirm", () => closeApp())
         break
     default:
@@ -80,6 +85,94 @@ const mem = new Progress({
         showMinMax: false,
     }
 } as ProgressConfig)
+
+const tableData = {
+    selectedRow: 0,
+    psList: [] as ProcessDescriptor[],
+    header: [] as string[],
+    table: new InPageWidgetBuilder(100),
+    maxSizes: [] as number[],
+    spacing: 2,
+    sortBy: "pid",
+}
+
+const Table = new Box({ 
+    id: "table", 
+    x: 0, 
+    y: mem.absoluteValues.y + 3, 
+    width: 100, 
+    height: 30,
+})
+
+Table.on("keypress", (key: KeyListenerArgs) => {
+    if (!Table.focused) return
+    switch (key.name) {
+    case "up":
+        if (tableData.selectedRow > 0) {
+            tableData.selectedRow -= 1
+            drawTable()
+        }
+        break
+    case "down": 
+        if (tableData.selectedRow < tableData.psList.length - 1) {
+            tableData.selectedRow += 1
+            drawTable()
+        }
+        break
+    case "f9":
+        // Kill process
+        if (tableData.psList.length > 0) {
+            const selectedProcess = tableData.psList[tableData.selectedRow]
+            new ConfirmPopup("popupKill", `Are you sure you want to kill process ${selectedProcess.name} (${selectedProcess.pid})?`, undefined).show().on("confirm", () => {
+                process.kill(selectedProcess.pid)
+            })
+        }
+        break
+    case "f6":
+        // Sort by
+        {
+            const sortOptions = ["pid", "name", "cpu", "memory", "command"]
+            new OptionPopup("popupSort", "Sort by", sortOptions, tableData.sortBy).show().on("select", (option: string) => {
+                tableData.sortBy = option
+                drawTable()
+            })
+        }
+        break
+    case "f1":
+        // Help
+        new ConfirmPopup("popupHelp", "Help", `Use the mouse wheel to scroll the table.${os.EOL}Use the up and down arrow keys to select a row.${os.EOL}Press F9 to kill a process.${os.EOL}Press F6 to sort the table.${os.EOL}Press F1 to show this help.${os.EOL}Press F10 or Q to quit.`).show()
+        break
+    default:
+        break
+    }
+})
+
+Table.on("relativeMouse", (e: RelativeMouseEvent) => {
+    if (e.name === "MOUSE_WHEEL_UP") {
+        if (tableData.selectedRow > 0) {
+            tableData.selectedRow -= 1
+            drawTable()
+        }
+    } else if (e.name === "MOUSE_WHEEL_DOWN") {
+        if (tableData.selectedRow < tableData.psList.length - 1) {
+            tableData.selectedRow += 1
+            drawTable()
+        }
+    } else if (e.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+        if (tableData.psList.length <= Table.absoluteValues.height) {
+            tableData.selectedRow = e.data.y - 1
+            drawTable()
+            return
+        }
+        const realStartIndex = mapToRange(Table.content.scrollIndex, tableData.psList.length - Table.absoluteValues.height, 0, 0, tableData.psList.length - Table.absoluteValues.height)
+        tableData.selectedRow = e.data.y + realStartIndex - 1
+        drawTable()
+    }
+})
+
+function mapToRange(value: number, min1: number, max1: number, min2: number, max2: number) {
+    return min2 + (max2 - min2) * ((value - min1) / (max1 - min1))
+}
 
 //Create function to get CPU information
 function cpuAverage(core: number) {
@@ -160,25 +253,30 @@ async function getData() {
     const minutes = Math.floor((uptime % 3600) / 60)
     const seconds = Math.floor(uptime % 60)
     const uptimeText = `${hours}:${minutes}:${seconds}s`
-    const limit = 20
-    const table = await psList({all: true})
+    //const limit = 10
+    const psTable = await psList({all: true})
     // Sort by CPU usage
-    /*table.sort((a, b) => {
+    if (psTable.length > 0 && psTable[0].cpu) {
+        psTable.sort((a, b) => {
+            return (b.cpu || 0) - (a.cpu || 0)
+        })
+    }
+    /*psTable.sort((a, b) => {
         b.cpu - a.cpu
     })*/
     // Limit to 20 processes
-    table.splice(limit)
-    if (table.length === 0) return
+    //psTable.splice(limit)
+    if (psTable.length === 0) return
     const p = new PageBuilder()
     p.addSpacer()
     p.addRow({text: `${" ".repeat(58)}Uptime: `, color: "#3d96da", bold: true}, {text: `${uptimeText}`, color: "cyan", bold: true})
     p.addSpacer(numberOfCores + 1)
-    const header = Object.keys(table[0]).map((h) => h.toUpperCase())
+    const header = Object.keys(psTable[0]).map((h) => h.toUpperCase())
     const maxSizes = header.map((h) => h.length)
 
     const spacing = 2
 
-    table.forEach(row => {
+    psTable.forEach(row => {
         const keys = Object.keys(row)
         keys.forEach((key, i) => {
             if (Object.values(row)[i].toString().length > maxSizes[i]) {
@@ -189,27 +287,73 @@ async function getData() {
 
     p.addRow(
         ...header.map((h, i) => {
-            return {text: `${h}${" ".repeat((maxSizes[i] - h.length > 0 ? maxSizes[i] - h.length : 0) + spacing)}`, color: "black", bg: "bgGreen", bold: true} as SimplifiedStyledElement
+            return {text: `${h}${" ".repeat((maxSizes[i] - h.length > 0 ? maxSizes[i] - h.length : 0) + spacing)}`, color: "black", bg: "bgGreen", bold: false} as SimplifiedStyledElement
         })
     )
-    table.forEach(row => {
-        p.addRow(
-            ...header.map((_, i) => {
-                return {text: `${Object.values(row)[i]}${" ".repeat((maxSizes[i] - Object.values(row)[i].toString().length > 0 ? maxSizes[i] - Object.values(row)[i].toString().length : 0) + spacing)}`, color: "white"/*, bg: "bgBlack"*/, bold: true} as SimplifiedStyledElement
+
+    drawGui(p)
+
+    updateTable(psTable, header, maxSizes, spacing)
+    drawTable()
+
+    setTimeout(getData, 1000)
+}
+
+const drawTable = () => {
+    tableData.table.clear()    
+    tableData.psList.forEach((row, index) => {
+        const background = index === tableData.selectedRow ? "bgCyan" : undefined
+        tableData.table.addRow(
+            ...tableData.header.map((_, i) => {
+                return {text: `${Object.values(row)[i]}${" ".repeat((tableData.maxSizes[i] - Object.values(row)[i].toString().length > 0 ? tableData.maxSizes[i] - Object.values(row)[i].toString().length : 0) + tableData.spacing)}`, color: "white", bg: background, bold: true} as SimplifiedStyledElement
             })
         )
     })
-    drawGui(p)
-
-    setTimeout(() => {
-        getData()
-    }, 1000)
+    Table.setContent(tableData.table)
 }
 
+const updateTable = (psTable: ProcessDescriptor[], header: string[], maxSizes: number[], spacing: number) => {
+    tableData.psList = psTable
+    tableData.header = header
+    tableData.maxSizes = maxSizes
+    tableData.spacing = spacing
+}
 
 const drawGui = (p: PageBuilder) => {
     GUI.setPage(p)
     GUI.refresh()
 }
+
+const footer = new Box({
+    id: "footer",
+    x: 0,
+    y: GUI.Screen.height - 1,
+    width: GUI.Screen.width,
+    height: 1,
+})
+const row = new InPageWidgetBuilder(1)
+
+row.addRow(
+    { text: "F1:", color: "white", bold: true },
+    { text: "Help  ", color: "black", bg: "bgCyan", bold: false },
+    { text: "F6:", color: "white", bold: true },
+    { text: "SortBy", color: "black", bg: "bgCyan", bold: false },
+    { text: "F9:", color: "white", bold: true },
+    { text: "Kill  ", color: "black", bg: "bgCyan", bold: false },
+    { text: "F10:", color: "white", bold: true },
+    { text: "Quit  ", color: "black", bg: "bgCyan", bold: false },
+)
+footer.setContent(row)
+
+GUI.on("resize", () => {
+    footer.absoluteValues = {
+        x: 0,
+        y: GUI.Screen.height - 2,
+        width: GUI.Screen.width,
+        height: 1,
+    }
+    GUI.refresh()
+})
+
 
 getData()
