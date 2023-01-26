@@ -3,6 +3,7 @@ import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import PageBuilder from "../PageBuilder.js"
 import { boxChars, PhisicalValues, StyledElement, truncate } from "../Utils.js"
+import os from "node:os"
 
 /**
  * @class CustomPopup
@@ -330,12 +331,12 @@ export class CustomPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}\n`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
+        header += `${boxChars["normal"].topRight}${os.EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${os.EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${os.EOL}`
 
         const windowDesign = `${header}`
-        const windowDesignLines = windowDesign.split("\n")
+        const windowDesignLines = windowDesign.split(os.EOL)
         const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(x + this.offsetX, this.marginTop + index + this.offsetY)

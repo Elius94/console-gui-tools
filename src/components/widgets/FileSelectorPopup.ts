@@ -4,6 +4,7 @@ import fs from "fs"
 import path from "path"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues } from "../Utils.js"
+import os from "node:os"
 
 /**
  * @description The file descriptions for the file selector popup.
@@ -448,23 +449,23 @@ export class FileSelectorPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}\n`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
+        header += `${boxChars["normal"].topRight}${os.EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${os.EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${os.EOL}`
 
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
             footer += boxChars["normal"].horizontal
         }
-        footer += `${boxChars["normal"].bottomRight}\n`
+        footer += `${boxChars["normal"].bottomRight}${os.EOL}`
 
         let content = ""
         this.adaptOptions().forEach((option) => {
-            content += `${boxChars["normal"].vertical}${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}${boxChars["normal"].vertical}\n`
+            content += `${boxChars["normal"].vertical}${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}${boxChars["normal"].vertical}${os.EOL}`
         })
 
         const windowDesign = `${header}${content}${footer}`
-        const windowDesignLines = windowDesign.split("\n")
+        const windowDesignLines = windowDesign.split(os.EOL)
         const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)

@@ -2,6 +2,7 @@ import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues, truncate } from "../Utils.js"
+import os from "node:os"
 
 /**
  * @class ButtonPopup
@@ -332,7 +333,7 @@ export class ButtonPopup extends EventEmitter {
         }
         let windowWidth = title.length + (2 * offset)
         const msg = this.message ? `${this.message}` : ""
-        let mstLines = msg.split("\n")
+        let mstLines = msg.split(os.EOL)
         if (mstLines.length > 0) {
             mstLines = mstLines.map((line) => {
                 if (line.length > this.CM.Screen.width - (2 * offset)) {
@@ -357,20 +358,20 @@ export class ButtonPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}\n`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}${boxChars["normal"].vertical}\n`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
+        header += `${boxChars["normal"].topRight}${os.EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}${boxChars["normal"].vertical}${os.EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${os.EOL}`
         
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
             footer += boxChars["normal"].horizontal
         }
-        footer += `${boxChars["normal"].bottomRight}\n`
+        footer += `${boxChars["normal"].bottomRight}${os.EOL}`
 
         let content = ""
         if (mstLines.length > 0 && mstLines[0].length > 0) {
             mstLines.forEach((line, index) => {
-                content += `${boxChars["normal"].vertical}${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}${boxChars["normal"].vertical}\n`
+                content += `${boxChars["normal"].vertical}${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}${boxChars["normal"].vertical}${os.EOL}`
             })
         }
         const buttonsYOffset = mstLines.length + 3 // 3 = header height
@@ -401,12 +402,12 @@ export class ButtonPopup extends EventEmitter {
                             this.CM.error("Error in ButtonPopup draw function")
                         }
                         if (colIndex === row.length - 1) {
-                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}\n`
+                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}${os.EOL}`
                         } else {
                             content += " ".repeat(spaceBetweenButtons)
                         }
                     } else if (colIndex === row.length) {
-                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}\n`
+                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}${os.EOL}`
                     }
                     const buttonPh: PhisicalValues = {
                         id: this.buttons.indexOf(button),
@@ -422,7 +423,7 @@ export class ButtonPopup extends EventEmitter {
         })
 
         const windowDesign = `${header}${content}${footer}`
-        const windowDesignLines = windowDesign.split("\n")
+        const windowDesignLines = windowDesign.split(os.EOL)
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })
