@@ -93,12 +93,12 @@ class ConsoleManager extends EventEmitter {
     layoutOptions!: LayoutOptions
     layout!: LayoutManager
     changeLayoutKey!: string
-    changeLayoutkeys!: string[]
+    private changeLayoutkeys!: string[]
     applicationTitle!: string
-    showLogKey!: string
+    private showLogKey!: string
     stdOut!: PageBuilder
     mouse!: MouseManager
-    parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
+    private parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -278,6 +278,25 @@ class ConsoleManager extends EventEmitter {
      */
     public setLogPageSize(size: number): void {
         this.logPageSize = size
+    }
+
+    /**
+     * @description This method is used to remove focus from other widgets.
+     *
+     * @param {string} widget
+     * @memberof ConsoleManager
+     */
+    public unfocusOtherWidgets(widget: string): void {
+        Object.keys(this.controlsCollection).forEach((key: string) => {
+            if (key !== widget) {
+                this.controlsCollection[key].unfocus()
+            }
+        })
+        Object.keys(this.popupCollection).forEach((key: string) => {
+            if (key !== widget) {
+                if (this.popupCollection[key].unfocus) this.popupCollection[key].unfocus()
+            }
+        })
     }
 
     /**

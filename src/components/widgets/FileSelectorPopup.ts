@@ -47,28 +47,28 @@ re case sensitive.
  * @example const popup = new FileSelectorPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
  */
 export class FileSelectorPopup extends EventEmitter {
-    CM: ConsoleManager
-    id: string
+    readonly CM: ConsoleManager
+    readonly id: string
     title: string
-    basePath: string
+    private basePath: string
     currentPath: string
-    selectDirectory: boolean
-    allowedExtensions: string[]
-    limitToPath: boolean
-    visible: boolean
-    marginTop: number
-    startIndex: number
-    selected: FileItemObject
-    options: FileItemObject[]
-    parsingMouseFrame = false
+    private selectDirectory: boolean
+    private allowedExtensions: string[]
+    private limitToPath: boolean
+    private visible: boolean
+    private marginTop: number
+    private startIndex: number
+    private selected: FileItemObject
+    private options: FileItemObject[]
+    private parsingMouseFrame = false
     /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetX: number
+    private offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetY: number
+    private offsetY: number
     private absoluteValues: PhisicalValues
-    dragging = false
-    dragStart: { x: number, y: number } = { x: 0, y: 0 }
-    focused = false
+    private dragging = false
+    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private focused = false
 
     public constructor(id: string, title: string, basePath: string, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
         super()
@@ -300,6 +300,7 @@ export class FileSelectorPopup extends EventEmitter {
             this.manageInput()
             this.visible = true
             this.CM.refresh()
+            this.CM.unfocusOtherWidgets(this.id)
         }
         return this
     }

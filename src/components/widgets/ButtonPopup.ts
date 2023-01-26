@@ -24,26 +24,25 @@ import os from "node:os"
  * @example const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
  */
 export class ButtonPopup extends EventEmitter {
-    CM: ConsoleManager
-    id: string
+    readonly CM: ConsoleManager
+    readonly id: string
     title: string
     message: string
-    buttons: string[]
+    readonly buttons: string[]
     selected: number
-    hovered: number
-    visible: boolean
-    marginTop: number
-    startIndex: number
+    private hovered: number
+    private visible: boolean
+    private marginTop: number
     parsingMouseFrame = false
     /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetX: number
+    private offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetY: number
+    private offsetY: number
     private absoluteValues: PhisicalValues
     private buttonsAbsoluteValues: PhisicalValues[] = []
-    dragging = false
-    dragStart: { x: number, y: number } = { x: 0, y: 0 }
-    focused = false
+    private dragging = false
+    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private focused = false
 
     public constructor(id: string, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
         super()
@@ -57,7 +56,6 @@ export class ButtonPopup extends EventEmitter {
         this.hovered = -1 // The selected option
         this.visible = visible
         this.marginTop = 4
-        this.startIndex = 0
         this.offsetX = 0
         this.offsetY = 0
         this.absoluteValues = {
@@ -146,6 +144,7 @@ export class ButtonPopup extends EventEmitter {
             this.manageInput()
             this.visible = true
             this.CM.refresh()
+            this.CM.unfocusOtherWidgets(this.id)
         }
         return this
     }

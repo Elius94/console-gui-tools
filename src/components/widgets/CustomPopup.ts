@@ -26,21 +26,21 @@ import os from "node:os"
  * @example const popup = new CustomPopup("popup1", "See that values", new PageBuilder()).show()
  */
 export class CustomPopup extends EventEmitter {
-    CM: ConsoleManager
-    id: string
+    readonly CM: ConsoleManager
+    readonly id: string
     title: string
     content: PageBuilder
     width: number
-    visible: boolean
-    marginTop: number
+    private visible: boolean
+    private marginTop: number
     parsingMouseFrame = false
     /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetX: number
+    private offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetY: number
+    private offsetY: number
     private absoluteValues: PhisicalValues
-    dragging = false
-    dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private dragging = false
+    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
     focused = false
 
     public constructor(id: string, title: string, content: PageBuilder, width: number, visible = false) {
@@ -166,6 +166,7 @@ export class CustomPopup extends EventEmitter {
             this.manageInput()
             this.visible = true
             this.CM.refresh()
+            this.CM.unfocusOtherWidgets(this.id)
         }
         return this
     }

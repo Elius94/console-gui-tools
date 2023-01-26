@@ -24,23 +24,23 @@ import os from "node:os"
  * @example const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
  */
 export class OptionPopup extends EventEmitter {
-    CM: ConsoleManager
-    id: string
+    readonly CM: ConsoleManager
+    readonly id: string
     title: string
-    options: Array<string | number>
-    selected: string | number
-    visible: boolean
-    marginTop: number
-    startIndex: number
-    parsingMouseFrame = false
+    private options: Array<string | number>
+    private selected: string | number
+    private visible: boolean
+    private marginTop: number
+    private startIndex: number
+    private parsingMouseFrame = false
     /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetX: number
+    private offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetY: number
+    private offsetY: number
     private absoluteValues: PhisicalValues
-    dragging = false
-    dragStart: { x: number, y: number } = { x: 0, y: 0 }
-    focused = false
+    private dragging = false
+    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private focused = false
     
     public constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible = false) {
         super()
@@ -192,6 +192,7 @@ export class OptionPopup extends EventEmitter {
             this.manageInput()
             this.visible = true
             this.CM.refresh()
+            this.CM.unfocusOtherWidgets(this.id)
         }
         return this
     }
