@@ -58,6 +58,10 @@ export class Screen extends EventEmitter {
 
         /** @const {object} cursor - The cursor object. */
         this.cursor = { x: 0, y: 0 }
+
+        this.Terminal.on("resize", () => {
+            this.emit("resize")
+        })
     }
 
     /**
