@@ -9,7 +9,8 @@ import ConfirmPopup from "./components/widgets/ConfirmPopup.js"
 import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
 import InputPopup from "./components/widgets/InputPopup.js"
 import OptionPopup from "./components/widgets/OptionPopup.js"
-import { Control } from "./components/widgets/Control.js"
+import { Control, ControlConfig } from "./components/widgets/Control.js"
+import { Box, BoxConfig, BoxStyle } from "./components/widgets/Box.js"
 import { Button, ButtonConfig, ButtonKey, ButtonStyle } from "./components/widgets/Button.js"
 import { Progress, ProgressConfig, Orientation, ProgressStyle } from "./components/widgets/ProgressBar.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
@@ -108,6 +109,9 @@ class ConsoleManager extends EventEmitter {
 
             /** @const {Screen} Screen - The screen instance */
             this.Screen = new Screen(this.Terminal)
+            this.Screen.on("resize", () => {
+                this.emit("resize")
+            })
             this.Screen.on("error", (err) => {
                 this.error(err)
             })
@@ -599,6 +603,7 @@ class ConsoleManager extends EventEmitter {
      * @example console.error("Anomaly detected") // Will be logged in the log page.
      * @example console.warn("Anomaly detected") // Will be logged in the log page.
      * @example console.info("Anomaly detected") // Will be logged in the log page.
+     * @example console.debug("Anomaly detected") // Will be logged in the log page.
      * @since 1.1.42
      */
     private overrideConsole(): void {
@@ -614,12 +619,20 @@ class ConsoleManager extends EventEmitter {
         console.info = (message: string) => {
             this.info(message)
         }
+        console.debug = (message: string) => {
+            this.log(message)
+        }
     }
 }
 
 export {
-    PageBuilder,
-    InPageWidgetBuilder,
+    PhisicalValues,
+    StyledElement, SimplifiedStyledElement, StyleObject,
+    PageBuilder, InPageWidgetBuilder,
+    Control, ControlConfig,
+    Box, BoxConfig, BoxStyle,
+    Button, ButtonConfig, ButtonStyle, ButtonKey,
+    Progress, ProgressConfig, ProgressStyle, Orientation,
     ConsoleManager,
     OptionPopup,
     InputPopup,
@@ -627,11 +640,4 @@ export {
     ButtonPopup,
     CustomPopup,
     FileSelectorPopup,
-    Control,
-    Button, ButtonConfig, ButtonStyle, ButtonKey,
-    Progress, ProgressConfig, ProgressStyle, Orientation,
-    PhisicalValues,
-    StyledElement,
-    SimplifiedStyledElement,
-    StyleObject
 }
