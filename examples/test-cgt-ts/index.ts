@@ -1,5 +1,6 @@
 import net from "net"
 import EventEmitter from "events"
+import os from "node:os"
 
 const PORT = 9090
 const HOST = "127.0.0.1"
@@ -61,7 +62,7 @@ const server = net
         connectedClients++
         //drawGui()
         clientManager.on("send", (data) => {
-            socket.write(data + "\n")
+            socket.write(data + os.EOL)
             tcpCounter++
         })
         socket.on("error", function (err) {
@@ -385,7 +386,7 @@ GUI.on("keypressed", (key) => {
         )
             .show()
             .on("confirm", (_period) => {
-                const msgMultiLine = `Changing period from ${period} to ${_period} ms.\nThis will restart the simulator.\nDo you want to continue?`
+                const msgMultiLine = `Changing period from ${period} to ${_period} ms.${os.EOL}This will restart the simulator.${os.EOL}Do you want to continue?`
                 new ButtonPopup(
                     "popupConfirmPeriod",
                     "Confirm period",
