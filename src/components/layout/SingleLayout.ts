@@ -14,6 +14,7 @@ import { boxChars, HEX, RGB, StyledElement, truncate } from "../Utils.js"
  * @export
  * @interface SingleLayoutOptions
  */
+// @type definition
 export interface SingleLayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;

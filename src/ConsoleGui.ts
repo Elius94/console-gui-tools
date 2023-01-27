@@ -32,6 +32,7 @@ import { EOL } from "node:os"
  * @export
  * @interface KeyListenerArgs
  */
+// @type definition
 export interface KeyListenerArgs {
     name: string;
     sequence: string;
@@ -57,6 +58,7 @@ export interface KeyListenerArgs {
  * @export
  * @interface ConsoleGuiOptions
  */
+// @type definition
 export interface ConsoleGuiOptions {
     logLocation?: 0 | 1 | 2 | 3 | "popup";
     showLogKey?: string;

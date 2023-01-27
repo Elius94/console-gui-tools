@@ -16,6 +16,7 @@ import { boxChars, PhisicalValues, truncate } from "../Utils.js"
  * @export
  * @interface ButtonPopupConfig
  */
+// @type definition
 export interface ButtonPopupConfig {
     id: string,
     title: string,

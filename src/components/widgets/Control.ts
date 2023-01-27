@@ -14,6 +14,7 @@ import { PhisicalValues, StyledElement, truncate } from "../Utils.js"
  * @export
  * @interface ControlConfig
  */
+// @type definition
 export interface ControlConfig {
     id: string
     attributes: PhisicalValues

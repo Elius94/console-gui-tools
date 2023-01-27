@@ -16,6 +16,7 @@ import { boxChars, PhisicalValues } from "../Utils.js"
  * @export
  * @interface InputPopupConfig
  */
+// @type definition
 export interface InputPopupConfig {
     id: string,
     title: string,

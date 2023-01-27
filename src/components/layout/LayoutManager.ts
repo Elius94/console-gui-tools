@@ -17,11 +17,12 @@ import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
  * @prop {string} [changeFocusKey] - The key that should be pressed to change the focus.
  * @prop {"horizontal" | "vertical"} [direction] - The direction of the layout.
  * @prop {string[]} [pageTitles] - The title of the first page.
- * @prop {[number, number] | [[number, number]]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ * @prop {number[]} [pageRatio] - The ratio of the pages. (in horizontal direction)
  *
  * @export
  * @interface LayoutOptions
  */
+// @type definition
 export interface LayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;

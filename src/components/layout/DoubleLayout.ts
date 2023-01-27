@@ -13,11 +13,12 @@ import { boxChars, HEX, RGB, StyledElement, truncate } from "../Utils.js"
  * @prop {"horizontal" | "vertical"} [direction] - The direction of the layout.
  * @prop {string} [page1Title] - The title of the first page.
  * @prop {string} [page2Title] - The title of the second page.
- * @prop {[number, number]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ * @prop {number[]} [pageRatio] - The ratio of the pages. (in horizontal direction)
  *
  * @export
  * @interface DoubleLayoutOptions
  */
+// @type definition
 export interface DoubleLayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;

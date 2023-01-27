@@ -146,6 +146,7 @@ const drawingChars = {
  * @export
  * @interface ProgressConfig
  */
+// @type definition
 export interface ProgressConfig {
     id: string;
     length: number;
@@ -176,7 +177,7 @@ export type Orientation = "horizontal" | "vertical";
  * @param {ForegroundColorName | HEX | RGB} borderColor The color of the border
  * @param {ForegroundColorName | HEX | RGB} [textColor] The color of the text
  * @param {ForegroundColorName | HEX | RGB} color The color of the progress bar
- * @param {keyof typeof drawingChars} [theme] The theme to use for the progress bar ["precision", "htop", "htop-light", "htop-heavy"]
+ * @param {"precision" | "htop" | "htop-light" | "htop-heavy"} [theme] The theme to use for the progress bar ["precision", "htop", "htop-light", "htop-heavy"]
  * @param {boolean} [boxed] Whether or not to draw a box around the progress bar
  * @param {boolean} [showPercentage] Whether or not to show the percentage
  * @param {boolean} [showValue] Whether or not to show the value
@@ -194,6 +195,7 @@ export type Orientation = "horizontal" | "vertical";
  * @export
  * @interface ProgressStyle
  */
+// @type definition
 export interface ProgressStyle {
     background: BackgroundColorName | HEX | RGB;
     borderColor: ForegroundColorName | HEX | RGB;

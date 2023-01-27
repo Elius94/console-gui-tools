@@ -21,6 +21,31 @@
 <dd><p>the instance of ConsoleManager (singleton)</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#FileSelectorPopupConfig">FileSelectorPopupConfig</a> : <code>Object</code></dt>
+<dd><p>The configuration for the FileSelectorPopup class.</p></dd>
+</dl>
+
+<a name="FileSelectorPopupConfig"></a>
+
+## FileSelectorPopupConfig : <code>Object</code>
+<p>The configuration for the FileSelectorPopup class.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the file selector popup.</p> |
+| title | <code>string</code> | <p>The title of the file selector popup.</p> |
+| basePath | <code>string</code> | <p>The base path of the file selector popup.</p> |
+| [selectDirectory] | <code>boolean</code> | <p>If the file selector popup can select directories.</p> |
+| [allowedExtensions] | <code>Array.&lt;string&gt;</code> | <p>The allowed extensions. If not set, all extensions are allowed.</p> |
+| [limitToPath] | <code>boolean</code> | <p>If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key.</p> |
+| [visible] | <code>boolean</code> | <p>If the file selector popup is visible.</p> |
+
 <a name="FileSelectorPopup"></a>
 
 ## FileSelectorPopup ⇐ <code>EventEmitter</code>
@@ -28,7 +53,7 @@
 **Extends**: <code>EventEmitter</code>  
 
 * [FileSelectorPopup](#FileSelectorPopup) ⇐ <code>EventEmitter</code>
-    * [new FileSelectorPopup(id, title, basePath, [limitToPath], [allowedExtensions], visible)](#new_FileSelectorPopup_new)
+    * [new FileSelectorPopup(config)](#new_FileSelectorPopup_new)
     * [.listDir(dir)](#FileSelectorPopup+listDir) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
     * [.updateList(_path)](#FileSelectorPopup+updateList)
     * [.keyListener(str, key)](#FileSelectorPopup+keyListener)
@@ -43,7 +68,7 @@
 
 <a name="new_FileSelectorPopup_new"></a>
 
-### new FileSelectorPopup(id, title, basePath, [limitToPath], [allowedExtensions], visible)
+### new FileSelectorPopup(config)
 <p>This class is used to create a popup with a file input to select a file or a directory.
 It will run a promise with fs.readdir to get the list of files and directories.
 The user can select a file or a directory and the popup will be closed.</p>
@@ -56,19 +81,19 @@ The user can select a file or a directory and the popup will be closed.</p>
 </ul>
 
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| id | <code>string</code> |  | <p>The id of the popup.</p> |
-| title | <code>string</code> |  | <p>The title of the popup.</p> |
-| basePath | <code>string</code> |  | <p>The main path of the popup. re case sensitive.</p> |
-| [limitToPath] | <code>boolean</code> | <code>false</code> | <p>If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key.</p> |
-| [allowedExtensions] | <code>Array.&lt;string&gt;</code> | <code>[]</code> | <p>The allowed extensions. If not set, all extensions are allowed. The extensions a can only select files in the path. If false, the user can select files in the path and parent directories.</p> |
-| visible | <code>boolean</code> |  | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
+| Param | Type | Description |
+| --- | --- | --- |
+| config | [<code>FileSelectorPopupConfig</code>](#FileSelectorPopupConfig) | <p>The configuration for the FileSelectorPopup class.</p> |
 
 **Example**  
-```js
-const popup = new FileSelectorPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
-```
+```ts
+const popup = new FileSelectorPopup({
+ id: "popup1",
+ title: "Choose the file",
+ basePath: "./examples"
+}).show().on("confirm", (selected) => {
+ console.log(selected)
+}) // show the popup and wait for the user to confirm
 <a name="FileSelectorPopup+listDir"></a>
 
 ### fileSelectorPopup.listDir(dir) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>

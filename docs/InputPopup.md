@@ -21,6 +21,29 @@
 <dd><p>the instance of ConsoleManager (singleton)</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#InputPopupConfig">InputPopupConfig</a> : <code>Object</code></dt>
+<dd><p>The configuration for the InputPopup class.</p></dd>
+</dl>
+
+<a name="InputPopupConfig"></a>
+
+## InputPopupConfig : <code>Object</code>
+<p>The configuration for the InputPopup class.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the popup.</p> |
+| title | <code>string</code> | <p>The title of the popup.</p> |
+| value | <code>string</code> \| <code>number</code> | <p>The value of the popup.</p> |
+| numeric | <code>boolean</code> | <p>If the input is numeric.</p> |
+| [visible] | <code>boolean</code> | <p>If the popup is visible.</p> |
+
 <a name="InputPopup"></a>
 
 ## InputPopup ⇐ <code>EventEmitter</code>
@@ -28,7 +51,7 @@
 **Extends**: <code>EventEmitter</code>  
 
 * [InputPopup](#InputPopup) ⇐ <code>EventEmitter</code>
-    * [new InputPopup(id, title, value, numeric, visible)](#new_InputPopup_new)
+    * [new InputPopup(config)](#new_InputPopup_new)
     * [.keyListenerNumeric(_str, key)](#InputPopup+keyListenerNumeric)
     * [.keyListenerText(_str, key)](#InputPopup+keyListenerText)
     * [.getValue()](#InputPopup+getValue) ⇒ <code>string</code> \| <code>number</code>
@@ -42,7 +65,7 @@
 
 <a name="new_InputPopup_new"></a>
 
-### new InputPopup(id, title, value, numeric, visible)
+### new InputPopup(config)
 <p>This class is used to create a popup with a text or numeric input.</p>
 <p><img src="https://user-images.githubusercontent.com/14907987/165752281-e836b862-a54a-48d5-b4e7-954374d6509f.gif" alt="InputPopup"></p>
 <p>Emits the following events:</p>
@@ -55,15 +78,16 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | <p>The id of the popup.</p> |
-| title | <code>string</code> | <p>The title of the popup.</p> |
-| value | <code>string</code> \| <code>number</code> | <p>The value of the input.</p> |
-| numeric | <code>boolean</code> | <p>If the input is numeric.</p> |
-| visible | <code>boolean</code> | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
+| config | [<code>InputPopupConfig</code>](#InputPopupConfig) | <p>The config of the popup.</p> |
 
 **Example**  
-```js
-const popup = new InputPopup("popup1", "Choose the number", selectedNumber, true).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
+```ts 
+const popup = new InputPopup({
+ id: "popup1", 
+ title: "Choose the number", 
+ value: selectedNumber, 
+ numeric: true
+}).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
 ```
 <a name="InputPopup+keyListenerNumeric"></a>
 

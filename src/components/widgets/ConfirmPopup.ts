@@ -12,6 +12,7 @@ import ButtonPopup from "./ButtonPopup.js"
  * @export
  * @interface ConfirmPopupConfig
  */
+// @type definition
 export interface ConfirmPopupConfig {
     id: string,
     title: string,

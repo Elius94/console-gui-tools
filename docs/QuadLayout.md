@@ -20,6 +20,34 @@
 <dd><p>The title of page4.</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#DoubleLayoutOptions">DoubleLayoutOptions</a> : <code>Object</code></dt>
+<dd><p>The type containing all the possible options for the QuadLayout.</p></dd>
+</dl>
+
+<a name="DoubleLayoutOptions"></a>
+
+## DoubleLayoutOptions : <code>Object</code>
+<p>The type containing all the possible options for the QuadLayout.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [showTitle] | <code>boolean</code> | <p>If the title should be shown.</p> |
+| [boxed] | <code>boolean</code> | <p>If the layout should be boxed.</p> |
+| [boxColor] | <code>ForegroundColorName</code> \| <code>HEX</code> \| <code>RGB</code> \| <code>&quot;&quot;</code> | <p>The color of the box taken from the chalk library.</p> |
+| [boxStyle] | <code>&quot;bold&quot;</code> | <p>If the border of the box should be bold.</p> |
+| [changeFocusKey] | <code>string</code> | <p>The key that should be pressed to change the focus.</p> |
+| [page1Title] | <code>string</code> | <p>The title of the first page.</p> |
+| [page2Title] | <code>string</code> | <p>The title of the second page.</p> |
+| [page3Title] | <code>string</code> | <p>The title of the third page.</p> |
+| [page4Title] | <code>string</code> | <p>The title of the fourth page.</p> |
+| [pageRatio] | <code>Array.&lt;number&gt;</code> | <p>The ratio of the pages.</p> |
+
 <a name="QuadLayout"></a>
 
 ## QuadLayout

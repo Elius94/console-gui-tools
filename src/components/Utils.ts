@@ -30,6 +30,7 @@ export type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${numb
  * @export
  * @interface StyleObject
  */
+// @type definition
 export interface StyleObject {
     color?: ForegroundColorName | HEX | RGB | "";
     bg?: BackgroundColorName | HEX | RGB | "";
@@ -55,6 +56,7 @@ export interface StyleObject {
  * @export
  * @interface StyledElement
  */
+// @type definition
 export interface StyledElement {
     text: string;
     style: StyleObject;
@@ -81,6 +83,7 @@ export interface StyledElement {
  * @export
  * @interface SimplifiedStyledElement
  */
+// @type definition
 export interface SimplifiedStyledElement {
     text: string;
     color?: ForegroundColorName | HEX | RGB | "";
@@ -101,6 +104,7 @@ export interface SimplifiedStyledElement {
  * @export
  * @interface PhisicalValues
  */
+// @type definition
 export interface PhisicalValues {
     x: number
     y: number

@@ -17,6 +17,7 @@ import { boxChars, PhisicalValues, StyledElement, truncate } from "../Utils.js"
  * @export
  * @interface PopupConfig
  */
+// @type definition
 export interface PopupConfig {
     id: string,
     title: string,

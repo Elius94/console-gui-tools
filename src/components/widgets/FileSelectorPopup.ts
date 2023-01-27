@@ -20,6 +20,7 @@ import { boxChars, PhisicalValues } from "../Utils.js"
  * @export
  * @interface FileSelectorPopupConfig
  */
+// @type definition
 export interface FileSelectorPopupConfig {
     id: string, 
     title: string, 

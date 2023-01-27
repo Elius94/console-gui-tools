@@ -21,6 +21,29 @@
 <dd><p>the instance of ConsoleManager (singleton)</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#OptionPopupConfig">OptionPopupConfig</a> : <code>Object</code></dt>
+<dd><p>The configuration for the OptionPopup class.</p></dd>
+</dl>
+
+<a name="OptionPopupConfig"></a>
+
+## OptionPopupConfig : <code>Object</code>
+<p>The configuration for the OptionPopup class.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the popup.</p> |
+| title | <code>string</code> | <p>The title of the popup.</p> |
+| options | <code>Array.&lt;(string\|number)&gt;</code> | <p>The options of the popup.</p> |
+| selected | <code>string</code> \| <code>number</code> | <p>The selected option of the popup.</p> |
+| [visible] | <code>boolean</code> | <p>If the popup is visible.</p> |
+
 <a name="OptionPopup"></a>
 
 ## OptionPopup ⇐ <code>EventEmitter</code>
@@ -61,8 +84,13 @@
 | visible | <code>boolean</code> | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
 
 **Example**  
-```js
-const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
+```ts
+const popup = new OptionPopup({
+ id:"popup1", 
+ title: "Choose the option", 
+ options, 
+ selected
+}).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
 ```
 <a name="OptionPopup+keyListener"></a>
 

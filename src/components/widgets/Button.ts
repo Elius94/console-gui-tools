@@ -25,6 +25,7 @@ import { KeyListenerArgs } from "../../ConsoleGui.js"
  * @export
  * @interface ButtonConfig
  */
+// @type definition
 export interface ButtonConfig {
     id: string,
     text: string,
@@ -49,6 +50,7 @@ export interface ButtonConfig {
  * @property {boolean} ctrl If the key is pressed with the ctrl key (default: false)
  * @property {boolean} shift If the key is pressed with the shift key (default: false)
  */
+// @type definition
 export interface ButtonKey {
     name: string,
     ctrl?: boolean,
@@ -74,6 +76,7 @@ export interface ButtonKey {
  * @export
  * @interface ButtonStyle
  */
+// @type definition
 export interface ButtonStyle {
     background?: BackgroundColorName | HEX | RGB | "";
     borderColor?: ForegroundColorName | HEX | RGB | "";

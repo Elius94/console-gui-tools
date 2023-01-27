@@ -14,6 +14,101 @@
 <dd><p>Object containing the state of the mouse buttons.</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#MouseEventArgs">MouseEventArgs</a> : <code>Object</code></dt>
+<dd><p>This type is used to define the parameters of the Mouse Listener event (mouseevent) data.</p></dd>
+<dt><a href="#MouseEvent">MouseEvent</a> : <code>Object</code></dt>
+<dd><p>This type is used to define the parameters of the Mouse Listener event (mouseevent).
+available event names:</p>
+<ul>
+<li>MOUSE_MOTION: mouse moved (no button pressed / hover)</li>
+<li>MOUSE_DRAG: Valorized xFrom and yFrom. Use left or right to know which button is pressed.</li>
+<li>MOUSE_LEFT_BUTTON_PRESS</li>
+<li>MOUSE_LEFT_BUTTON_RELEASE</li>
+<li>MOUSE_RIGHT_BUTTON_PRESS</li>
+<li>MOUSE_RIGHT_BUTTON_RELEASE</li>
+<li>MOUSE_MIDDLE_BUTTON_PRESS</li>
+<li>MOUSE_MIDDLE_BUTTON_RELEASE</li>
+<li>MOUSE_WHEEL_UP</li>
+<li>MOUSE_WHEEL_DOWN</li>
+</ul></dd>
+<dt><a href="#RelativeMouseEvent">RelativeMouseEvent</a> : <code>Object</code></dt>
+<dd><p>This type is used to define the parameters of the Mouse Listener event (mouseevent) data, relative to a widget.</p></dd>
+</dl>
+
+<a name="MouseEventArgs"></a>
+
+## MouseEventArgs : <code>Object</code>
+<p>This type is used to define the parameters of the Mouse Listener event (mouseevent) data.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| code | <code>string</code> | <p>The code of the pressed key.</p> |
+| alt | <code>boolean</code> | <p>If the alt key is pressed.</p> |
+| ctrl | <code>boolean</code> | <p>If the ctrl key is pressed.</p> |
+| shift | <code>boolean</code> | <p>If the shift key is pressed.</p> |
+| left | <code>boolean</code> | <p>If the left mouse key is pressed.</p> |
+| right | <code>boolean</code> | <p>If the right mouse key is pressed.</p> |
+| x | <code>number</code> | <p>The x position of the mouse (terminal column).</p> |
+| y | <code>number</code> | <p>The y position of the mouse (terminal row).</p> |
+| xFrom | <code>number</code> \| <code>null</code> | <p>The original x position of the mouse (terminal column) when the drag started.</p> |
+| yFrom | <code>number</code> \| <code>null</code> | <p>The original y position of the mouse (terminal row) when the drag started.</p> |
+
+**Example**  
+```js
+const mouseEventArgs = { code: "MOUSE", alt: false, ctrl: false, shift: false, left: true, right: false, x: 10, y: 10, xFrom: null, yFrom: null }
+```
+<a name="MouseEvent"></a>
+
+## MouseEvent : <code>Object</code>
+<p>This type is used to define the parameters of the Mouse Listener event (mouseevent).
+available event names:</p>
+<ul>
+<li>MOUSE_MOTION: mouse moved (no button pressed / hover)</li>
+<li>MOUSE_DRAG: Valorized xFrom and yFrom. Use left or right to know which button is pressed.</li>
+<li>MOUSE_LEFT_BUTTON_PRESS</li>
+<li>MOUSE_LEFT_BUTTON_RELEASE</li>
+<li>MOUSE_RIGHT_BUTTON_PRESS</li>
+<li>MOUSE_RIGHT_BUTTON_RELEASE</li>
+<li>MOUSE_MIDDLE_BUTTON_PRESS</li>
+<li>MOUSE_MIDDLE_BUTTON_RELEASE</li>
+<li>MOUSE_WHEEL_UP</li>
+<li>MOUSE_WHEEL_DOWN</li>
+</ul>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | <p>The name of the event.</p> |
+| eaten | <code>number</code> | <p>The number of eaten events.</p> |
+| args | [<code>MouseEventArgs</code>](#MouseEventArgs) | <p>The arguments of the event.</p> |
+
+**Example**  
+```js
+const mouseEvent = { name: "MOUSE_MOTION", eaten: 0, args: { code: "MOUSE", alt: false, ctrl: false, shift: false, left: true, right: false, x: 10, y: 10, xFrom: null, yFrom: null } }
+```
+<a name="RelativeMouseEvent"></a>
+
+## RelativeMouseEvent : <code>Object</code>
+<p>This type is used to define the parameters of the Mouse Listener event (mouseevent) data, relative to a widget.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | <p>The name of the event.</p> |
+| data | <code>object</code> | <p>The data of the event.</p> |
+| data.x | <code>number</code> | <p>The x position of the mouse (terminal column).</p> |
+| data.y | <code>number</code> | <p>The y position of the mouse (terminal row).</p> |
+
 <a name="MouseManager"></a>
 
 ## MouseManager ⇐ <code>EventEmitter</code>

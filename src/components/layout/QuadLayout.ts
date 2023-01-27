@@ -14,11 +14,12 @@ import { boxChars, HEX, RGB, StyledElement, truncate } from "../Utils.js"
  * @prop {string} [page2Title] - The title of the second page.
  * @prop {string} [page3Title] - The title of the third page.
  * @prop {string} [page4Title] - The title of the fourth page.
- * @prop {[number, number] | [[number, number]]} [pageRatio] - The ratio of the pages.
+ * @prop {number[]} [pageRatio] - The ratio of the pages.
  *
  * @export
  * @interface DoubleLayoutOptions
  */
+// @type definition
 export interface QuadLayoutOptions {
     showTitle?: boolean;
     boxed?: boolean;

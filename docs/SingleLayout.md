@@ -14,6 +14,29 @@
 <dd><p>The application title.</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#SingleLayoutOptions">SingleLayoutOptions</a> : <code>Object</code></dt>
+<dd><p>The type containing all the possible options for the SingleLayout.</p></dd>
+</dl>
+
+<a name="SingleLayoutOptions"></a>
+
+## SingleLayoutOptions : <code>Object</code>
+<p>The type containing all the possible options for the SingleLayout.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [showTitle] | <code>boolean</code> | <p>If the title should be shown.</p> |
+| [boxed] | <code>boolean</code> | <p>If the layout should be boxed.</p> |
+| [boxColor] | <code>ForegroundColorName</code> \| <code>HEX</code> \| <code>RGB</code> \| <code>&quot;&quot;</code> | <p>The color of the box taken from the chalk library.</p> |
+| [boxStyle] | <code>&quot;bold&quot;</code> | <p>If the border of the box should be bold.</p> |
+| [pageTitle] | <code>string</code> | <p>The title of the first page.</p> |
+
 <a name="SingleLayout"></a>
 
 ## SingleLayout

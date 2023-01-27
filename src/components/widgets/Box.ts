@@ -22,6 +22,7 @@ import { RelativeMouseEvent } from "../MouseManager.js"
  * @export
  * @interface BoxConfig
  */
+// @type definition
 export interface BoxConfig {
     id: string,
     x: number,
@@ -44,6 +45,7 @@ export interface BoxConfig {
  * @export
  * @interface BoxStyle
  */
+// @type definition
 export interface BoxStyle {
     boxed?: boolean,
     color?: ForegroundColorName | HEX | RGB | "",

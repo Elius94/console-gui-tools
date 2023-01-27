@@ -20,6 +20,7 @@ import { EventEmitter } from "events"
  * @export
  * @interface MouseEventArgs
  */
+// @type definition
 export interface MouseEventArgs {
     code: number;
     alt: boolean;
@@ -57,6 +58,7 @@ export interface MouseEventArgs {
  * @export
  * @interface MouseEvent
  */
+// @type definition
 export interface MouseEvent {
     name: string;
     eaten: number;
@@ -75,6 +77,7 @@ export interface MouseEvent {
  * @export
  * @interface RelativeMouseEvent
  */
+// @type definition
 export interface RelativeMouseEvent {
     name: string;
     data: {
