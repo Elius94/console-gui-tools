@@ -1,10 +1,34 @@
 import { EventEmitter } from "events"
-import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import fs from "fs"
 import path from "path"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues } from "../Utils.js"
-import os from "node:os"
+
+/**
+ * @description The configuration for the FileSelectorPopup class.
+ * @typedef {Object} FileSelectorPopupConfig
+ * 
+ * @prop {string} id - The id of the file selector popup.
+ * @prop {string} title - The title of the file selector popup.
+ * @prop {string} basePath - The base path of the file selector popup.
+ * @prop {boolean} [selectDirectory] - If the file selector popup can select directories.
+ * @prop {Array<string>} [allowedExtensions] - The allowed extensions. If not set, all extensions are allowed.
+ * @prop {boolean} [limitToPath] - If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key.
+ * @prop {boolean} [visible] - If the file selector popup is visible.
+ *
+ * @export
+ * @interface FileSelectorPopupConfig
+ */
+export interface FileSelectorPopupConfig {
+    id: string, 
+    title: string, 
+    basePath: string, 
+    selectDirectory?: boolean, 
+    allowedExtensions ?: string[], 
+    limitToPath?: boolean, 
+    visible?: boolean
+}
 
 /**
  * @description The file descriptions for the file selector popup.
@@ -36,15 +60,16 @@ interface FileItemObject {
  * - "confirm" when the user confirm the file or directory selection. The file or directory path is passed as parameter like this: {path: "path/to/file", name: "file.ext"}
  * - "cancel" when the user cancel the file or directory selection.
  * - "exit" when the user exit
- * @param {string} id - The id of the popup.
- * @param {string} title - The title of the popup.
- * @param {string} basePath - The main path of the popup.
-re case sensitive.
- * @param {boolean} [limitToPath=false] - If true, the user can select a directory. Otherwise, only files are selectable. When true, to enter a directory, the user must press the space key instead of the enter key.
- * @param {Array<string>} [allowedExtensions=[]] - The allowed extensions. If not set, all extensions are allowed. The extensions a can only select files in the path. If false, the user can select files in the path and parent directories.
- * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
+ * @param {FileSelectorPopupConfig} config - The configuration for the FileSelectorPopup class.
  * 
- * @example const popup = new FileSelectorPopup("popup1", "Choose the file", "./examples").show().on("confirm", (selected) => { console.log(selected) }) // show the popup and wait for the user to confirm
+ * @example ```ts
+ * const popup = new FileSelectorPopup({
+ *  id: "popup1",
+ *  title: "Choose the file",
+ *  basePath: "./examples"
+ * }).show().on("confirm", (selected) => {
+ *  console.log(selected)
+ * }) // show the popup and wait for the user to confirm
  */
 export class FileSelectorPopup extends EventEmitter {
     readonly CM: ConsoleManager
@@ -70,7 +95,12 @@ export class FileSelectorPopup extends EventEmitter {
     private dragStart: { x: number, y: number } = { x: 0, y: 0 }
     private focused = false
 
-    public constructor(id: string, title: string, basePath: string, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false) {
+    public constructor(config: FileSelectorPopupConfig) {
+        if (!config) throw new Error("The config is required")
+        const { id, title, basePath, selectDirectory = false, allowedExtensions = [], limitToPath = false, visible = false } = config
+        if (!id) throw new Error("The id is required")
+        if (!title) throw new Error("The title is required")
+        if (!basePath) throw new Error("The basePath is required")
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -451,23 +481,23 @@ export class FileSelectorPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}${os.EOL}`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${os.EOL}`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${os.EOL}`
+        header += `${boxChars["normal"].topRight}${EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${EOL}`
 
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
             footer += boxChars["normal"].horizontal
         }
-        footer += `${boxChars["normal"].bottomRight}${os.EOL}`
+        footer += `${boxChars["normal"].bottomRight}${EOL}`
 
         let content = ""
         this.adaptOptions().forEach((option) => {
-            content += `${boxChars["normal"].vertical}${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}${boxChars["normal"].vertical}${os.EOL}`
+            content += `${boxChars["normal"].vertical}${option.name === this.selected.name ? "<" : " "} ${option.text}${option.name === this.selected.name ? " >" : "  "}${" ".repeat(windowWidth - option.text.toString().length - 4)}${boxChars["normal"].vertical}${EOL}`
         })
 
         const windowDesign = `${header}${content}${footer}`
-        const windowDesignLines = windowDesign.split(os.EOL)
+        const windowDesignLines = windowDesign.split(EOL)
         const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)

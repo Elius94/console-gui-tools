@@ -1,8 +1,28 @@
 import { EventEmitter } from "events"
-import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues, truncate } from "../Utils.js"
-import os from "node:os"
+
+/**
+ * @description The configuration for the ButtonPopup class.
+ * @typedef {Object} ButtonPopupConfig
+ * 
+ * @prop {string} id - The id of the popup.
+ * @prop {string} title - The title of the popup.
+ * @prop {string} message - The message of the popup.
+ * @prop {Array<string>} [buttons] - The buttons of the popup (default is ["Ok", "Cancel", "?"]).
+ * @prop {boolean} [visible] - If the popup is visible. Default is false (make it appears using show()).
+ *
+ * @export
+ * @interface ButtonPopupConfig
+ */
+export interface ButtonPopupConfig {
+    id: string,
+    title: string,
+    message?: string,
+    buttons?: Array<string>,
+    visible?: boolean,
+}
 
 /**
  * @class ButtonPopup
@@ -15,13 +35,22 @@ import os from "node:os"
  * - "confirm" when the user confirm
  * - "cancel" when the user cancel
  * - "exit" when the user exit
- * @param {string} id - The id of the popup.
- * @param {string} title - The title of the popup.
- * @param {string} message - The message of the popup.
- * @param {Array<string>} buttons - The buttons of the popup (default is ["Yes", "No"]).
- * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
+ * @param {ButtonPopupConfig} config - The configuration of the popup.
  * 
- * @example const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
+ * @example ```ts
+ * const popup = new ButtonPopup({
+ *  id: "popup1", 
+ *  title: "Choose the option", 
+ *  buttons: ["YES", "NO", "?"],
+ * }) 
+ * popup.show() // show the popup
+ * popup.on("confirm", () => {
+ *  console.log("User confirmed")
+ * })
+ * popup.on("cancel", () => {
+ *  console.log("User canceled")
+ * })
+ * ```
  */
 export class ButtonPopup extends EventEmitter {
     readonly CM: ConsoleManager
@@ -44,13 +73,17 @@ export class ButtonPopup extends EventEmitter {
     private dragStart: { x: number, y: number } = { x: 0, y: 0 }
     private focused = false
 
-    public constructor(id: string, title = "Confirm?", message = "", buttons = ["Ok", "Cancel", "?"], visible = false) {
+    public constructor(config: ButtonPopupConfig) {
+        if (!config) throw new Error("The config is required")
+        const { id, title, message, buttons = ["Ok", "Cancel", "?"], visible = false } = config
+        if (!id) throw new Error("The id is required")
+        if (!title) throw new Error("The title is required")
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
         this.id = id
         this.title = title
-        this.message = message
+        this.message = message || ""
         this.buttons = buttons
         this.selected = 0 // The selected option
         this.hovered = -1 // The selected option
@@ -333,7 +366,7 @@ export class ButtonPopup extends EventEmitter {
         }
         let windowWidth = title.length + (2 * offset)
         const msg = this.message ? `${this.message}` : ""
-        let mstLines = msg.split(os.EOL)
+        let mstLines = msg.split(EOL)
         if (mstLines.length > 0) {
             mstLines = mstLines.map((line) => {
                 if (line.length > this.CM.Screen.width - (2 * offset)) {
@@ -358,20 +391,20 @@ export class ButtonPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}${os.EOL}`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}${boxChars["normal"].vertical}${os.EOL}`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${os.EOL}`
+        header += `${boxChars["normal"].topRight}${EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidthTitle)}${title}${" ".repeat(windowWidth - halfWidthTitle - title.length)}${boxChars["normal"].vertical}${EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${EOL}`
         
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
             footer += boxChars["normal"].horizontal
         }
-        footer += `${boxChars["normal"].bottomRight}${os.EOL}`
+        footer += `${boxChars["normal"].bottomRight}${EOL}`
 
         let content = ""
         if (mstLines.length > 0 && mstLines[0].length > 0) {
             mstLines.forEach((line, index) => {
-                content += `${boxChars["normal"].vertical}${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}${boxChars["normal"].vertical}${os.EOL}`
+                content += `${boxChars["normal"].vertical}${" ".repeat(halfWidthMessage[index])}${line}${" ".repeat(windowWidth - halfWidthMessage[index] - line.length)}${boxChars["normal"].vertical}${EOL}`
             })
         }
         const buttonsYOffset = mstLines.length + 3 // 3 = header height
@@ -402,12 +435,12 @@ export class ButtonPopup extends EventEmitter {
                             this.CM.error("Error in ButtonPopup draw function")
                         }
                         if (colIndex === row.length - 1) {
-                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}${os.EOL}`
+                            content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}${EOL}`
                         } else {
                             content += " ".repeat(spaceBetweenButtons)
                         }
                     } else if (colIndex === row.length) {
-                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}${os.EOL}`
+                        content += " ".repeat(!(emptySpace % 2) ? emptySpace / 2 : Math.round(emptySpace / 2)) + `${boxChars["normal"].vertical}${EOL}`
                     }
                     const buttonPh: PhisicalValues = {
                         id: this.buttons.indexOf(button),
@@ -423,7 +456,7 @@ export class ButtonPopup extends EventEmitter {
         })
 
         const windowDesign = `${header}${content}${footer}`
-        const windowDesignLines = windowDesign.split(os.EOL)
+        const windowDesignLines = windowDesign.split(EOL)
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)
             this.CM.Screen.write({ text: line, style: { color: "white" } })

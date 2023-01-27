@@ -2,6 +2,23 @@ import { KeyListenerArgs } from "../../ConsoleGui.js"
 import ButtonPopup from "./ButtonPopup.js"
 
 /**
+ * @description The configuration for the ConfirmPopup class.
+ * @typedef {Object} ConfirmPopupConfig
+ * 
+ * @prop {string} id - The id of the popup.
+ * @prop {string} title - The title of the popup.
+ * @prop {string} [message] - The message of the popup.
+ *
+ * @export
+ * @interface ConfirmPopupConfig
+ */
+export interface ConfirmPopupConfig {
+    id: string,
+    title: string,
+    message?: string,
+}
+
+/**
  * @class ConfirmPopup
  * @extends ButtonPopup
  * @description This class is an overload of ButtonPopup that is used to create a popup with That asks for a confirm [Yes, No]. 
@@ -12,16 +29,30 @@ import ButtonPopup from "./ButtonPopup.js"
  * - "confirm" when the user confirm
  * - "cancel" when the user cancel
  * - "exit" when the user exit
- * @param {string} id - The id of the popup.
- * @param {string} title - The title of the popup.
- * @param {string} message - The message of the popup.
- * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
+ * @param {ConfirmPopupConfig} config - The configuration of the popup.
  * 
- * @example const popup = new ConfirmPopup("popup1", "Are you shure").show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
+ * @example ```ts
+ * const popup = new ConfirmPopup({
+ *  id: "popup1", 
+ *  title: "Are you shure",
+ * }) 
+ * popup.show() // show the popup
+ * popup.on("confirm", (answer) => {
+ *  console.log(console.log(answer))
+ * })
+ * ```
  */
 export class ConfirmPopup extends ButtonPopup {
-    public constructor(id: string, title: string | undefined, message: string | undefined) {
-        super(id, title, message, ["Yes", "No"])
+    public constructor(config: ConfirmPopupConfig) {
+        if (!config) throw new Error("The config is not defined")
+        const { id, title, message } = config
+        super({
+            id,
+            title,
+            message,
+            buttons: ["Yes", "No"],
+            visible: false,
+        })
         super.keyListener = (_str: string, key : KeyListenerArgs) => {
             const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
             if (checkResult === 1) {
