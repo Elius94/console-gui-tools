@@ -209,6 +209,12 @@ export class Button extends Control {
         this.update()
     }
 
+    /**
+     * @description Used to draw the button to the content of the control.
+     *
+     * @returns {Button}
+     * @memberof Button
+     */
     public update = () => {
         const absVal = this.absoluteValues
         let truncatedText = truncate(this.text, absVal.width - 2, false)
@@ -249,21 +255,46 @@ export class Button extends Control {
         )
         this.getContent().addRow({ text: `${boxChars[this.status].bottomLeft}${boxChars[this.status].horizontal.repeat(absVal.width - 2)}${boxChars[this.status].bottomRight}`, bg: this.style.background, color: this.style.borderColor, bold: this.style.bold })
         this.CM.refresh()
+        return this
     }
 
+    /**
+     * @description Used to set the text of the button.
+     *
+     * @param {string} text
+     * @returns {Button}
+     * @memberof Button
+     */
     public setText = (text: string) => {
         this.text = text
         this.update()
+        return this
     }
 
+    /**
+     * @description Used to set the style of the button.
+     *
+     * @param {ButtonStyle} style
+     * @returns {Button}
+     * @memberof Button
+     */
     public setStyle = (style: ButtonStyle) => {
         this.style = style
         this.update()
+        return this
     }
 
+    /**
+     * @description Used to set the enabled state of the button.
+     *
+     * @param {boolean} enabled
+     * @returns {Button}
+     * @memberof Button
+     */
     public setEnabled = (enabled: boolean) => {
         this.enabled = enabled
         this.update()
+        return this
     }
 }
 

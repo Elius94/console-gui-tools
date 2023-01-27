@@ -345,6 +345,7 @@ export class OptionPopup extends EventEmitter {
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
             footer += boxChars["normal"].horizontal
+            
         }
         footer += `${boxChars["normal"].bottomRight}${os.EOL}`
 

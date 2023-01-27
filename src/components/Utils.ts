@@ -1,5 +1,12 @@
 import { BackgroundColorName, ForegroundColorName } from "chalk"
 
+/**
+ * @typedef {string} HEX - The type of the HEX color.
+ * @example const hexColor = "#FF0000"
+ * 
+ * @typedef {string} RGB - The type of the RGB color.
+ * @example const rgbColor = "rgb(255, 0, 0)"
+ */
 export type HEX = `#${string}`;
 export type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${number})`;
 
@@ -88,6 +95,12 @@ export interface SimplifiedStyledElement {
     overline?: boolean;
 }
 
+/**
+ * @description The type that contains the phisical values of an element (x, y, width, height)
+ *
+ * @export
+ * @interface PhisicalValues
+ */
 export interface PhisicalValues {
     x: number
     y: number
@@ -96,7 +109,7 @@ export interface PhisicalValues {
     id?: number
 }
 
-// TODO: if there are more kind of drawing, add them here like theme, adding a sub array for each kind of drawing
+/** @const {Object} boxChars - The characters used to draw the box. */
 export const boxChars = {
     normal: {
         topLeft: "┌",
@@ -163,6 +176,16 @@ export function truncate(str: string, n: number, useWordBoundary: boolean): stri
         subString) + "…"
 }
 
+/**
+ * @description This function is used to convert a styled element to a simplified styled element.
+ *
+ * @export
+ * @param {StyledElement} styled
+ * @return {*}  {SimplifiedStyledElement}
+ * 
+ * @example const simplifiedStyledElement = styledToSimplifiedStyled({ text: "Hello world", style: { color: "red", backgroundColor: "blue", bold: true, italic: true } })
+ * // returns { text: "Hello world", color: "red", backgroundColor: "blue", bold: true, italic: true }
+ */
 export function styledToSimplifiedStyled(styled: StyledElement): SimplifiedStyledElement {
     return {
         text: styled.text,
@@ -179,6 +202,16 @@ export function styledToSimplifiedStyled(styled: StyledElement): SimplifiedStyle
     }
 }
 
+/**
+ * @description This function is used to convert a simplified styled element to a styled element.
+ *
+ * @export
+ * @param {SimplifiedStyledElement} simplifiedStyled
+ * @return {*}  {StyledElement}
+ * 
+ * @example const styledElement = simplifiedStyledToStyled({ text: "Hello world", color: "red", bold: true })
+ * // returns { text: "Hello world", style: { color: "red", bold: true } }
+ */
 export function simplifiedStyledToStyled(simplifiedStyled: SimplifiedStyledElement): StyledElement {
     return {
         text: simplifiedStyled.text,

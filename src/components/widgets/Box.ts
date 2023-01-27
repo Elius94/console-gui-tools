@@ -6,6 +6,22 @@ import Control from "./Control.js"
 import { KeyListenerArgs } from "../../ConsoleGui.js"
 import { RelativeMouseEvent } from "../MouseManager.js"
 
+/**
+ * @description The configuration for the Box class.
+ * @typedef {Object} BoxConfig
+ * 
+ * @prop {string} id - The id of the box.
+ * @prop {number} x - The x position of the box.
+ * @prop {number} y - The y position of the box.
+ * @prop {number} [width] - The width of the box.
+ * @prop {number} [height] - The height of the box.
+ * @prop {BoxStyle} [style] - The style of the box.
+ * @prop {boolean} [visible] - If the box is visible.
+ * @prop {boolean} [draggable] - If the box is draggable.
+ *
+ * @export
+ * @interface BoxConfig
+ */
 export interface BoxConfig {
     id: string,
     x: number,
@@ -17,12 +33,48 @@ export interface BoxConfig {
     draggable?: boolean,
 }
 
+/**
+ * @description The style of the box.
+ * @typedef {Object} BoxStyle
+ * 
+ * @prop {boolean} [boxed] - If the box is boxed.
+ * @prop {chalk.ForegroundColorName | HEX | RGB | ""} [color] - The color of the box.
+ * @prop {string} [label] - The label of the box.
+ *
+ * @export
+ * @interface BoxStyle
+ */
 export interface BoxStyle {
     boxed?: boolean,
     color?: ForegroundColorName | HEX | RGB | "",
     label?: string,
 }
 
+/**
+ * @description The class that represents a box.
+ * 
+ * ![image](https://user-images.githubusercontent.com/14907987/215069151-037e28d6-011f-428a-baac-3fe42ac0d540.png)
+ * 
+ * Example of a box containing a list of process running on the computer.
+ * 
+ * @param {BoxConfig} config - The configuration of the box.
+ * 
+ * @example ```ts
+ * const box = new Box({ 
+ *   id: "box", 
+ *   x: 0, 
+ *   y: 0, 
+ *   width: 10, 
+ *   height: 5, 
+ *   style: { boxed: true, color: "red", label: "Box" } 
+ * })
+ * box.setContent(new InPageWidgetBuilder(5).addText("Hello World!"))
+ * ```
+ *
+ * @export
+ * @class Box
+ * @extends {Control}
+ */
 export class Box extends Control {
     public content: InPageWidgetBuilder
     private style: BoxStyle = {
@@ -68,6 +120,13 @@ export class Box extends Control {
         this.update()
     }
 
+    /**
+     * @description Draws a line inside the box. It keeps the style of the text.
+     *
+     * @private
+     * @param {Array<StyledElement>} line
+     * @memberof Box
+     */
     private drawInnerLine(line: Array<StyledElement>): void {
         let unformattedLine = ""
         let newLine = [...line]
@@ -105,6 +164,12 @@ export class Box extends Control {
         this.getContent().addRow(...newLine.map((element: StyledElement) => styledToSimplifiedStyled(element)))
     }
 
+    /**
+     * @description Sets the content of the box.
+     *
+     * @returns {Box}
+     * @memberof Box
+     */
     public update = () => {
         if (this.style.boxed) {
             const absVal = this.absoluteValues
@@ -131,22 +196,47 @@ export class Box extends Control {
             }
         }
         this.CM.refresh()
+        return this
     }
 
-    public setLabel = (text: string) => {
+    /**
+     * @description Sets the label of the box.
+     *
+     * @param {string} text
+     * @returns {Box}
+     * @memberof Box
+     */
+    public setLabel = (text: string): Box => {
         this.style.label = text
         this.update()
+        return this
     }
 
-    public setStyle = (style: BoxStyle) => {
+    /**
+     * @description Sets the style of the box.
+     *
+     * @param {BoxStyle} style
+     * @returns {Box}
+     * @memberof Box
+     */
+    public setStyle = (style: BoxStyle): Box => {
         this.style = style
         this.update()
+        return this
     }
 
-    public setContent = (content: InPageWidgetBuilder) => {
+    /**
+     * @description Sets the content of the box.
+     *
+     * @param {InPageWidgetBuilder} content
+     * @returns {Box}
+     * @memberof Box
+     */
+    public setContent = (content: InPageWidgetBuilder): Box => {
         this.content = content
         this.content.setRowsPerPage(this.style.boxed ? this.absoluteValues.height - 2 : this.absoluteValues.height)
         this.update()
+        return this
     }
 }
 

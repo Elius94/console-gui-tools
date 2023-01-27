@@ -44,7 +44,12 @@ export interface ControlConfig {
  * widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })
  * widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
  * 
- * const button1 = new Control("btn1", false, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+ * const button1 = new Control({
+ *    id: "btn1",
+ *    visible: false,
+ *    attributes: { x: 30, y: 18, width: 10, height: 3 },
+ *    children: widget1
+ * })
  * button1.on("relativeMouse", (event) => {
  *     // The relative mouse event is triggered with the mouse position relative to the widget
  *     //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
@@ -169,6 +174,7 @@ export class Control extends EventEmitter {
     public focus(): Control {
         if (this.visible && !this.focused) {
             this.focused = true
+            this.unManageInput()
             this.manageInput()
             //this.CM.refresh()
         }
