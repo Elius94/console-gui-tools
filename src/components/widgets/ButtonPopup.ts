@@ -158,6 +158,7 @@ export class ButtonPopup extends EventEmitter {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
+            this.CM.restoreFocusInWidgets()
             this.CM.refresh()
         }
         return this

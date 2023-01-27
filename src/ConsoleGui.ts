@@ -99,6 +99,7 @@ class ConsoleManager extends EventEmitter {
     stdOut!: PageBuilder
     mouse!: MouseManager
     private parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
+    private previousFocusedWidgetsId: string[] = []
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -290,13 +291,26 @@ class ConsoleManager extends EventEmitter {
         Object.keys(this.controlsCollection).forEach((key: string) => {
             if (key !== widget) {
                 this.controlsCollection[key].unfocus()
+                this.previousFocusedWidgetsId.push(key)
             }
         })
         Object.keys(this.popupCollection).forEach((key: string) => {
             if (key !== widget) {
                 if (this.popupCollection[key].unfocus) this.popupCollection[key].unfocus()
+                this.previousFocusedWidgetsId.push(key)
             }
         })
+    }
+
+    public restoreFocusInWidgets(): void {
+        this.previousFocusedWidgetsId.forEach((key: string) => {
+            if (this.controlsCollection[key]) {
+                this.controlsCollection[key].focus()
+            } else if (this.popupCollection[key]) {
+                if (this.popupCollection[key].focus) this.popupCollection[key].focus()
+            }
+        })
+        this.previousFocusedWidgetsId = []
     }
 
     /**
@@ -373,6 +387,10 @@ class ConsoleManager extends EventEmitter {
                     this.emit("keypressed", key)
                 }
             }
+        })
+        // TODO: Add a listener for the mouse events that set the focus on the widget that is clicked on the screen. This is useful when the mouse is used to navigate the widgets.
+        this.mouse.addListener("mouseevent", (event: MouseEvent) => {
+            //this.log(`Mouse event: ${JSON.stringify(event)}`)
         })
     }
 
