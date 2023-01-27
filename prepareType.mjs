@@ -23,14 +23,17 @@ const replaceToDir = (dir, reverse = false) => {
         const filePath = path.join(dir, file)
         const content = fs.readFileSync(filePath, "utf8")
         if (!reverse) {
-            const newContent = content.replace(ORIGINAL, REPLACEMENT)
+            // replace all occurrences of ORIGINAL with REPLACEMENT
+            const newContent = content.replace(new RegExp(ORIGINAL, "g"), REPLACEMENT)
             fs.writeFileSync(filePath, newContent)
         } else {
-            const newContent = content.replace(REPLACEMENT, ORIGINAL)
+            const newContent = content.replace(new RegExp(REPLACEMENT, "g"), ORIGINAL)
             fs.writeFileSync(filePath, newContent)
         }
     }
 }
 
-replaceToDir(dir)
+const reverse = process.argv.includes("--reverse")
+
+replaceToDir(dir, reverse)
 
