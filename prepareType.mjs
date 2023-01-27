@@ -4,7 +4,7 @@ import fs from "fs"
 import path from "path"
 
 const ORIGINAL = "// @type definition"
-const REPLACEMENT = "1 // @type definition"
+const REPLACEMENT = "1 // WORKARAOUND"
 
 const dir = path.join(process.cwd(), "src")
 
