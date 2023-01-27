@@ -151,53 +151,108 @@ GUI.on("exit", () => {
 // And manage the keypress event from the library
 GUI.on("keypressed", (key) => {
     switch (key.name) {
-        case 'space':
-            if (valueEmitter) {
-                clearInterval(valueEmitter)
-                valueEmitter = null
-            } else {
-                valueEmitter = setInterval(frame, period)
-            }
-            break
-        case 'm':
-            new OptionPopup("popupSelectMode", "Select simulation mode", modeList, mode).show().on("confirm", (_mode) => {
-                mode = _mode
-                GUI.warn(`NEW MODE: ${mode}`)
+    case "space":
+        if (valueEmitter) {
+            clearInterval(valueEmitter)
+            valueEmitter = null
+        } else {
+            valueEmitter = setInterval(frame, period)
+        }
+        break
+    case "m":
+        new OptionPopup({
+            id: "popupSelectMode", 
+            title: "Select simulation mode", 
+            options: modeList, 
+            selected: mode 
+        }).show().on("confirm", (_mode) => {
+            mode = _mode
+            GUI.warn(`NEW MODE: ${mode}`)
+            drawGui()
+        })
+        break
+    case "s":
+        new OptionPopup({
+            id: "popupSelectPeriod", 
+            title: "Select simulation period", 
+            options: periodList, 
+            selected: period 
+        }).show().on("confirm", (_period) => {
+            const msgMultiLine = `Changing period from ${period} to ${_period} ms.${EOL}This will restart the simulator.${EOL}Do you want to continue?`
+            new ButtonPopup({
+                id: "popupConfirmPeriod", 
+                title: "Confirm period", 
+                message: msgMultiLine, 
+                buttons: ["Yes", "No", "?"]
+            }).show().on("confirm", (answer) => {
+                if (answer === "Yes") {
+                    period = _period
+                    GUI.warn(`NEW PERIOD: ${period}`)
+                } else if (answer === "?") {
+                    GUI.info("Choose ok to confirm period")
+                }
                 drawGui()
             })
-            break
-        case 's':
-            new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
-                new ButtonPopup("popupConfirmPeriod", "Confirm period", `Period set to ${period} ms, apply?`, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
-                    if (answer === "Yes") {
-                        period = _period
-                        GUI.warn(`NEW PERIOD: ${period}`)
-                    } else if (answer === "?") {
-                        GUI.info(`Choose ok to confirm period`)
-                    }
-                    drawGui()
-                })
-            })
-            break
-        case 'h':
-            new InputPopup("popupTypeMax", "Type max value", max, true).show().on("confirm", (_max) => {
-                max = _max
-                GUI.warn(`NEW MAX VALUE: ${max}`)
-                drawGui()
-            })
-            break
-        case 'l':
-            new InputPopup("popupTypeMin", "Type min value", min, true).show().on("confirm", (_min) => {
-                min = _min
-                GUI.warn(`NEW MIN VALUE: ${min}`)
-                drawGui()
-            })
-            break
-        case 'q':
-            new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
-            break
-        default:
-            break
+        })
+        break
+    case "h":
+        new InputPopup({
+            id: "popupTypeMax", 
+            title: "Type max value", 
+            value: max,
+            numeric: true
+        }).show().on("confirm", (_max) => {
+            max = _max
+            GUI.warn(`NEW MAX VALUE: ${max}`)
+            drawGui()
+        })
+        break
+    case "l":
+        new InputPopup({
+            id: "popupTypeMin", 
+            title: "Type min value", 
+            value: min, 
+            numeric: true
+        }).show().on("confirm", (_min) => {
+            min = _min
+            GUI.warn(`NEW MIN VALUE: ${min}`)
+            drawGui()
+        })
+        break
+    case "1":
+        {
+            const p = new PageBuilder(5) // Add a scroll limit so it will be scrollable with up and down
+            p.addRow({ text: "Example of a custom popup content!", color: "yellow" })
+            p.addRow({ text: "This is a custom popup!", color: "green" })
+            p.addRow({ text: "It can be used to show a message,", color: "green" })
+            p.addRow({ text: "or to show variables.", color: "green" })
+            p.addRow({ text: "TCP Message sent: ", color: "green" }, { text: `${tcpCounter}`, color: "white" })
+            p.addRow({ text: "Connected clients: ", color: "green" }, { text: `${connectedClients}`, color: "white" })
+            p.addRow({ text: "Mode: ", color: "green" }, { text: `${mode}`, color: "white" })
+            p.addRow({ text: "Message period: ", color: "green" }, { text: `${period} ms`, color: "white" })
+            new CustomPopup({
+                id: "popupCustom1", 
+                title: "See that values", 
+                content: p, 
+                width: 32
+            }).show()
+        }
+        break
+    case "f":
+        new FileSelectorPopup({
+            id: "popupFileManager", 
+            title: "File Manager", 
+            basePath: "./"
+        }).show()
+        break
+    case "q":
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
+        break
+    default:
+        break
     }
 })
 
