@@ -1,8 +1,30 @@
 import { EventEmitter } from "events"
-import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import PageBuilder from "../PageBuilder.js"
 import { boxChars, PhisicalValues, StyledElement, truncate } from "../Utils.js"
+
+/**
+ * @description The configuration for the CustomPopup class.
+ * @typedef {Object} PopupConfig
+ * 
+ * @prop {string} id - The id of the popup.
+ * @prop {string} title - The title of the popup.
+ * @prop {PageBuilder} content - The content of the popup.
+ * @prop {number} width - The width of the popup.
+ * @prop {boolean} [visible] - If the popup is visible.
+ *
+ * @export
+ * @interface PopupConfig
+ */
+// @type definition
+export interface PopupConfig {
+    id: string,
+    title: string,
+    content: PageBuilder,
+    width: number,
+    visible?: boolean,
+}
 
 /**
  * @class CustomPopup
@@ -16,33 +38,40 @@ import { boxChars, PhisicalValues, StyledElement, truncate } from "../Utils.js"
  * - "cancel" when the user cancel
  * - "exit" when the user exit
  * - "data" when the user send custom event - the data is an object with the data and the event name
- * @param {string} id - The id of the popup.
- * @param {string} title - The title of the popup.
- * @param {PageBuilder} content - The content of the popup.
- * @param {number} width - The width of the popup.
- * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
+ * @param {PopupConfig} config - The configuration of the popup.
  * 
- * @example const popup = new CustomPopup("popup1", "See that values", new PageBuilder()).show()
+ * @example ```ts
+ * const popup = new CustomPopup({
+ *  id: "popup1",
+ *  title: "See that values",
+ *  content: new PageBuilder().addText("Hello world!"),
+ * }).show()
  */
 export class CustomPopup extends EventEmitter {
-    CM: ConsoleManager
-    id: string
+    readonly CM: ConsoleManager
+    readonly id: string
     title: string
     content: PageBuilder
     width: number
-    visible: boolean
-    marginTop: number
+    private visible: boolean
+    private marginTop: number
     parsingMouseFrame = false
     /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetX: number
+    private offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetY: number
+    private offsetY: number
     private absoluteValues: PhisicalValues
-    dragging = false
-    dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private dragging = false
+    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
     focused = false
 
-    public constructor(id: string, title: string, content: PageBuilder, width: number, visible = false) {
+    public constructor(config: PopupConfig) {
+        if (!config) throw new Error("PopupConfig is required")
+        const { id, title, content, width, visible = false } = config
+        if (!id) throw new Error("id is required")
+        if (!title) throw new Error("title is required")
+        if (!content) throw new Error("content is required")
+        if (!width) throw new Error("width is required")
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -165,6 +194,7 @@ export class CustomPopup extends EventEmitter {
             this.manageInput()
             this.visible = true
             this.CM.refresh()
+            this.CM.unfocusOtherWidgets(this.id)
         }
         return this
     }
@@ -178,6 +208,7 @@ export class CustomPopup extends EventEmitter {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
+            this.CM.restoreFocusInWidgets()
             this.CM.refresh()
         }
         return this
@@ -330,12 +361,12 @@ export class CustomPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}\n`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
+        header += `${boxChars["normal"].topRight}${EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${EOL}`
 
         const windowDesign = `${header}`
-        const windowDesignLines = windowDesign.split("\n")
+        const windowDesignLines = windowDesign.split(EOL)
         const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(x + this.offsetX, this.marginTop + index + this.offsetY)

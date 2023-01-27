@@ -3,18 +3,20 @@ import readline from "readline"
 import PageBuilder from "./components/PageBuilder.js"
 import InPageWidgetBuilder from "./components/InPageWidgetBuilder.js"
 import Screen from "./components/Screen.js"
-import CustomPopup from "./components/widgets/CustomPopup.js"
-import ButtonPopup from "./components/widgets/ButtonPopup.js"
-import ConfirmPopup from "./components/widgets/ConfirmPopup.js"
-import FileSelectorPopup from "./components/widgets/FileSelectorPopup.js"
-import InputPopup from "./components/widgets/InputPopup.js"
-import OptionPopup from "./components/widgets/OptionPopup.js"
-import { Control } from "./components/widgets/Control.js"
-import { Button } from "./components/widgets/Button.js"
-import { Progress } from "./components/widgets/ProgressBar.js"
+import { CustomPopup, PopupConfig } from "./components/widgets/CustomPopup.js"
+import { ButtonPopup, ButtonPopupConfig } from "./components/widgets/ButtonPopup.js"
+import { ConfirmPopup, ConfirmPopupConfig } from "./components/widgets/ConfirmPopup.js"
+import { FileSelectorPopup, FileSelectorPopupConfig } from "./components/widgets/FileSelectorPopup.js"
+import { InputPopup, InputPopupConfig } from "./components/widgets/InputPopup.js"
+import { OptionPopup, OptionPopupConfig } from "./components/widgets/OptionPopup.js"
+import { Control, ControlConfig } from "./components/widgets/Control.js"
+import { Box, BoxConfig, BoxStyle } from "./components/widgets/Box.js"
+import { Button, ButtonConfig, ButtonKey, ButtonStyle } from "./components/widgets/Button.js"
+import { Progress, ProgressConfig, Orientation, ProgressStyle } from "./components/widgets/ProgressBar.js"
 import LayoutManager, { LayoutOptions } from "./components/layout/LayoutManager.js"
-import { MouseEvent, MouseManager } from "./components/MouseManager.js"
+import { MouseEvent, MouseManager, MouseEventArgs, RelativeMouseEvent } from "./components/MouseManager.js"
 import { PhisicalValues, StyledElement, SimplifiedStyledElement, StyleObject } from "./components/Utils.js"
+import { EOL } from "node:os"
 
 
 /**
@@ -30,6 +32,7 @@ import { PhisicalValues, StyledElement, SimplifiedStyledElement, StyleObject } f
  * @export
  * @interface KeyListenerArgs
  */
+// @type definition
 export interface KeyListenerArgs {
     name: string;
     sequence: string;
@@ -50,10 +53,12 @@ export interface KeyListenerArgs {
  * @prop {LayoutOptions} [layoutOptions] - The options of the layout.
  * @prop {boolean} [enableMouse] - If the mouse should be enabled.
  * @prop {boolean} [overrideConsole = true] - If the console.log|warn|error|info should be overridden.
+ * @prop {string} [focusKey = "tab"] - The key to focus the next widget.
  * 
  * @export
  * @interface ConsoleGuiOptions
  */
+// @type definition
 export interface ConsoleGuiOptions {
     logLocation?: 0 | 1 | 2 | 3 | "popup";
     showLogKey?: string;
@@ -61,7 +66,8 @@ export interface ConsoleGuiOptions {
     layoutOptions?: LayoutOptions;
     title?: string;
     enableMouse?: boolean; // enable the mouse support (default: true) - Only for Linux and other Mouse Tracking terminals
-    overrideConsole: boolean; // override the console.log, console.warn, console.error, console.info, console.debug (default: true)
+    overrideConsole?: boolean; // override the console.log, console.warn, console.error, console.info, console.debug (default: true)
+    focusKey?: string; // the key to focus the next widget (default: tab)
 }
 
 /**
@@ -92,12 +98,14 @@ class ConsoleManager extends EventEmitter {
     layoutOptions!: LayoutOptions
     layout!: LayoutManager
     changeLayoutKey!: string
-    changeLayoutkeys!: string[]
+    private changeLayoutkeys!: string[]
     applicationTitle!: string
-    showLogKey!: string
+    private showLogKey!: string
     stdOut!: PageBuilder
     mouse!: MouseManager
-    parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
+    private parsingMouseFrame = false // used to avoid the mouse event to be triggered multiple times
+    private previousFocusedWidgetsId: string[] = []
+    private focusKey!: string
 
     public constructor(options: ConsoleGuiOptions | undefined = undefined) {
         super()
@@ -108,6 +116,9 @@ class ConsoleManager extends EventEmitter {
 
             /** @const {Screen} Screen - The screen instance */
             this.Screen = new Screen(this.Terminal)
+            this.Screen.on("resize", () => {
+                this.emit("resize")
+            })
             this.Screen.on("error", (err) => {
                 this.error(err)
             })
@@ -119,7 +130,6 @@ class ConsoleManager extends EventEmitter {
 
             /** @const {number | 'popup'} logLocation - Choose where the logs are displayed: number (0,1) - to pot them on one of the two layouts, string ("popup") - to put them on a CustomPopup that can be displayed on the window. */
             this.logLocation = 1
-            this.logPageSize = 10
             this.logPageTitle = "LOGS"
 
             this.layoutOptions = {
@@ -131,8 +141,6 @@ class ConsoleManager extends EventEmitter {
                 type: "double",
                 direction: "vertical",
             }
-
-            this.applicationTitle = ""
             
             if (options) {
                 if (options.logLocation !== undefined) {
@@ -146,12 +154,6 @@ class ConsoleManager extends EventEmitter {
                             this.logLocation = 1
                         }
                     }
-                }
-                if (options.logPageSize) {
-                    this.logPageSize = options.logPageSize
-                }
-                if (options.title) {
-                    this.applicationTitle = options.title
                 }
                 if (options.enableMouse) {
                     this.mouse.enableMouse()
@@ -167,6 +169,10 @@ class ConsoleManager extends EventEmitter {
                     this.setLayoutOptions(options.layoutOptions, false)
                 }
             }
+            
+            this.logPageSize = options && options.logPageSize || 10
+            this.applicationTitle = options && options.title || ""
+            this.focusKey = options && options.focusKey || "tab"
             
             /** @const {PageBuilder} stdOut - The logs page */
             this.stdOut = new PageBuilder()
@@ -277,6 +283,38 @@ class ConsoleManager extends EventEmitter {
     }
 
     /**
+     * @description This method is used to remove focus from other widgets.
+     *
+     * @param {string} widget
+     * @memberof ConsoleManager
+     */
+    public unfocusOtherWidgets(widget: string): void {
+        Object.keys(this.controlsCollection).forEach((key: string) => {
+            if (key !== widget) {
+                this.controlsCollection[key].unfocus()
+                this.previousFocusedWidgetsId.push(key)
+            }
+        })
+        Object.keys(this.popupCollection).forEach((key: string) => {
+            if (key !== widget) {
+                if (this.popupCollection[key].unfocus) this.popupCollection[key].unfocus()
+                this.previousFocusedWidgetsId.push(key)
+            }
+        })
+    }
+
+    public restoreFocusInWidgets(): void {
+        this.previousFocusedWidgetsId.forEach((key: string) => {
+            if (this.controlsCollection[key]) {
+                this.controlsCollection[key].focus()
+            } else if (this.popupCollection[key]) {
+                if (this.popupCollection[key].focus) this.popupCollection[key].focus()
+            }
+        })
+        this.previousFocusedWidgetsId = []
+    }
+
+    /**
      * @description This function is used to make the ConsoleManager handle the key events when no widgets are showed.
      * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
      * @memberof ConsoleManager
@@ -309,6 +347,34 @@ class ConsoleManager extends EventEmitter {
             } else {
                 if (key.name === this.changeLayoutkeys[0])
                     change = true
+            }
+
+            if (this.focusKey && key.name === this.focusKey) {
+                // Find current focused widget
+                let focusedWidget = ""
+                Object.keys(this.controlsCollection).forEach((key: string) => {
+                    if (this.controlsCollection[key].isFocused()) {
+                        focusedWidget = key
+                    }
+                })
+                // If there is a focused widget, unfocus it
+                if (focusedWidget !== "") {
+                    this.controlsCollection[focusedWidget].unfocus()
+                }
+                // Focus the next widget
+                let found = false
+                Object.keys(this.controlsCollection).forEach((key: string) => {
+                    if (found) {
+                        this.controlsCollection[key].focus()
+                        found = false
+                    }
+                    if (key === focusedWidget) {
+                        found = true
+                    }
+                })
+                if (found) {
+                    this.controlsCollection[Object.keys(this.controlsCollection)[0]].focus()
+                }
             }
 
             if (this.showLogKey && key.name === this.showLogKey) {
@@ -349,6 +415,22 @@ class ConsoleManager extends EventEmitter {
                     }
                     this.emit("keypressed", key)
                 }
+            }
+        })
+
+        /** @eventlistener this is used to set the focus over the top viewed widget if the mouse is over it */
+        this.mouse.addListener("mouseevent", (e: MouseEvent) => {
+            if (e.name === "MOUSE_LEFT_BUTTON_PRESSED") {
+                // Check if the mouse is over a widget. if there are more widgets, the one on top is selected.
+                Object.keys(this.controlsCollection).forEach((key: string) => {
+                    if (this.controlsCollection[key].absoluteValues.x <= e.data.x && this.controlsCollection[key].absoluteValues.x + this.controlsCollection[key].absoluteValues.width >= e.data.x) {
+                        if (this.controlsCollection[key].absoluteValues.y <= e.data.y && this.controlsCollection[key].absoluteValues.y + this.controlsCollection[key].absoluteValues.height >= e.data.y) {
+                            if (!this.controlsCollection[key].isFocused()) {
+                                this.controlsCollection[key].focus()
+                            }
+                        }
+                    }
+                })
             }
         })
     }
@@ -532,7 +614,12 @@ class ConsoleManager extends EventEmitter {
      * @example CM.showLogPopup()
      */
     public showLogPopup(): CustomPopup {
-        return new CustomPopup("logPopup", "Application Logs", this.stdOut, this.Screen.width - 12).show()
+        return new CustomPopup({
+            id: "logPopup", 
+            title: "Application Logs", 
+            content: this.stdOut, 
+            width: this.Screen.width - 12
+        }).show()
     }
 
     /**
@@ -599,6 +686,7 @@ class ConsoleManager extends EventEmitter {
      * @example console.error("Anomaly detected") // Will be logged in the log page.
      * @example console.warn("Anomaly detected") // Will be logged in the log page.
      * @example console.info("Anomaly detected") // Will be logged in the log page.
+     * @example console.debug("Anomaly detected") // Will be logged in the log page.
      * @since 1.1.42
      */
     private overrideConsole(): void {
@@ -614,24 +702,27 @@ class ConsoleManager extends EventEmitter {
         console.info = (message: string) => {
             this.info(message)
         }
+        console.debug = (message: string) => {
+            this.log(message)
+        }
     }
 }
 
 export {
-    PageBuilder,
-    InPageWidgetBuilder,
-    ConsoleManager,
-    OptionPopup,
-    InputPopup,
-    ConfirmPopup,
-    ButtonPopup,
-    CustomPopup,
-    FileSelectorPopup,
-    Control,
-    Button,
-    Progress,
+    EOL,
+    RelativeMouseEvent, MouseEventArgs, MouseEvent,
     PhisicalValues,
-    StyledElement,
-    SimplifiedStyledElement,
-    StyleObject
+    StyledElement, SimplifiedStyledElement, StyleObject,
+    PageBuilder, InPageWidgetBuilder,
+    Control, ControlConfig,
+    Box, BoxConfig, BoxStyle,
+    Button, ButtonConfig, ButtonStyle, ButtonKey,
+    Progress, ProgressConfig, ProgressStyle, Orientation,
+    ConsoleManager,
+    OptionPopup, OptionPopupConfig,
+    InputPopup, InputPopupConfig,
+    ConfirmPopup, ConfirmPopupConfig,
+    ButtonPopup, ButtonPopupConfig,
+    CustomPopup, PopupConfig,
+    FileSelectorPopup, FileSelectorPopupConfig,
 }

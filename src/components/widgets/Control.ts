@@ -1,7 +1,27 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs, InPageWidgetBuilder } from "../../ConsoleGui.js"
-import { MouseEvent } from "../MouseManager.js"
+import { MouseEvent, RelativeMouseEvent } from "../MouseManager.js"
 import { PhisicalValues, StyledElement, truncate } from "../Utils.js"
+
+/**
+ * @typedef {Object} ControlConfig
+ * @property {string} id - The id of the control.
+ * @property {PhisicalValues} attributes - The phisical values of the control.
+ * @property {InPageWidgetBuilder} children - The children of the control.
+ * @property {boolean} [visible=true] - If the control is visible or not.
+ * @property {boolean} [draggable=false] - If the control is draggable or not.
+ *
+ * @export
+ * @interface ControlConfig
+ */
+// @type definition
+export interface ControlConfig {
+    id: string
+    attributes: PhisicalValues
+    children: InPageWidgetBuilder
+    visible?: boolean
+    draggable?: boolean
+}
 
 /**
  * @class Control
@@ -17,10 +37,7 @@ import { PhisicalValues, StyledElement, truncate } from "../Utils.js"
  *
  * Emits the following events: 
  * 
- * @param {string} id - The id of the popup.
- * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
- * @param {PhisicalValues} attributes - The phisical values of the control (x, y, width, height).
- * @param {InPageWidgetBuilder} children - The content of the control.
+ * @param {ControlConfig} config The configuration object for the control.
  * 
  * @example ```ts
  * const widget1 = new InPageWidgetBuilder()
@@ -28,7 +45,12 @@ import { PhisicalValues, StyledElement, truncate } from "../Utils.js"
  * widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })
  * widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
  * 
- * const button1 = new Control("btn1", false, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+ * const button1 = new Control({
+ *    id: "btn1",
+ *    visible: false,
+ *    attributes: { x: 30, y: 18, width: 10, height: 3 },
+ *    children: widget1
+ * })
  * button1.on("relativeMouse", (event) => {
  *     // The relative mouse event is triggered with the mouse position relative to the widget
  *     //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
@@ -58,14 +80,26 @@ export class Control extends EventEmitter {
     focused = false
     hovered = false
 
-    public constructor(id: string, visible: boolean, attributes: PhisicalValues, children: InPageWidgetBuilder) {
+    public constructor(config: ControlConfig) {
+        if (!config) {
+            throw new Error("The configuration object is required.")
+        } 
+        if (!config.id) {
+            throw new Error("The id is required.")
+        } 
+        if (!config.attributes) {
+            throw new Error("The attributes are required.")
+        } 
+        if (!config.children) {
+            throw new Error("The children are required.")
+        }
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
-        this.id = id
-        this.visible = visible
-        this.absoluteValues = attributes
-        this.children = children
+        this.id = config.id
+        this.visible = config.visible || true
+        this.absoluteValues = config.attributes
+        this.children = config.children
         if (this.CM.controlsCollection[this.id]) {
             this.CM.unregisterControl(this)
             const message = `Control ${this.id} already exists.`
@@ -141,6 +175,7 @@ export class Control extends EventEmitter {
     public focus(): Control {
         if (this.visible && !this.focused) {
             this.focused = true
+            this.unManageInput()
             this.manageInput()
             //this.CM.refresh()
         }
@@ -263,7 +298,7 @@ export class Control extends EventEmitter {
                     x: x - this.absoluteValues.x,
                     y: y - this.absoluteValues.y
                 }
-            }
+            } as RelativeMouseEvent
             this.emit("relativeMouse", relativeMouseEvent)
             // class can handle the mouse event without overriding this function
             if (event.name === "MOUSE_LEFT_BUTTON_PRESSED") {

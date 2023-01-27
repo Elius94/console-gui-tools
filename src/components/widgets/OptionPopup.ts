@@ -1,7 +1,29 @@
 import { EventEmitter } from "events"
-import { ConsoleManager, KeyListenerArgs } from "../../ConsoleGui.js"
+import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues } from "../Utils.js"
+
+/**
+ * @description The configuration for the OptionPopup class.
+ * @typedef {Object} OptionPopupConfig
+ * 
+ * @prop {string} id - The id of the popup.
+ * @prop {string} title - The title of the popup.
+ * @prop {Array<string | number>} options - The options of the popup.
+ * @prop {string | number} selected - The selected option of the popup.
+ * @prop {boolean} [visible] - If the popup is visible.
+ *
+ * @export
+ * @interface OptionPopupConfig
+ */
+// @type definition
+export interface OptionPopupConfig {
+    id: string
+    title: string
+    options: Array<string | number>
+    selected: string | number
+    visible?: boolean
+}
 
 /**
  * @class OptionPopup
@@ -20,28 +42,41 @@ import { boxChars, PhisicalValues } from "../Utils.js"
  * @param {string | number} selected - The selected option.
  * @param {boolean} visible - If the popup is visible. Default is false (make it appears using show()).
  * 
- * @example const popup = new OptionPopup("popup1", "Choose the option", options, selectedOption).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
+ * @example ```ts
+ * const popup = new OptionPopup({
+ *  id:"popup1", 
+ *  title: "Choose the option", 
+ *  options, 
+ *  selected
+ * }).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
+ * ```
  */
 export class OptionPopup extends EventEmitter {
-    CM: ConsoleManager
-    id: string
+    readonly CM: ConsoleManager
+    readonly id: string
     title: string
-    options: Array<string | number>
-    selected: string | number
-    visible: boolean
-    marginTop: number
-    startIndex: number
-    parsingMouseFrame = false
+    private options: Array<string | number>
+    private selected: string | number
+    private visible: boolean
+    private marginTop: number
+    private startIndex: number
+    private parsingMouseFrame = false
     /** @var {number} x - The x offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetX: number
+    private offsetX: number
     /** @var {number} y - The y offset of the popup to be drown. If 0 it will be placed on the center */
-    offsetY: number
+    private offsetY: number
     private absoluteValues: PhisicalValues
-    dragging = false
-    dragStart: { x: number, y: number } = { x: 0, y: 0 }
-    focused = false
+    private dragging = false
+    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private focused = false
     
-    public constructor(id: string, title: string, options: Array<string | number>, selected: string | number, visible = false) {
+    public constructor(config: OptionPopupConfig) {
+        if (!config) throw new Error("OptionPopup config is required")
+        const { id, title, options, selected, visible = false } = config
+        if (!id) throw new Error("OptionPopup id is required")
+        if (!title) throw new Error("OptionPopup title is required")
+        if (!options) throw new Error("OptionPopup options is required")
+        if (!selected) throw new Error("OptionPopup selected is required")
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
@@ -191,6 +226,7 @@ export class OptionPopup extends EventEmitter {
             this.manageInput()
             this.visible = true
             this.CM.refresh()
+            this.CM.unfocusOtherWidgets(this.id)
         }
         return this
     }
@@ -204,6 +240,7 @@ export class OptionPopup extends EventEmitter {
         if (this.visible) {
             this.unManageInput()
             this.visible = false
+            this.CM.restoreFocusInWidgets()
             this.CM.refresh()
         }
         return this
@@ -335,23 +372,24 @@ export class OptionPopup extends EventEmitter {
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
-        header += `${boxChars["normal"].topRight}\n`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}\n`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}\n`
+        header += `${boxChars["normal"].topRight}${EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${EOL}`
 
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
             footer += boxChars["normal"].horizontal
+            
         }
-        footer += `${boxChars["normal"].bottomRight}\n`
+        footer += `${boxChars["normal"].bottomRight}${EOL}`
 
         let content = ""
         this.adaptOptions().forEach((option) => {
-            content += `${boxChars["normal"].vertical}${option === this.selected ? "<" : " "} ${option}${option === this.selected ? " >" : "  "}${" ".repeat(windowWidth - option.toString().length - 4)}${boxChars["normal"].vertical}\n`
+            content += `${boxChars["normal"].vertical}${option === this.selected ? "<" : " "} ${option}${option === this.selected ? " >" : "  "}${" ".repeat(windowWidth - option.toString().length - 4)}${boxChars["normal"].vertical}${EOL}`
         })
 
         const windowDesign = `${header}${content}${footer}`
-        const windowDesignLines = windowDesign.split("\n")
+        const windowDesignLines = windowDesign.split(EOL)
         const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
         windowDesignLines.forEach((line, index) => {
             this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)

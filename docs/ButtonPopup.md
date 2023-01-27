@@ -21,6 +21,29 @@
 <dd><p>the instance of ConsoleManager (singleton)</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#ButtonPopupConfig">ButtonPopupConfig</a> : <code>Object</code></dt>
+<dd><p>The configuration for the ButtonPopup class.</p></dd>
+</dl>
+
+<a name="ButtonPopupConfig"></a>
+
+## ButtonPopupConfig : <code>Object</code>
+<p>The configuration for the ButtonPopup class.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | <p>The id of the popup.</p> |
+| title | <code>string</code> | <p>The title of the popup.</p> |
+| message | <code>string</code> | <p>The message of the popup.</p> |
+| [buttons] | <code>Array.&lt;string&gt;</code> | <p>The buttons of the popup (default is [&quot;Ok&quot;, &quot;Cancel&quot;, &quot;?&quot;]).</p> |
+| [visible] | <code>boolean</code> | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
+
 <a name="ButtonPopup"></a>
 
 ## ButtonPopup ⇐ <code>EventEmitter</code>
@@ -28,7 +51,7 @@
 **Extends**: <code>EventEmitter</code>  
 
 * [ButtonPopup](#ButtonPopup) ⇐ <code>EventEmitter</code>
-    * [new ButtonPopup(id, title, message, buttons, visible)](#new_ButtonPopup_new)
+    * [new ButtonPopup(config)](#new_ButtonPopup_new)
     * [.keyListener(_str, key)](#ButtonPopup+keyListener)
     * [.show()](#ButtonPopup+show) ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
     * [.hide()](#ButtonPopup+hide) ⇒ [<code>ButtonPopup</code>](#ButtonPopup)
@@ -39,7 +62,7 @@
 
 <a name="new_ButtonPopup_new"></a>
 
-### new ButtonPopup(id, title, message, buttons, visible)
+### new ButtonPopup(config)
 <p>This class is used to create a popup with That asks for a confirm.</p>
 <p><img src="https://user-images.githubusercontent.com/14907987/165752116-b796f41a-e4fe-45db-8c90-5d97318bd17a.gif" alt="ButtonPopup"></p>
 <p>Emits the following events:</p>
@@ -52,16 +75,10 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | <p>The id of the popup.</p> |
-| title | <code>string</code> | <p>The title of the popup.</p> |
-| message | <code>string</code> | <p>The message of the popup.</p> |
-| buttons | <code>Array.&lt;string&gt;</code> | <p>The buttons of the popup (default is [&quot;Yes&quot;, &quot;No&quot;]).</p> |
-| visible | <code>boolean</code> | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
+| config | [<code>ButtonPopupConfig</code>](#ButtonPopupConfig) | <p>The configuration of the popup.</p> |
 
 **Example**  
-```js
-const popup = new ButtonPopup("popup1", "Choose the option", ["YES", "NO", "?"]).show().on("confirm", (answer) => { console.log(answer) }) // show the popup and wait for the user to confirm
-```
+```tsconst popup = new ButtonPopup({ id: "popup1",  title: "Choose the option",  buttons: ["YES", "NO", "?"],}) popup.show() // show the popuppopup.on("confirm", () => { console.log("User confirmed")})popup.on("cancel", () => { console.log("User canceled")})```
 <a name="ButtonPopup+keyListener"></a>
 
 ### buttonPopup.keyListener(_str, key)

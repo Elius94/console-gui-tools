@@ -1,5 +1,12 @@
 import { BackgroundColorName, ForegroundColorName } from "chalk"
 
+/**
+ * @typedef {string} HEX - The type of the HEX color.
+ * @example const hexColor = "#FF0000"
+ * 
+ * @typedef {string} RGB - The type of the RGB color.
+ * @example const rgbColor = "rgb(255, 0, 0)"
+ */
 export type HEX = `#${string}`;
 export type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${number})`;
 
@@ -23,6 +30,7 @@ export type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${numb
  * @export
  * @interface StyleObject
  */
+// @type definition
 export interface StyleObject {
     color?: ForegroundColorName | HEX | RGB | "";
     bg?: BackgroundColorName | HEX | RGB | "";
@@ -48,6 +56,7 @@ export interface StyleObject {
  * @export
  * @interface StyledElement
  */
+// @type definition
 export interface StyledElement {
     text: string;
     style: StyleObject;
@@ -74,6 +83,7 @@ export interface StyledElement {
  * @export
  * @interface SimplifiedStyledElement
  */
+// @type definition
 export interface SimplifiedStyledElement {
     text: string;
     color?: ForegroundColorName | HEX | RGB | "";
@@ -88,6 +98,13 @@ export interface SimplifiedStyledElement {
     overline?: boolean;
 }
 
+/**
+ * @description The type that contains the phisical values of an element (x, y, width, height)
+ *
+ * @export
+ * @interface PhisicalValues
+ */
+// @type definition
 export interface PhisicalValues {
     x: number
     y: number
@@ -96,7 +113,7 @@ export interface PhisicalValues {
     id?: number
 }
 
-// TODO: if there are more kind of drawing, add them here like theme, adding a sub array for each kind of drawing
+/** @const {Object} boxChars - The characters used to draw the box. */
 export const boxChars = {
     normal: {
         topLeft: "┌",
@@ -161,4 +178,58 @@ export function truncate(str: string, n: number, useWordBoundary: boolean): stri
     return (useWordBoundary ?
         subString.substring(0, subString.lastIndexOf(" ")) :
         subString) + "…"
+}
+
+/**
+ * @description This function is used to convert a styled element to a simplified styled element.
+ *
+ * @export
+ * @param {StyledElement} styled
+ * @return {*}  {SimplifiedStyledElement}
+ * 
+ * @example const simplifiedStyledElement = styledToSimplifiedStyled({ text: "Hello world", style: { color: "red", backgroundColor: "blue", bold: true, italic: true } })
+ * // returns { text: "Hello world", color: "red", backgroundColor: "blue", bold: true, italic: true }
+ */
+export function styledToSimplifiedStyled(styled: StyledElement): SimplifiedStyledElement {
+    return {
+        text: styled.text,
+        color: styled.style?.color,
+        bg: styled.style?.bg,
+        italic: styled.style?.italic,
+        bold: styled.style?.bold,
+        dim: styled.style?.dim,
+        underline: styled.style?.underline,
+        inverse: styled.style?.inverse,
+        hidden: styled.style?.hidden,
+        strikethrough: styled.style?.strikethrough,
+        overline: styled.style?.overline,
+    }
+}
+
+/**
+ * @description This function is used to convert a simplified styled element to a styled element.
+ *
+ * @export
+ * @param {SimplifiedStyledElement} simplifiedStyled
+ * @return {*}  {StyledElement}
+ * 
+ * @example const styledElement = simplifiedStyledToStyled({ text: "Hello world", color: "red", bold: true })
+ * // returns { text: "Hello world", style: { color: "red", bold: true } }
+ */
+export function simplifiedStyledToStyled(simplifiedStyled: SimplifiedStyledElement): StyledElement {
+    return {
+        text: simplifiedStyled.text,
+        style: {
+            color: simplifiedStyled?.color,
+            bg: simplifiedStyled?.bg,
+            italic: simplifiedStyled?.italic,
+            bold: simplifiedStyled?.bold,
+            dim: simplifiedStyled?.dim,
+            underline: simplifiedStyled?.underline,
+            inverse: simplifiedStyled?.inverse,
+            hidden: simplifiedStyled?.hidden,
+            strikethrough: simplifiedStyled?.strikethrough,
+            overline: simplifiedStyled?.overline,
+        }
+    }
 }

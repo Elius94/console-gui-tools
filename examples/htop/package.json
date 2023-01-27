@@ -1,7 +1,7 @@
 {
-  "name": "test-cgt",
+  "name": "node-htop",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple htop like tool for nodejs. It uses console-gui-tools to render the UI.",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -11,7 +11,10 @@
   "author": "Elia Lazzari",
   "license": "ISC",
   "dependencies": {
+    "@types/lodash": "^4.14.191",
     "console-gui-tools": "file:../../",
+    "lodash": "^4.17.21",
+    "ps-list": "^8.1.1",
     "typescript": "^4.9.4"
   },
   "devDependencies": {

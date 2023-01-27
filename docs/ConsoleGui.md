@@ -22,6 +22,51 @@
 <dd><p>The layout instance</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#KeyListenerArgs">KeyListenerArgs</a> : <code>Object</code></dt>
+<dd><p>This type is used to define the parameters of the KeyListener event (keypress).</p></dd>
+<dt><a href="#ConsoleGuiOptions">ConsoleGuiOptions</a> : <code>Object</code></dt>
+<dd><p>This type is used to define the ConsoleGui options.</p></dd>
+</dl>
+
+<a name="KeyListenerArgs"></a>
+
+## KeyListenerArgs : <code>Object</code>
+<p>This type is used to define the parameters of the KeyListener event (keypress).</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | <p>The name of the key pressed.</p> |
+| ctrl | <code>boolean</code> | <p>If the ctrl key is pressed.</p> |
+| shift | <code>boolean</code> | <p>If the shift key is pressed.</p> |
+| alt | <code>boolean</code> | <p>If the alt key is pressed.</p> |
+| meta | <code>boolean</code> | <p>If the meta key is pressed.</p> |
+| sequence | <code>boolean</code> | <p>If the sequence of keys is pressed.</p> |
+
+<a name="ConsoleGuiOptions"></a>
+
+## ConsoleGuiOptions : <code>Object</code>
+<p>This type is used to define the ConsoleGui options.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| [title] | <code>string</code> |  | <p>The title of the ConsoleGui.</p> |
+| [logLocation] | <code>0</code> \| <code>1</code> \| <code>2</code> \| <code>3</code> \| <code>&quot;popup&quot;</code> |  | <p>The location of the logs.</p> |
+| [showLogKey] | <code>string</code> |  | <p>The key to show the log.</p> |
+| [logPageSize] | <code>number</code> |  | <p>The size of the log page.</p> |
+| [layoutOptions] | <code>LayoutOptions</code> |  | <p>The options of the layout.</p> |
+| [enableMouse] | <code>boolean</code> |  | <p>If the mouse should be enabled.</p> |
+| [overrideConsole] | <code>boolean</code> | <code>true</code> | <p>If the console.log|warn|error|info should be overridden.</p> |
+| [focusKey] | <code>string</code> | <code>&quot;\&quot;tab\&quot;&quot;</code> | <p>The key to focus the next widget.</p> |
+
 <a name="ConsoleManager"></a>
 
 ## ConsoleManager ⇐ <code>EventEmitter</code>
@@ -35,6 +80,7 @@
     * [.getLayoutOptions()](#ConsoleManager+getLayoutOptions) ⇒ <code>LayoutOptions</code>
     * [.getLogPageSize()](#ConsoleManager+getLogPageSize) ⇒ <code>number</code>
     * [.setLogPageSize(size)](#ConsoleManager+setLogPageSize) ⇒ <code>void</code>
+    * [.unfocusOtherWidgets(widget)](#ConsoleManager+unfocusOtherWidgets)
     * [.addGenericListeners()](#ConsoleManager+addGenericListeners)
     * [.setKeyListener(id, manageFunction)](#ConsoleManager+setKeyListener)
     * [.removeKeyListener(id)](#ConsoleManager+removeKeyListener)
@@ -145,6 +191,17 @@ CM.getLogPageSize()
 ```js
 CM.setLogPageSize(10)
 ```
+<a name="ConsoleManager+unfocusOtherWidgets"></a>
+
+### consoleManager.unfocusOtherWidgets(widget)
+<p>This method is used to remove focus from other widgets.</p>
+
+**Kind**: instance method of [<code>ConsoleManager</code>](#ConsoleManager)  
+
+| Param | Type |
+| --- | --- |
+| widget | <code>string</code> | 
+
 <a name="ConsoleManager+addGenericListeners"></a>
 
 ### consoleManager.addGenericListeners()
@@ -426,6 +483,10 @@ console.warn("Anomaly detected") // Will be logged in the log page.
 **Example**  
 ```js
 console.info("Anomaly detected") // Will be logged in the log page.
+```
+**Example**  
+```js
+console.debug("Anomaly detected") // Will be logged in the log page.
 ```
 <a name="Screen"></a>
 

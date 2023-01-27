@@ -14,6 +14,33 @@
 <dd><p>The application title.</p></dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#LayoutOptions">LayoutOptions</a> : <code>Object</code></dt>
+<dd><p>The type containing all the possible options for the layout.</p></dd>
+</dl>
+
+<a name="LayoutOptions"></a>
+
+## LayoutOptions : <code>Object</code>
+<p>The type containing all the possible options for the layout.</p>
+
+**Kind**: global interface  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [showTitle] | <code>boolean</code> | <p>If the title should be shown.</p> |
+| [boxed] | <code>boolean</code> | <p>If the layout should be boxed.</p> |
+| [boxColor] | <code>ForegroundColorName</code> \| <code>HEX</code> \| <code>RGB</code> \| <code>&quot;&quot;</code> | <p>The color of the box taken from the chalk library.</p> |
+| [boxStyle] | <code>&quot;bold&quot;</code> | <p>If the border of the box should be bold.</p> |
+| [type] | <code>&quot;single&quot;</code> \| <code>&quot;double&quot;</code> \| <code>&quot;triple&quot;</code> \| <code>&quot;quad&quot;</code> | <p>The type of the layout.</p> |
+| [changeFocusKey] | <code>string</code> | <p>The key that should be pressed to change the focus.</p> |
+| [direction] | <code>&quot;horizontal&quot;</code> \| <code>&quot;vertical&quot;</code> | <p>The direction of the layout.</p> |
+| [pageTitles] | <code>Array.&lt;string&gt;</code> | <p>The title of the first page.</p> |
+| [pageRatio] | <code>Array.&lt;number&gt;</code> | <p>The ratio of the pages. (in horizontal direction)</p> |
+
 <a name="LayoutManager"></a>
 
 ## LayoutManager

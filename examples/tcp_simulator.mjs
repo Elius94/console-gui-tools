@@ -12,7 +12,20 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { ConsoleManager, OptionPopup, InputPopup, PageBuilder, ButtonPopup, ConfirmPopup, CustomPopup, FileSelectorPopup, Control, InPageWidgetBuilder, Button, Progress } from "../dist/esm/ConsoleGui.mjs"
+import { 
+    ConsoleManager, 
+    OptionPopup, 
+    InputPopup, 
+    PageBuilder, 
+    ButtonPopup, 
+    ConfirmPopup, 
+    CustomPopup, 
+    FileSelectorPopup, 
+    Control, 
+    InPageWidgetBuilder, 
+    Button, 
+    EOL
+} from "../dist/esm/ConsoleGui.mjs"
 const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
@@ -105,12 +118,16 @@ const sendValuesAsCsv = async () => {
 
 const defineCustomWidget = () => {
     const widget1 = new InPageWidgetBuilder()
-    widget1.addRow({ text: "┌────────┐", color: "yellow", style: "bold" })
-    widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })
-    widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
+    widget1.addRow({ text: "┌────────┐", color: "yellow", bold: true })
+    widget1.addRow({ text: "│ START! │", color: "yellow", bold: true })
+    widget1.addRow({ text: "└────────┘", color: "yellow", bold: true })
 
     //id: string, visible = false, attributes: PhisicalValues, children: PageBuilder
-    const button1 = new Control("btn1", true, { x: 32, y: 18, width: 10, height: 3 }, widget1)
+    const button1 = new Control({
+        id: "btn1", 
+        attributes: { x: 60, y: 1, width: 10, height: 3 }, 
+        children: widget1 
+    })
     button1.on("relativeMouse", (event) => {
         // The relative mouse event is triggered with the mouse position relative to the widget
         //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
@@ -127,70 +144,21 @@ const defineCustomWidget = () => {
 }
 
 const defineButton = () => {
-    new Button("btnRun", "Run me!", 10, 3, 21, 18,
-        {
+    new Button({
+        id: "btnRun", 
+        text: "Run me!", 
+        x: 48, 
+        y: 1,
+        style: {
             color: "magentaBright",
             bold: true,
             italic: true,
             borderColor: "green"
         },
-        () => {
+        onRelease: () => {
             GUI.log("Button clicked!")
-        })
-
-    const pStyle = {
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: false,
-    }
-    const p = new Progress("prog1", 20, 1, 3, 23, pStyle, "htop", "horizontal")
-    p.setText("Mem")
-    const incr = setInterval(() => {
-        const value = p.getValue() + 0.25
-        p.setValue(value)
-        if (value >= p.getMax()) {
-            clearInterval(incr)
-        }
-    }, 100)
-
-    const p1Style = {
-        background: "bgBlack",
-        borderColor: "yellow",
-        color: "green",
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: true,
-
-    }
-    const p1 = new Progress("prog2", 25, 2, 3, 25, p1Style, "precision", "horizontal")
-    p1.setText("Precision")
-    const incr1 = setInterval(() => {
-        const value = p1.getValue() + 0.25
-        p1.setValue(value)
-        if (value >= p1.getMax()) {
-            clearInterval(incr1)
-        }
-    }, 100)
-
-    const p2Style = {
-        background: "bgBlack",
-        borderColor: "yellow",
-        color: "magenta",
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: true,
-
-    }
-    const p2 = new Progress("prog3", 25, 2, 3, 31, p2Style, "precision", "horizontal", true)
-    p2.setText("Interactive")
-    p2.on("valueChanged", (value) => {
-        console.log(`Value changed: ${value}`)
+        },
+        draggable: true,
     })
 }
 
@@ -259,16 +227,31 @@ GUI.on("keypressed", (key) => {
         }
         break
     case "m":
-        new OptionPopup("popupSelectMode", "Select simulation mode", modeList, mode).show().on("confirm", (_mode) => {
+        new OptionPopup({
+            id: "popupSelectMode", 
+            title: "Select simulation mode", 
+            options: modeList, 
+            selected: mode 
+        }).show().on("confirm", (_mode) => {
             mode = _mode
             GUI.warn(`NEW MODE: ${mode}`)
             drawGui()
         })
         break
     case "s":
-        new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
-            const msgMultiLine = `Changing period from ${period} to ${_period} ms.\nThis will restart the simulator.\nDo you want to continue?`
-            new ButtonPopup("popupConfirmPeriod", "Confirm period", msgMultiLine, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
+        new OptionPopup({
+            id: "popupSelectPeriod", 
+            title: "Select simulation period", 
+            options: periodList, 
+            selected: period 
+        }).show().on("confirm", (_period) => {
+            const msgMultiLine = `Changing period from ${period} to ${_period} ms.${EOL}This will restart the simulator.${EOL}Do you want to continue?`
+            new ButtonPopup({
+                id: "popupConfirmPeriod", 
+                title: "Confirm period", 
+                message: msgMultiLine, 
+                buttons: ["Yes", "No", "?"]
+            }).show().on("confirm", (answer) => {
                 if (answer === "Yes") {
                     period = _period
                     GUI.warn(`NEW PERIOD: ${period}`)
@@ -280,14 +263,24 @@ GUI.on("keypressed", (key) => {
         })
         break
     case "h":
-        new InputPopup("popupTypeMax", "Type max value", max, true).show().on("confirm", (_max) => {
+        new InputPopup({
+            id: "popupTypeMax", 
+            title: "Type max value", 
+            value: max,
+            numeric: true
+        }).show().on("confirm", (_max) => {
             max = _max
             GUI.warn(`NEW MAX VALUE: ${max}`)
             drawGui()
         })
         break
     case "l":
-        new InputPopup("popupTypeMin", "Type min value", min, true).show().on("confirm", (_min) => {
+        new InputPopup({
+            id: "popupTypeMin", 
+            title: "Type min value", 
+            value: min, 
+            numeric: true
+        }).show().on("confirm", (_min) => {
             min = _min
             GUI.warn(`NEW MIN VALUE: ${min}`)
             drawGui()
@@ -304,14 +297,26 @@ GUI.on("keypressed", (key) => {
             p.addRow({ text: "Connected clients: ", color: "green" }, { text: `${connectedClients}`, color: "white" })
             p.addRow({ text: "Mode: ", color: "green" }, { text: `${mode}`, color: "white" })
             p.addRow({ text: "Message period: ", color: "green" }, { text: `${period} ms`, color: "white" })
-            new CustomPopup("popupCustom1", "See that values", p, 32).show()
+            new CustomPopup({
+                id: "popupCustom1", 
+                title: "See that values", 
+                content: p, 
+                width: 32
+            }).show()
         }
         break
     case "f":
-        new FileSelectorPopup("popupFileManager", "File Manager", "./").show()
+        new FileSelectorPopup({
+            id: "popupFileManager", 
+            title: "File Manager", 
+            basePath: "./"
+        }).show()
         break
     case "q":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break

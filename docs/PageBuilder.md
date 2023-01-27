@@ -6,16 +6,16 @@
 * [PageBuilder](#PageBuilder)
     * [new PageBuilder(rowsPerPage)](#new_PageBuilder_new)
     * _instance_
-        * [.addRow(row)](#PageBuilder+addRow) ⇒ <code>void</code>
-        * [.addSpacer([count])](#PageBuilder+addSpacer) ⇒ <code>void</code>
+        * [.addRow(row)](#PageBuilder+addRow) ⇒ [<code>PageBuilder</code>](#PageBuilder)
+        * [.addSpacer([count])](#PageBuilder+addSpacer) ⇒ [<code>PageBuilder</code>](#PageBuilder)
         * [.getContent()](#PageBuilder+getContent) ⇒ <code>Array.&lt;Array.&lt;object&gt;&gt;</code>
         * [.getPageHeight()](#PageBuilder+getPageHeight) ⇒ <code>number</code>
         * [.getViewedPageHeight()](#PageBuilder+getViewedPageHeight) ⇒ <code>number</code>
-        * [.setScrollIndex(index)](#PageBuilder+setScrollIndex) ⇒ <code>void</code>
-        * [.setRowsPerPage(rowsPerPage)](#PageBuilder+setRowsPerPage) ⇒ <code>void</code>
-        * [.increaseScrollIndex()](#PageBuilder+increaseScrollIndex) ⇒ <code>void</code>
-        * [.decreaseScrollIndex()](#PageBuilder+decreaseScrollIndex) ⇒ <code>void</code>
-        * [.clear()](#PageBuilder+clear) ⇒ <code>void</code>
+        * [.setScrollIndex(index)](#PageBuilder+setScrollIndex) ⇒ [<code>PageBuilder</code>](#PageBuilder)
+        * [.setRowsPerPage(rowsPerPage)](#PageBuilder+setRowsPerPage) ⇒ [<code>PageBuilder</code>](#PageBuilder)
+        * [.increaseScrollIndex()](#PageBuilder+increaseScrollIndex) ⇒ [<code>PageBuilder</code>](#PageBuilder)
+        * [.decreaseScrollIndex()](#PageBuilder+decreaseScrollIndex) ⇒ [<code>PageBuilder</code>](#PageBuilder)
+        * [.clear()](#PageBuilder+clear) ⇒ [<code>PageBuilder</code>](#PageBuilder)
     * _static_
         * [.scrollIndex](#PageBuilder.scrollIndex) : <code>number</code>
         * [.content](#PageBuilder.content) : <code>Array.&lt;Array.&lt;object&gt;&gt;</code>
@@ -33,7 +33,7 @@ It's a sort of collection of styled rows.</p>
 
 <a name="PageBuilder+addRow"></a>
 
-### pageBuilder.addRow(row) ⇒ <code>void</code>
+### pageBuilder.addRow(row) ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Add a new styled row to the page.</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
@@ -44,11 +44,12 @@ It's a sort of collection of styled rows.</p>
 
 **Example**  
 ```js
-page.addRow({ text: 'Hello World', color: 'white' })page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
+page.addRow({ text: 'Hello World', color: 'white' })
+page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
 ```
 <a name="PageBuilder+addSpacer"></a>
 
-### pageBuilder.addSpacer([count]) ⇒ <code>void</code>
+### pageBuilder.addSpacer([count]) ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Add an empty row to the page. (like <br /> in HTML)</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
@@ -59,7 +60,8 @@ page.addRow({ text: 'Hello World', color: 'white' })page.addRow({ text: 'Hello 
 
 **Example**  
 ```js
-page.addEmptyRow()page.addEmptyRow(2)
+page.addEmptyRow()
+page.addEmptyRow(2)
 ```
 <a name="PageBuilder+getContent"></a>
 
@@ -93,7 +95,7 @@ page.getViewedPageHeight() // returns the height of the page that is visible
 ```
 <a name="PageBuilder+setScrollIndex"></a>
 
-### pageBuilder.setScrollIndex(index) ⇒ <code>void</code>
+### pageBuilder.setScrollIndex(index) ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Changes the index of the scroll bar.</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
@@ -108,7 +110,7 @@ page.setScrollIndex(10)
 ```
 <a name="PageBuilder+setRowsPerPage"></a>
 
-### pageBuilder.setRowsPerPage(rowsPerPage) ⇒ <code>void</code>
+### pageBuilder.setRowsPerPage(rowsPerPage) ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Changes the number of rows per page.</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
@@ -123,7 +125,7 @@ page.setRowsPerPage(10)
 ```
 <a name="PageBuilder+increaseScrollIndex"></a>
 
-### pageBuilder.increaseScrollIndex() ⇒ <code>void</code>
+### pageBuilder.increaseScrollIndex() ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Increases the index of the scroll bar.</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
@@ -133,7 +135,7 @@ page.increaseScrollIndex()
 ```
 <a name="PageBuilder+decreaseScrollIndex"></a>
 
-### pageBuilder.decreaseScrollIndex() ⇒ <code>void</code>
+### pageBuilder.decreaseScrollIndex() ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Decreases the index of the scroll bar.</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  
@@ -143,7 +145,7 @@ page.increaseScrollIndex()
 ```
 <a name="PageBuilder+clear"></a>
 
-### pageBuilder.clear() ⇒ <code>void</code>
+### pageBuilder.clear() ⇒ [<code>PageBuilder</code>](#PageBuilder)
 <p>Clears the page.</p>
 
 **Kind**: instance method of [<code>PageBuilder</code>](#PageBuilder)  

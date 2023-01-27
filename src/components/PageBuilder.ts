@@ -1,4 +1,4 @@
-import { SimplifiedStyledElement, StyledElement } from "./Utils.js"
+import { SimplifiedStyledElement, StyledElement, simplifiedStyledToStyled } from "./Utils.js"
 
 /**
  * @class PageBuilder
@@ -33,50 +33,34 @@ export class PageBuilder {
     /**
      * @description Add a new styled row to the page.
      * @param {parameters<object>} row - The styled row to add.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example
      * page.addRow({ text: 'Hello World', color: 'white' })
      * page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
      */
-    public addRow(...args: SimplifiedStyledElement[]): void {
+    public addRow(...args: SimplifiedStyledElement[]): PageBuilder {
         // each argument is an object like {text: string, color: string}
-        const _row: StyledElement[] = []
-        for (let i = 0; i < args.length; i++) {
-            const arg: SimplifiedStyledElement = args[i]
-            _row.push({
-                text: arg.text,
-                style: {
-                    color: arg.color ? arg.color : undefined,
-                    bg: arg.bg ? arg.bg : undefined,
-                    italic: arg.italic ? arg.italic : undefined,
-                    bold: arg.bold ? arg.bold : undefined,
-                    dim: arg.dim ? arg.dim : undefined,
-                    underline: arg.underline ? arg.underline : undefined,
-                    inverse: arg.inverse ? arg.inverse : undefined,
-                    hidden: arg.hidden ? arg.hidden : undefined,
-                    strikethrough: arg.strikethrough ? arg.strikethrough : undefined,
-                    overline: arg.overline ? arg.overline : undefined,
-                }
-            })
-        }
+        const _row: StyledElement[] = args.map((arg) => simplifiedStyledToStyled(arg)) // convert to StyledElement
         this.content.push(_row)
+        return this
     }
 
     /**
      * @description Add an empty row to the page. (like <br /> in HTML)
      * @param {number} [count=1] - The number of empty rows to add.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example page.addEmptyRow()
      * page.addEmptyRow(2)
      */
-    public addSpacer(height = 1): void {
+    public addSpacer(height = 1): PageBuilder {
         if (height > 0) {
             for (let i = 0; i < height; i++) {
                 this.addRow({ text: "", color: "" })
             }
         }
+        return this
     }
 
     /**
@@ -116,58 +100,63 @@ export class PageBuilder {
     /**
      * @description Changes the index of the scroll bar.
      * @param {number} index - The index of the scroll bar.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example page.setScrollIndex(10)
      */
-    public setScrollIndex(index: number): void {
+    public setScrollIndex(index: number): PageBuilder {
         this.scrollIndex = index
+        return this
     }
 
     /**
      * @description Changes the number of rows per page.
      * @param {number} rowsPerPage - The number of rows per page.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example page.setRowsPerPage(10)
      */
-    public setRowsPerPage(rpp: number): void {
+    public setRowsPerPage(rpp: number): PageBuilder {
         this.rowsPerPage = rpp
+        return this
     }
 
     /**
      * @description Increases the index of the scroll bar.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example page.increaseScrollIndex()
      */
-    public increaseScrollIndex(): void {
+    public increaseScrollIndex(): PageBuilder {
         if (this.scrollIndex < this.getPageHeight() - this.rowsPerPage) {
             this.scrollIndex++
         }
+        return this
     }
 
     /**
      * @description Decreases the index of the scroll bar.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example page.increaseScrollIndex()
      */
-    public decreaseScrollIndex(): void {
+    public decreaseScrollIndex(): PageBuilder {
         if (this.scrollIndex > 0) {
             this.scrollIndex--
         }
+        return this
     }
 
     /**
      * @description Clears the page.
-     * @returns {void}
+     * @returns {PageBuilder}
      * @memberOf PageBuilder
      * @example page.clear()
      * @since 1.2.0
      */
-    public clear(): void {
+    public clear(): PageBuilder {
         this.content = []
+        return this
     }
 }
 

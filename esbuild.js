@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 // esbuild.js
 import { execSync } from "child_process"
-import { build, analyzeMetafile } from "esbuild"
+import { build, context } from "esbuild"
 import fs from "fs"
 
 const stripJSONComments = (data) => {
@@ -40,26 +40,25 @@ fs.writeFileSync("./tsconfig_esbuild.json", JSON.stringify(tsc, null, 4))
 console.log(`\u001b[36mBuilding for Node ${target[0]}, ECMAScript ${target[1]}...\u001b[37m`)
 
 const banner = "/* eslint-disable linebreak-style */\n" +
-"/*                                                                            \n" +
-"   ____                      _         ____       _   _____           _       \n" +
-"  / ___|___  _ __  ___  ___ | | ___   / ___|_   _(_) |_   _|__   ___ | |___   \n" +
-" | |   / _ \\| '_ \\/ __|/ _ \\| |/ _ \\ | |  _| | | | |   | |/ _ \\ / _ \\| / __|  \n" +
-" | |__| (_) | | | \\__ \\ (_) | |  __/ | |_| | |_| | |   | | (_) | (_) | \\__ \\  \n" +
-"  \\____\\___/|_| |_|___/\\___/|_|\\___|  \\____|\\__,_|_|   |_|\\___/ \\___/|_|___/  \n" +
-"                                                                              \n" +
-`                                                                      v${pkg.version} \n\n\n` +
-`   ${pkg.description}                                                          \n\n` +
-`   Author: ${pkg.author}\n` +
-`   License: ${pkg.license}\n` +
-`   Repository: ${pkg.repository.url}\n\n` +
-"   This program is free software: you can redistribute it and/or modify\n\n" +
-`   Build: ${new Date().toUTCString()} for Node ${target[0]}, ECMAScript ${target[1]}\n*/\n`
+    "/*                                                                            \n" +
+    "   ____                      _         ____       _   _____           _       \n" +
+    "  / ___|___  _ __  ___  ___ | | ___   / ___|_   _(_) |_   _|__   ___ | |___   \n" +
+    " | |   / _ \\| '_ \\/ __|/ _ \\| |/ _ \\ | |  _| | | | |   | |/ _ \\ / _ \\| / __|  \n" +
+    " | |__| (_) | | | \\__ \\ (_) | |  __/ | |_| | |_| | |   | | (_) | (_) | \\__ \\  \n" +
+    "  \\____\\___/|_| |_|___/\\___/|_|\\___|  \\____|\\__,_|_|   |_|\\___/ \\___/|_|___/  \n" +
+    "                                                                              \n" +
+    `                                                                      v${pkg.version} \n\n\n` +
+    `   ${pkg.description}                                                          \n\n` +
+    `   Author: ${pkg.author}\n` +
+    `   License: ${pkg.license}\n` +
+    `   Repository: ${pkg.repository.url}\n\n` +
+    "   This program is free software: you can redistribute it and/or modify\n\n" +
+    `   Build: ${new Date().toUTCString()} for Node ${target[0]}, ECMAScript ${target[1]}\n*/\n`
 
-await build({
+const buildOptions = {
     bundle: true,
     platform: "node",
     target: target,
-    
     minifySyntax: dev ? true : false,
     minify: dev ? false : true,
     sourcemap: true,
@@ -71,12 +70,6 @@ await build({
     banner: {
         js: banner
     },
-    watch: watch ? {
-        onRebuild(error, result) {
-            if (error) console.error("watch build failed:", error)
-            else console.log("watch build succeeded:", result)
-        }
-    } : false,
     outdir: "dist/esm",
     entryPoints: ["src/ConsoleGui.ts"],
     plugins: [
@@ -88,52 +81,48 @@ await build({
                     execSync("npx tsc --emitDeclarationOnly --declarationDir ./dist/types -p ./tsconfig_esbuild.json")
                 })
             }
+        },
+        {
+            name: "rebuildListener",
+            setup(build) {
+                let count = 0
+                build.onEnd(result => {
+                    if (count++ === 0) console.log("First build:", result)
+                    else console.log("Subsequent build:", result)
+                })
+            },
         }
     ]
-}).then(async (result) => {
-    console.log("\u001b[36mESM Build succeeded!\u001b[37m")
-    if (dev) {
-        let text = await analyzeMetafile(result.metafile, {
-            verbose: true,
-        })
-        console.log(text)
-    }
-    watch ? console.log("\u001b[36mWatching...\u001b[37m") : console.log("\u001b[36mBuild complete!\u001b[37m")
-})
+}
 
-await build({
-    bundle: true,
-    platform: "node",
-    target: target,
-    minifySyntax: dev ? true : false,
-    minify: dev ? false : true,
-    sourcemap: true,
+const buildOptionsCjs = {
+    ...buildOptions,
     format: "cjs",
-    color: true,
-    metafile: dev ? true : false,
-    tsconfig: "./tsconfig_esbuild.json",
     outExtension: { ".js": ".cjs" },
-    banner: {
-        js: banner
-    },
-    watch: watch ? {
-        onRebuild(error, result) {
-            if (error) console.error("watch build failed:", error)
-            else console.log("watch build succeeded:", result)
-        }
-    } : false,
     outdir: "dist/cjs",
-    entryPoints: ["src/ConsoleGui.ts"],
-}).then(async (result) => {
-    if (dev) {
-        let text = await analyzeMetafile(result.metafile, {
-            verbose: true,
+    plugins: []
+}
+
+if (dev) {
+    const ctxEsm = await context(buildOptions)
+    const ctxCjs = await context(buildOptionsCjs)
+
+    if (watch) {
+        await ctxEsm.watch().then(() => {
+            console.log("\u001b[36mWatching ESM...\u001b[37m")
         })
-        console.log(text)
+        await ctxCjs.watch().then(() => {
+            console.log("\u001b[36mWatching CJS...\u001b[37m")
+        })
     }
+} else {
+    // ESM Build
+    await build(buildOptions)
+    console.log("\u001b[36mESM Build succeeded!\u001b[37m")
+    // CJS Build
+    await build(buildOptionsCjs)
     console.log("\u001b[36mCJS Build succeeded!\u001b[37m")
-    watch ? console.log("\u001b[36mWatching...\u001b[37m") : console.log("\u001b[36mBuild complete!\u001b[37m")
-})
+}
 
 process.on("exit", () => {
     fs.unlinkSync("./tsconfig_esbuild.json")

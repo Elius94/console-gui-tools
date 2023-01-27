@@ -19,7 +19,10 @@ GUI.on("exit", () => {
 GUI.on("keypressed", (key) => {
     switch (key.name) {
     case "q":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break
@@ -36,7 +39,16 @@ const style1 = {
     color: "red",
 }
 
-const button = new Button("btnClickMe", "Click Me!", 11, 3, 10, 10, style1, { name: "r", ctrl: true })
+const btnProps = {
+    id: "btnClickMe", 
+    text: "Click Me! (Ctrl+R)", 
+    x: 10, 
+    y: 15, 
+    style: style1,
+    key: { name: "r", ctrl: true },
+}
+
+const button = new Button(btnProps)
 button.on("click", () => {
     button.absoluteValues.x = Math.floor(Math.random() * 30)
     button.absoluteValues.y = Math.floor(Math.random() * 30)

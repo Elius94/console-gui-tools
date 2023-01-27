@@ -20,6 +20,7 @@ import { EventEmitter } from "events"
  * @export
  * @interface MouseEventArgs
  */
+// @type definition
 export interface MouseEventArgs {
     code: number;
     alt: boolean;
@@ -57,10 +58,32 @@ export interface MouseEventArgs {
  * @export
  * @interface MouseEvent
  */
+// @type definition
 export interface MouseEvent {
     name: string;
     eaten: number;
     data: MouseEventArgs;
+}
+
+/**
+ * @typedef {Object} RelativeMouseEvent
+ * @description This type is used to define the parameters of the Mouse Listener event (mouseevent) data, relative to a widget.
+ * 
+ * @prop {string} name - The name of the event.
+ * @prop {object} data - The data of the event.
+ * @prop {number} data.x - The x position of the mouse (terminal column).
+ * @prop {number} data.y - The y position of the mouse (terminal row).
+ *
+ * @export
+ * @interface RelativeMouseEvent
+ */
+// @type definition
+export interface RelativeMouseEvent {
+    name: string;
+    data: {
+        x: number;
+        y: number;
+    }
 }
 
 /**

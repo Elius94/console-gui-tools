@@ -15,7 +15,7 @@ It's in embryonic phase, any suggestion will be constructive :D
 Version: >= 14.17
 
 #### OS
-It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11.
+It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11 and Mac OS.
 Since 1.1.4 mouse SGR and X11 protocols are supported. It works well on most linux terminals, but it doesn't work on Windows 10 and 11. You can use it on Windows 10 and 11 with [Windows Terminal](https://www.microsoft.com/it-it/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab) or [Cmder](https://cmder.net/) and using WSL (Windows Subsystem for Linux) with Ubuntu LTS or others.
 In this way you can use mouse also on Windows 10 and 11.
 
@@ -82,6 +82,9 @@ const layoutOptions = {
     boxStyle: 'bold', // The style of the box (bold)
 }
 ```
+
+### options.focusKey [v3.0.0]
+The key that will be used to change the focus between controls in the focused layout. [default: 'tab']
 
 </details>
 
@@ -370,14 +373,45 @@ widget1.addRow({ text: "┌────────┐", color: "yellow", style:
 widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" })
 widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" })
 
-const button1 = new Control("btn1", true, { x: 30, y: 18, width: 10, height: 3 }, widget1)
+const button1 = new Control({
+   id: "btn1",
+   visible: false,
+   attributes: { x: 30, y: 18, width: 10, height: 3 },
+   children: widget1
+})
 button1.on("relativeMouse", (event) => {
     if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") console.log("Button clicked!")
 })
 ```
+
+> Since the version 3.0.0 of the library, this constructor has been changed. See the [v3.0.0 Release Note](https://github.com/Elius94/console-gui-tools/releases/tag/v3.0.0) for more information.
+
 Result:
 
 ![InPageWidget](https://user-images.githubusercontent.com/14907987/202858694-82ca7f26-2a7a-4210-92da-fbbd40ad10b4.gif)
+
+## Box (since 3.0.0) [New!](docs/Box.md)
+The box is a control widget that allows you to create a box with a title and a content. The content is a InPageWidgetBuilder object, so you can add rows to it. It can have a title and can be boxed or not. It can be used to place some texts in a specific position of the screen, without using the layout. It also can be draggable.
+
+```ts
+new Box({
+    id: "box1",
+    x: 22,
+    y: 3,
+    width: 28,
+    height: 3,
+    draggable: true,
+    style: {
+        boxed: true,
+    }
+}).setContent(new InPageWidgetBuilder().addRow({ text: "This is a draggable Box!", color: "rgb(255,0,0)", bg: "rgb(0,0,255)"}))
+```
+
+See the [Box documentation](docs/Box.md) for more information. or try the [Box example](examples/box.mjs).
+
+![htop](https://user-images.githubusercontent.com/14907987/215077472-3fd24bd5-ec71-420d-bdcf-f518a8f5d837.gif)
+
+> This example is inspired by the htop command line tool.
 
 ### Button (since 1.2.0) [New!](docs/Button.md)
 The button is a control widget that basically do the previous example for you in a simpler way.
@@ -392,50 +426,72 @@ The button is a control widget that basically do the previous example for you in
 </ul>
 
 ```js
-new Button("btnRun", "Run me!", 10, 3, 21, 18, 
-     { 
-         color: "magentaBright", 
-         bold: true, 
-         italic: true,
-         borderColor: "green"
-     },
-     () => {
-         GUI.log("Button clicked!")
-     })
+new Button({
+    id: "btnRun", 
+    text: "Run me!", 
+    x: 48, 
+    y: 1,
+    style: {
+        color: "magentaBright",
+        bold: true,
+        italic: true,
+        borderColor: "green"
+    },
+    onRelease: () => {
+        GUI.log("Button clicked!")
+    },
+    draggable: true,
+})
 ```
+
+See the [Button documentation](docs/Button.md) for more information. or try the [Button example](examples/mouse_test.mjs).
+
+> Since the version 3.0.0 of the library, this constructor has been changed. See the [v3.0.0 Release Note](https://github.com/Elius94/console-gui-tools/releases/tag/v3.0.0) for more information.
 
 ### Progress (since 1.3.0) [New!](docs/ProgressBar.md)
 This is a control widget that is used to draw a customizable progress bar. 
 It can also be used as interactive control (slider) by setting the `interactive` option to `true`.
 
 ```js
-const p2Style = {
-    background: "bgBlack",
-    borderColor: "yellow",
-    color: "magenta",
-    boxed: true,
-    showTitle: true,
-    showValue: true,
-    showPercentage: true,
-    showMinMax: true,
-}
-const p2 = new Progress("prog3", 25, 2, 3, 31, p2Style, "precision", "horizontal", true)
+const p2 = new Progress({
+    id: "prog1",
+    x: 2,
+    y: 1,
+    label: "Mem",
+    length: 40,
+    min: 0,
+    max: 100,
+    unit: "G",
+    style: {
+        boxed: true,
+        theme: "htop",
+        showMinMax: false,
+    }
+})
 p2.setText("Interactive")
 p2.on("valueChanged", (value) => {
     console.log(`Value changed: ${value}`)
 })
 ```
 
+> Since the version 3.0.0 of the library, this constructor has been changed. See the [v3.0.0 Release Note](https://github.com/Elius94/console-gui-tools/releases/tag/v3.0.0) for more information.
 
 **Example**  
 <p><img src="https://user-images.githubusercontent.com/14907987/203607512-6ce3656c-7ffb-4185-b36e-6c10619b2b6e.gif" alt="Progress_Interactive"></p>
+
+See the [Progress documentation](docs/ProgressBar.md) for more information. or try the [Progress example](examples/progress.mjs).
 
 In the next versions of the library, more control widgets will be added as Control extensions.
 
 ## Popup widgets
 ## To create an option popup (select)
 ```js
-new OptionPopup("popupSelectPeriod", "Select simulation period", periodList, period).show().on("confirm", (_period) => {
+new OptionPopup({ 
+    id: "popupSelectPeriod",
+    title: "Select simulation period", 
+    options: periodList, 
+    selected: period 
+}).show().on("confirm", (_period) => {
     period = _period
     GUI.warn(`NEW PERIOD: ${period}`)
     drawGui()
@@ -459,7 +515,12 @@ Now you can also use "pageup" amd "pagedown" keys to navigate faster.
 
 ## To create an input popup (numeric or string)
 ```js
-new InputPopup("popupTypeMax", "Type max value", max, true).show().on("confirm", (_max) => {
+new InputPopup({ 
+    id: "popupTypeMax", 
+    title: "Type max value", 
+    value: max, 
+    numeric: true 
+}).show().on("confirm", (_max) => {
     max = _max
     GUI.warn(`NEW MAX VALUE: ${max}`)
     drawGui()
@@ -482,7 +543,12 @@ All class of components will be destroyed when the popup is closed. The event li
 
 ## To create a button popup
 ```js
-new ButtonPopup("popupConfirmPeriod", "Confirm period", `Period set to ${period} ms, apply?`, ["Yes", "No", "?"]).show().on("confirm", (answer) => {
+new ButtonPopup({ 
+    id: "popupConfirmPeriod", 
+    title: "Confirm period", 
+    message: `Period set to ${period} ms, apply?`, 
+    buttons: ["Yes", "No", "?"]
+}).show().on("confirm", (answer) => {
     if (answer === "Yes") {
         period = _period
         GUI.warn(`NEW PERIOD: ${period}`)
@@ -506,7 +572,7 @@ You can use it for example to make a question:
 
 ## To create a confirm popup (if you only need a yes or no answer)
 ```js
-new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+new ConfirmPopup({ id: "popupQuit", title: "Are you sure you want to quit?" }).show().on("confirm", () => closeApp())
 ```
 
 ### Class ConfirmPopup:
@@ -529,7 +595,7 @@ p.addRow({ text: `TCP Message sent: `, color: 'green' }, { text: `${tcpCounter}`
 p.addRow({ text: `Connected clients: `, color: 'green' }, { text: `${connectedClients}`, color: 'white' })
 p.addRow({ text: `Mode: `, color: 'green' }, { text: `${mode}`, color: 'white' })
 p.addRow({ text: `Message period: `, color: 'green' }, { text: `${period} ms`, color: 'white' })
-new CustomPopup("popupCustom1", "See that values", p, 32).show()
+new CustomPopup({ id: "popupCustom1", title: "See that values", content: p, width: 32 }).show()
 ```
 
 ### Class CustomPopup:
@@ -549,7 +615,11 @@ That means that they allows to build a custom popup widget with components insid
 
 ## To create a File Selector popup
 ```js
-new FileSelectorPopup("popupFileManager", "File Manager", "./").show().on("confirm", (file) => {
+new FileSelectorPopup({ 
+    id: "popupFileManager", 
+    title: "File Manager", 
+    basePath: "./"
+}).show().on("confirm", (file) => {
     GUI.warn(`File selected: ${file}`)
     drawGui()
 })
@@ -572,6 +642,8 @@ Emits the following events:
 - "exit" when the user exit
  
 All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
+
+> Since the version 3.0.0 of the library, all the popup constructors has been changed. See the [v3.0.0 Release Note](https://github.com/Elius94/console-gui-tools/releases/tag/v3.0.0) for more information.
 
 ## Console.log and other logging tools
 By default (since version 1.1.42) the console.log|warn|error|info are replaced by a custom function that will show the message in the apposite GUI space. To disable this override you can set the option `overrideConsole` to false in the options object of the constructor.
