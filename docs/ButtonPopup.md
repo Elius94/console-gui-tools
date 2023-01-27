@@ -78,20 +78,7 @@
 | config | [<code>ButtonPopupConfig</code>](#ButtonPopupConfig) | <p>The configuration of the popup.</p> |
 
 **Example**  
-```ts
-const popup = new ButtonPopup({
- id: "popup1", 
- title: "Choose the option", 
- buttons: ["YES", "NO", "?"],
-}) 
-popup.show() // show the popup
-popup.on("confirm", () => {
- console.log("User confirmed")
-})
-popup.on("cancel", () => {
- console.log("User canceled")
-})
-```
+```tsconst popup = new ButtonPopup({ id: "popup1",  title: "Choose the option",  buttons: ["YES", "NO", "?"],}) popup.show() // show the popuppopup.on("confirm", () => { console.log("User confirmed")})popup.on("cancel", () => { console.log("User canceled")})```
 <a name="ButtonPopup+keyListener"></a>
 
 ### buttonPopup.keyListener(_str, key)

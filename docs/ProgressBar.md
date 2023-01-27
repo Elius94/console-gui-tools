@@ -104,79 +104,7 @@
 | config | [<code>ProgressConfig</code>](#ProgressConfig) | <p>The configuration object for the progress bar</p> |
 
 **Example**  
-```js
- const pStyle = {
-     boxed: true,
-     showTitle: true,
-     showValue: true,
-     showPercentage: true,
-     showMinMax: false,
- }
- const p = new Progress({
-     id: "prog1", 
-     x: 10, y: 2,
-     style: pStyle, 
-     theme: "htop",
-     length: 25,
-     label: "Mem"
- })
- const incr = setInterval(() => {
-     const value = p.getValue() + 0.25
-     p.setValue(value)
-     if (value >= p.getMax()) {
-         clearInterval(incr)
-     }
- }, 100)
-
- const p1Style = {
-     background: "bgBlack",
-     borderColor: "yellow",
-     color: "green",
-     boxed: true,
-     showTitle: true,
-     showValue: true,
-     showPercentage: true,
-     showMinMax: true,
- }
- const p1 = new Progress({
-     id: "prog1", 
-     x: 10, y: 4,
-     style: pStyle, 
-     theme: "precision",
-     length: 25,
-     label: "Precision"
- })
- const incr1 = setInterval(() => {
-     const value = p1.getValue() + 0.25
-     p1.setValue(value)
-     if (value >= p1.getMax()) {
-         clearInterval(incr1)
-     }
- }, 100)
- const p2Style = {
-     background: "bgBlack",
-     borderColor: "yellow",
-     color: "magenta",
-     boxed: true,
-     showTitle: true,
-     showValue: true,
-     showPercentage: true,
-     showMinMax: true,
- }
- const p2 = new Progress({
-     id: "prog3", 
-     x: 10, y: 6,
-     style: pStyle, 
-     theme: "precision",
-     length: 25,
-     label: "Interactive",
-     direction: "vertical",
-     interactive: true,
- })
- p2.on("valueChanged", (value) => {
-     console.log(`Value changed: ${value}`)
- })
-```
+```js const pStyle = {     boxed: true,     showTitle: true,     showValue: true,     showPercentage: true,     showMinMax: false, } const p = new Progress({     id: "prog1",      x: 10, y: 2,     style: pStyle,      theme: "htop",     length: 25,     label: "Mem" }) const incr = setInterval(() => {     const value = p.getValue() + 0.25     p.setValue(value)     if (value >= p.getMax()) {         clearInterval(incr)     } }, 100) const p1Style = {     background: "bgBlack",     borderColor: "yellow",     color: "green",     boxed: true,     showTitle: true,     showValue: true,     showPercentage: true,     showMinMax: true, } const p1 = new Progress({     id: "prog1",      x: 10, y: 4,     style: pStyle,      theme: "precision",     length: 25,     label: "Precision" }) const incr1 = setInterval(() => {     const value = p1.getValue() + 0.25     p1.setValue(value)     if (value >= p1.getMax()) {         clearInterval(incr1)     } }, 100) const p2Style = {     background: "bgBlack",     borderColor: "yellow",     color: "magenta",     boxed: true,     showTitle: true,     showValue: true,     showPercentage: true,     showMinMax: true, } const p2 = new Progress({     id: "prog3",      x: 10, y: 6,     style: pStyle,      theme: "precision",     length: 25,     label: "Interactive",     direction: "vertical",     interactive: true, }) p2.on("valueChanged", (value) => {     console.log(`Value changed: ${value}`) })```
 <a name="drawingChars"></a>
 
 ## drawingChars : <code>Object</code>

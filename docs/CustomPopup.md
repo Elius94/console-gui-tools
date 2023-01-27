@@ -83,12 +83,7 @@
 | config | [<code>PopupConfig</code>](#PopupConfig) | <p>The configuration of the popup.</p> |
 
 **Example**  
-```ts
-const popup = new CustomPopup({
- id: "popup1",
- title: "See that values",
- content: new PageBuilder().addText("Hello world!"),
-}).show()
+```tsconst popup = new CustomPopup({ id: "popup1", title: "See that values", content: new PageBuilder().addText("Hello world!"),}).show()
 <a name="CustomPopup+keyListener"></a>
 
 ### customPopup.keyListener(str, key)

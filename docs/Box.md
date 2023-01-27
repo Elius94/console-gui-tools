@@ -65,14 +65,4 @@
 | config | [<code>BoxConfig</code>](#BoxConfig) | <p>The configuration of the box.</p> |
 
 **Example**  
-```ts
-const box = new Box({ 
-  id: "box", 
-  x: 0, 
-  y: 0, 
-  width: 10, 
-  height: 5, 
-  style: { boxed: true, color: "red", label: "Box" } 
-})
-box.setContent(new InPageWidgetBuilder(5).addText("Hello World!"))
-```
+```tsconst box = new Box({   id: "box",   x: 0,   y: 0,   width: 10,   height: 5,   style: { boxed: true, color: "red", label: "Box" } })box.setContent(new InPageWidgetBuilder(5).addText("Hello World!"))```

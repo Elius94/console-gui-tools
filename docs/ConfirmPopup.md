@@ -49,13 +49,4 @@
 | config | [<code>ConfirmPopupConfig</code>](#ConfirmPopupConfig) | <p>The configuration of the popup.</p> |
 
 **Example**  
-```ts
-const popup = new ConfirmPopup({
- id: "popup1", 
- title: "Are you shure",
-}) 
-popup.show() // show the popup
-popup.on("confirm", (answer) => {
- console.log(console.log(answer))
-})
-```
+```tsconst popup = new ConfirmPopup({ id: "popup1",  title: "Are you shure",}) popup.show() // show the popuppopup.on("confirm", (answer) => { console.log(console.log(answer))})```

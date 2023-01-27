@@ -86,14 +86,7 @@ The user can select a file or a directory and the popup will be closed.</p>
 | config | [<code>FileSelectorPopupConfig</code>](#FileSelectorPopupConfig) | <p>The configuration for the FileSelectorPopup class.</p> |
 
 **Example**  
-```ts
-const popup = new FileSelectorPopup({
- id: "popup1",
- title: "Choose the file",
- basePath: "./examples"
-}).show().on("confirm", (selected) => {
- console.log(selected)
-}) // show the popup and wait for the user to confirm
+```tsconst popup = new FileSelectorPopup({ id: "popup1", title: "Choose the file", basePath: "./examples"}).show().on("confirm", (selected) => { console.log(selected)}) // show the popup and wait for the user to confirm
 <a name="FileSelectorPopup+listDir"></a>
 
 ### fileSelectorPopup.listDir(dir) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>

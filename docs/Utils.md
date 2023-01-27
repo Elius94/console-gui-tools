@@ -152,8 +152,7 @@ CM.truncate("Hello world", 5, true) // "Hello..."
 
 **Example**  
 ```js
-const simplifiedStyledElement = styledToSimplifiedStyled({ text: "Hello world", style: { color: "red", backgroundColor: "blue", bold: true, italic: true } })
-// returns { text: "Hello world", color: "red", backgroundColor: "blue", bold: true, italic: true }
+const simplifiedStyledElement = styledToSimplifiedStyled({ text: "Hello world", style: { color: "red", backgroundColor: "blue", bold: true, italic: true } })// returns { text: "Hello world", color: "red", backgroundColor: "blue", bold: true, italic: true }
 ```
 <a name="simplifiedStyledToStyled"></a>
 
@@ -169,8 +168,7 @@ const simplifiedStyledElement = styledToSimplifiedStyled({ text: "Hello world", 
 
 **Example**  
 ```js
-const styledElement = simplifiedStyledToStyled({ text: "Hello world", color: "red", bold: true })
-// returns { text: "Hello world", style: { color: "red", bold: true } }
+const styledElement = simplifiedStyledToStyled({ text: "Hello world", color: "red", bold: true })// returns { text: "Hello world", style: { color: "red", bold: true } }
 ```
 <a name="RGB"></a>
 
