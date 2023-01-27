@@ -13,7 +13,7 @@ const replaceToDir = (dir, reverse = false) => {
     for (const file of files) {
         // check if file is a directory
         if (fs.statSync(path.join(dir, file)).isDirectory()) {
-            replaceToDir(path.join(dir, file))
+            replaceToDir(path.join(dir, file), reverse)
             continue
         }
 
@@ -33,7 +33,7 @@ const replaceToDir = (dir, reverse = false) => {
     }
 }
 
-const reverse = process.argv.includes("--reverse")
+const reverse = process.argv.includes("--restore")
 
 replaceToDir(dir, reverse)
 
