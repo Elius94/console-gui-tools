@@ -1,6 +1,5 @@
 import net from "net"
 import EventEmitter from "events"
-import os from "node:os"
 
 const PORT = 9090
 const HOST = "127.0.0.1"
@@ -8,32 +7,26 @@ let period = 100
 
 let mode = "random"
 
-const periodList = [
-    10, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 30000, 60000, 120000,
-    300000, 600000, 900000, 1800000, 3600000, 7200000, 14400000, 28800000,
-    43200000, 86400000,
-]
+const periodList = [10, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 30000, 60000, 120000, 300000, 600000, 900000, 1800000, 3600000, 7200000, 14400000, 28800000, 43200000, 86400000]
 const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import {
-    ConsoleManager,
-    OptionPopup,
-    InputPopup,
-    PageBuilder,
-    ButtonPopup,
-    ConfirmPopup,
-    CustomPopup,
-    FileSelectorPopup,
-    Control,
-    InPageWidgetBuilder,
-    Button,
-    Progress,
-    SimplifiedStyledElement,
+import { 
+    ConsoleManager, 
+    OptionPopup, 
+    InputPopup, 
+    PageBuilder, 
+    ButtonPopup, 
+    ConfirmPopup, 
+    CustomPopup, 
+    FileSelectorPopup, 
+    Control, 
+    InPageWidgetBuilder, 
+    Button, 
+    RelativeMouseEvent,
+    EOL
 } from "console-gui-tools"
-import { ProgressStyle } from "console-gui-tools/dist/types/components/widgets/ProgressBar"
-import { ButtonConfig } from "console-gui-tools/dist/types/components/widgets/Button"
 const GUI = new ConsoleManager({
     title: "TCP Simulator", // Title of the console
     logPageSize: 20, // Number of lines to show in logs page
@@ -48,7 +41,6 @@ const GUI = new ConsoleManager({
         boxColor: "yellow",
         boxStyle: "bold",
     },
-    overrideConsole: true, // Set to false to disable overriding console.log
 })
 
 let connectedClients = 0
@@ -57,27 +49,25 @@ let connectedClients = 0
 let tcpCounter = 0
 
 // Make A TCP Server that listens on port 9090
-const server = net
-    .createServer((socket) => {
-        connectedClients++
-        //drawGui()
-        clientManager.on("send", (data) => {
-            socket.write(data + os.EOL)
-            tcpCounter++
-        })
-        socket.on("error", function (err) {
-            lastErr = `Error:  ${err.stack}`
-        })
-        socket.on("end", function () {
-            lastErr = "Error: Client disconnected!"
-            connectedClients--
-        })
+const server = net.createServer(socket => {
+    connectedClients++
+    //drawGui()
+    clientManager.on("send", (data) => {
+        socket.write(data + "\n")
+        tcpCounter++
     })
-    .listen(PORT, HOST)
+    socket.on("error", function (err) {
+        lastErr = `Error:  ${err.stack}`
+    })
+    socket.on("end", function () {
+        lastErr = "Error: Client disconnected!"
+        connectedClients--
+    })
+}).listen(PORT, HOST)
 
 let lastErr = ""
 
-server.on("error", (err) => {
+server.on("error", err => {
     lastErr = `Error: ${err.message}`
     GUI.error(lastErr)
 })
@@ -101,7 +91,7 @@ const frame = async () => {
     await sendValuesAsCsv()
 }
 
-let valueEmitter: any = null //setInterval(frame, period)
+let valueEmitter: NodeJS.Timeout | null = null
 const direction = [1, 0, 1, 1, 0, 0] // 1 = Up
 const step = 0.01
 
@@ -122,27 +112,26 @@ const updateWithLinearValues = async () => {
 }
 
 const sendValuesAsCsv = async () => {
-    const csv = values.map((v) => v.toFixed(4)).join(",")
+    const csv = values.map(v => v.toFixed(4)).join(",")
     clientManager.emit("send", csv)
     drawGui()
 }
 
 const defineCustomWidget = () => {
     const widget1 = new InPageWidgetBuilder()
-    widget1.addRow({ text: "┌────────┐", color: "yellow", style: "bold" } as SimplifiedStyledElement)
-    widget1.addRow({ text: "│ START! │", color: "yellow", style: "bold" } as SimplifiedStyledElement)
-    widget1.addRow({ text: "└────────┘", color: "yellow", style: "bold" } as SimplifiedStyledElement)
+    widget1.addRow({ text: "┌────────┐", color: "yellow", bold: true })
+    widget1.addRow({ text: "│ START! │", color: "yellow", bold: true })
+    widget1.addRow({ text: "└────────┘", color: "yellow", bold: true })
 
     //id: string, visible = false, attributes: PhisicalValues, children: PageBuilder
-    const button1 = new Control(
-        "btn1",
-        true,
-        { x: 32, y: 18, width: 10, height: 3 },
-        widget1
-    )
-    button1.on("relativeMouse", (event) => {
-    // The relative mouse event is triggered with the mouse position relative to the widget
-    //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
+    const button1 = new Control({
+        id: "btn1", 
+        attributes: { x: 60, y: 1, width: 10, height: 3 }, 
+        children: widget1 
+    })
+    button1.on("relativeMouse", (event: RelativeMouseEvent) => {
+        // The relative mouse event is triggered with the mouse position relative to the widget
+        //console.log(`Mouse event: x: ${event.data.x}, y: ${event.data.y}`)
         if (event.name === "MOUSE_LEFT_BUTTON_RELEASED") {
             GUI.log("Button 1 clicked!")
             if (valueEmitter) {
@@ -157,93 +146,20 @@ const defineCustomWidget = () => {
 
 const defineButton = () => {
     new Button({
-        id: "btnRun",
-        text: "Run me!",
-        x: 21,
-        y: 18,
+        id: "btnRun", 
+        text: "Run me!", 
+        x: 48, 
+        y: 1,
         style: {
             color: "magentaBright",
             bold: true,
             italic: true,
-            borderColor: "green",
-            background: "bgBlack",
+            borderColor: "green"
         },
-        onClick: () => {
+        onRelease: () => {
             GUI.log("Button clicked!")
         },
         draggable: true,
-    } as ButtonConfig)
-
-    const pStyle = {
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: false,
-    } as ProgressStyle
-    const p = new Progress("prog1", 20, 1, 3, 23, pStyle, "htop", "horizontal")
-    p.setText("Mem")
-    const incr = setInterval(() => {
-        const value = p.getValue() + 0.25
-        p.setValue(value)
-        if (value >= p.getMax()) {
-            clearInterval(incr)
-        }
-    }, 100)
-
-    const p1Style = {
-        background: "bgBlack",
-        borderColor: "yellow",
-        color: "green",
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: true,
-    } as ProgressStyle
-    const p1 = new Progress(
-        "prog2",
-        25,
-        2,
-        3,
-        25,
-        p1Style,
-        "precision",
-        "horizontal"
-    )
-    p1.setText("Precision")
-    const incr1 = setInterval(() => {
-        const value = p1.getValue() + 0.25
-        p1.setValue(value)
-        if (value >= p1.getMax()) {
-            clearInterval(incr1)
-        }
-    }, 100)
-
-    const p2Style = {
-        background: "bgBlack",
-        borderColor: "yellow",
-        color: "magenta",
-        boxed: true,
-        showTitle: true,
-        showValue: true,
-        showPercentage: true,
-        showMinMax: true,
-    } as ProgressStyle
-    const p2 = new Progress(
-        "prog3",
-        25,
-        2,
-        3,
-        31,
-        p2Style,
-        "precision",
-        "horizontal",
-        true
-    )
-    p2.setText("Interactive")
-    p2.on("valueChanged", (value) => {
-        console.log(`Value changed: ${value}`)
     })
 }
 
@@ -255,62 +171,28 @@ const updateConsole = async () => {
     const p = new PageBuilder()
     p.addRow({ text: "TCP server simulator app! Welcome...", color: "yellow" })
     p.addRow({ text: `TCP Server listening on ${HOST}:${PORT}`, color: "green" })
-    p.addRow(
-        { text: "Connected clients:", color: "green" },
-        { text: ` ${connectedClients}`, color: "white" }
-    )
-    p.addRow(
-        {
-            text: "TCP messages sent:",
-            color: "green",
-            bg: "bgRed",
-            bold: true,
-            italic: true,
-            underline: true,
-        },
-        { text: ` ${tcpCounter}`, color: "white" }
-    )
+    p.addRow({ text: "Connected clients:", color: "green" }, { text: ` ${connectedClients}`, color: "white" })
+    p.addRow({ text: "TCP messages sent:", color: "green", bg: "bgRed", bold: true, italic: true, underline: true }, { text: ` ${tcpCounter}`, color: "white" })
 
     // Print if simulator is running or not
     if (!valueEmitter) {
-        p.addRow(
-            { text: "Simulator is not running! ", color: "red" },
-            { text: "press 'space' to start", color: "white" }
-        )
+        p.addRow({ text: "Simulator is not running! ", color: "red" }, { text: "press 'space' to start", color: "white" })
     } else {
-        p.addRow(
-            { text: "Simulator is running! ", color: "green" },
-            { text: "press 'space' to stop", color: "white" }
-        )
+        p.addRow({ text: "Simulator is running! ", color: "green" }, { text: "press 'space' to stop", color: "white" })
     }
 
     // Print mode:
-    p.addRow(
-        { text: "Mode: ", color: "cyan" },
-        { text: `${mode}`, color: "white" }
-    )
+    p.addRow({ text: "Mode: ", color: "cyan" }, { text: `${mode}`, color: "white" })
 
     // Print message frequency:
-    p.addRow(
-        { text: "Message period: ", color: "cyan" },
-        { text: `${period} ms`, color: "white" }
-    )
+    p.addRow({ text: "Message period: ", color: "cyan" }, { text: `${period} ms`, color: "white" })
 
     // Print Min and Max
-    p.addRow(
-        { text: "Min: ", color: "cyan" },
-        { text: `${min}`, color: "white" }
-    )
-    p.addRow(
-        { text: "Max: ", color: "cyan" },
-        { text: `${max}`, color: "white" }
-    )
+    p.addRow({ text: "Min: ", color: "cyan" }, { text: `${min}`, color: "white" })
+    p.addRow({ text: "Max: ", color: "cyan" }, { text: `${max}`, color: "white" })
 
     // Print current values:
-    p.addRow(
-        { text: "Values: ", color: "cyan" },
-        { text: ` ${values.map((v) => v.toFixed(4)).join("   ")}`, color: "white" }
-    )
+    p.addRow({ text: "Values: ", color: "cyan" }, { text: ` ${values.map(v => v.toFixed(4)).join("   ")}`, color: "white" })
 
     // Spacer
     p.addSpacer()
@@ -321,30 +203,12 @@ const updateConsole = async () => {
     }
 
     p.addRow({ text: "Commands:", color: "white", bg: "bgBlack" })
-    p.addRow(
-        { text: "  'space'", color: "gray", bold: true },
-        { text: "   - Start/stop simulator", color: "white", italic: true }
-    )
-    p.addRow(
-        { text: "  'm'", color: "gray", bold: true },
-        { text: "       - Select simulation mode", color: "white", italic: true }
-    )
-    p.addRow(
-        { text: "  's'", color: "gray", bold: true },
-        { text: "       - Select message period", color: "white", italic: true }
-    )
-    p.addRow(
-        { text: "  'h'", color: "gray", bold: true },
-        { text: "       - Set max value", color: "white", italic: true }
-    )
-    p.addRow(
-        { text: "  'l'", color: "gray", bold: true },
-        { text: "       - Set min value", color: "white", italic: true }
-    )
-    p.addRow(
-        { text: "  'q'", color: "gray", bold: true },
-        { text: "       - Quit", color: "white", italic: true }
-    )
+    p.addRow({ text: "  'space'", color: "gray", bold: true }, { text: "   - Start/stop simulator", color: "white", italic: true })
+    p.addRow({ text: "  'm'", color: "gray", bold: true }, { text: "       - Select simulation mode", color: "white", italic: true })
+    p.addRow({ text: "  's'", color: "gray", bold: true }, { text: "       - Select message period", color: "white", italic: true })
+    p.addRow({ text: "  'h'", color: "gray", bold: true }, { text: "       - Set max value", color: "white", italic: true })
+    p.addRow({ text: "  'l'", color: "gray", bold: true }, { text: "       - Set min value", color: "white", italic: true })
+    p.addRow({ text: "  'q'", color: "gray", bold: true }, { text: "       - Quit", color: "white", italic: true })
 
     GUI.setPage(p, 0)
 }
@@ -364,101 +228,96 @@ GUI.on("keypressed", (key) => {
         }
         break
     case "m":
-        new OptionPopup(
-            "popupSelectMode",
-            "Select simulation mode",
-            modeList,
-            mode
-        )
-            .show()
-            .on("confirm", (_mode) => {
-                mode = _mode
-                GUI.warn(`NEW MODE: ${mode}`)
-                drawGui()
-            })
+        new OptionPopup({
+            id: "popupSelectMode", 
+            title: "Select simulation mode", 
+            options: modeList, 
+            selected: mode 
+        }).show().on("confirm", (_mode) => {
+            mode = _mode
+            GUI.warn(`NEW MODE: ${mode}`)
+            drawGui()
+        })
         break
     case "s":
-        new OptionPopup(
-            "popupSelectPeriod",
-            "Select simulation period",
-            periodList,
-            period
-        )
-            .show()
-            .on("confirm", (_period) => {
-                const msgMultiLine = `Changing period from ${period} to ${_period} ms.${os.EOL}This will restart the simulator.${os.EOL}Do you want to continue?`
-                new ButtonPopup(
-                    "popupConfirmPeriod",
-                    "Confirm period",
-                    msgMultiLine,
-                    ["Yes", "No", "?"]
-                )
-                    .show()
-                    .on("confirm", (answer) => {
-                        if (answer === "Yes") {
-                            period = _period
-                            GUI.warn(`NEW PERIOD: ${period}`)
-                        } else if (answer === "?") {
-                            GUI.info("Choose ok to confirm period")
-                        }
-                        drawGui()
-                    })
+        new OptionPopup({
+            id: "popupSelectPeriod", 
+            title: "Select simulation period", 
+            options: periodList, 
+            selected: period 
+        }).show().on("confirm", (_period) => {
+            const msgMultiLine = `Changing period from ${period} to ${_period} ms.${EOL}This will restart the simulator.${EOL}Do you want to continue?`
+            new ButtonPopup({
+                id: "popupConfirmPeriod", 
+                title: "Confirm period", 
+                message: msgMultiLine, 
+                buttons: ["Yes", "No", "?"]
+            }).show().on("confirm", (answer) => {
+                if (answer === "Yes") {
+                    period = _period
+                    GUI.warn(`NEW PERIOD: ${period}`)
+                } else if (answer === "?") {
+                    GUI.info("Choose ok to confirm period")
+                }
+                drawGui()
             })
+        })
         break
     case "h":
-        new InputPopup("popupTypeMax", "Type max value", max, true)
-            .show()
-            .on("confirm", (_max) => {
-                max = _max
-                GUI.warn(`NEW MAX VALUE: ${max}`)
-                drawGui()
-            })
+        new InputPopup({
+            id: "popupTypeMax", 
+            title: "Type max value", 
+            value: max,
+            numeric: true
+        }).show().on("confirm", (_max) => {
+            max = _max
+            GUI.warn(`NEW MAX VALUE: ${max}`)
+            drawGui()
+        })
         break
     case "l":
-        new InputPopup("popupTypeMin", "Type min value", min, true)
-            .show()
-            .on("confirm", (_min) => {
-                min = _min
-                GUI.warn(`NEW MIN VALUE: ${min}`)
-                drawGui()
-            })
+        new InputPopup({
+            id: "popupTypeMin", 
+            title: "Type min value", 
+            value: min, 
+            numeric: true
+        }).show().on("confirm", (_min) => {
+            min = _min
+            GUI.warn(`NEW MIN VALUE: ${min}`)
+            drawGui()
+        })
         break
     case "1":
         {
             const p = new PageBuilder(5) // Add a scroll limit so it will be scrollable with up and down
-            p.addRow({
-                text: "Example of a custom popup content!",
-                color: "yellow",
-            })
+            p.addRow({ text: "Example of a custom popup content!", color: "yellow" })
             p.addRow({ text: "This is a custom popup!", color: "green" })
             p.addRow({ text: "It can be used to show a message,", color: "green" })
             p.addRow({ text: "or to show variables.", color: "green" })
-            p.addRow(
-                { text: "TCP Message sent: ", color: "green" },
-                { text: `${tcpCounter}`, color: "white" }
-            )
-            p.addRow(
-                { text: "Connected clients: ", color: "green" },
-                { text: `${connectedClients}`, color: "white" }
-            )
-            p.addRow(
-                { text: "Mode: ", color: "green" },
-                { text: `${mode}`, color: "white" }
-            )
-            p.addRow(
-                { text: "Message period: ", color: "green" },
-                { text: `${period} ms`, color: "white" }
-            )
-            new CustomPopup("popupCustom1", "See that values", p, 32).show()
+            p.addRow({ text: "TCP Message sent: ", color: "green" }, { text: `${tcpCounter}`, color: "white" })
+            p.addRow({ text: "Connected clients: ", color: "green" }, { text: `${connectedClients}`, color: "white" })
+            p.addRow({ text: "Mode: ", color: "green" }, { text: `${mode}`, color: "white" })
+            p.addRow({ text: "Message period: ", color: "green" }, { text: `${period} ms`, color: "white" })
+            new CustomPopup({
+                id: "popupCustom1", 
+                title: "See that values", 
+                content: p, 
+                width: 32
+            }).show()
         }
         break
     case "f":
-        new FileSelectorPopup("popupFileManager", "File Manager", "./").show()
+        new FileSelectorPopup({
+            id: "popupFileManager", 
+            title: "File Manager", 
+            basePath: "./"
+        }).show()
         break
     case "q":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?", "Yes")
-            .show()
-            .on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break
@@ -471,7 +330,7 @@ const drawGui = () => {
 
 const closeApp = () => {
     console.clear()
-    clearInterval(valueEmitter)
+    if (valueEmitter) clearInterval(valueEmitter)
     server.close()
     process.exit()
 }

@@ -18,7 +18,9 @@ GUI.on("exit", () => {
 GUI.on("keypressed", (key) => {
     switch (key.name) {
     case "q":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break
@@ -38,7 +40,6 @@ const b = new Box({
     y: 3,
     width: 17,
     height: 4,
-    draggable: true,
     style: {
         boxed: true,
     }
@@ -64,3 +65,15 @@ content.addRow({
 
 
 b.setContent(content)
+
+new Box({
+    id: "box1",
+    x: 22,
+    y: 3,
+    width: 28,
+    height: 3,
+    draggable: true,
+    style: {
+        boxed: true,
+    }
+}).setContent(new InPageWidgetBuilder().addRow({ text: "This is a draggable Box!", color: "rgb(255,0,0)", bg: "rgb(0,0,255)"}))

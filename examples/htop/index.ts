@@ -1,3 +1,4 @@
+import os from "node:os"
 import { 
     ConsoleManager, 
     ConsoleGuiOptions, 
@@ -9,11 +10,11 @@ import {
     SimplifiedStyledElement,
     InPageWidgetBuilder,
     Box,
-    OptionPopup
+    OptionPopup,
+    EOL
 } from "console-gui-tools"
 import { RelativeMouseEvent } from "console-gui-tools/dist/types/components/MouseManager"
 import _ from "lodash"
-import os from "node:os"
 import psList, { ProcessDescriptor } from "ps-list"
 
 const opt = {
@@ -35,7 +36,10 @@ GUI.on("keypressed", (key: KeyListenerArgs) => {
     switch (key.name) {
     case "q":
     case "f10":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?", undefined).show().on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break
@@ -105,6 +109,8 @@ const Table = new Box({
     height: 30,
 })
 
+Table.focus()
+
 Table.on("keypress", (key: KeyListenerArgs) => {
     if (!Table.focused) return
     switch (key.name) {
@@ -124,7 +130,10 @@ Table.on("keypress", (key: KeyListenerArgs) => {
         // Kill process
         if (tableData.psTab.length > 0) {
             const selectedProcess = tableData.psTab[tableData.selectedRow]
-            new ConfirmPopup("popupKill", `Are you sure you want to kill process ${selectedProcess.name} (${selectedProcess.pid})?`, undefined).show().on("confirm", () => {
+            new ConfirmPopup({
+                id: "popupKill",
+                title: `Are you sure you want to kill process ${selectedProcess.name} (${selectedProcess.pid})?`, 
+            }).show().on("confirm", () => {
                 process.kill(selectedProcess.pid)
             })
         }
@@ -133,7 +142,12 @@ Table.on("keypress", (key: KeyListenerArgs) => {
         // Sort by
         {
             const sortOptions = Object.keys(tableData.psTab[0])
-            new OptionPopup("popupSort", "Sort by", sortOptions, tableData.sortBy).show().on("confirm", (option: string) => {
+            new OptionPopup({
+                id: "popupSort",
+                title: "Sort by", 
+                options: sortOptions, 
+                selected: tableData.sortBy
+            }).show().on("confirm", (option: string) => {
                 tableData.sortBy = option
                 drawTable()
             })
@@ -141,7 +155,11 @@ Table.on("keypress", (key: KeyListenerArgs) => {
         break
     case "f1":
         // Help
-        new ConfirmPopup("popupHelp", "Help", `Use the mouse wheel to scroll the table.${os.EOL}Use the up and down arrow keys to select a row.${os.EOL}Press F9 to kill a process.${os.EOL}Press F6 to sort the table.${os.EOL}Press F1 to show this help.${os.EOL}Press F10 or Q to quit.`).show()
+        new ConfirmPopup({
+            id: "popupHelp", 
+            title: "Help", 
+            message: `Use the mouse wheel to scroll the table.${EOL}Use the up and down arrow keys to select a row.${EOL}Press F9 to kill a process.${EOL}Press F6 to sort the table.${EOL}Press F1 to show this help.${EOL}Press F10 or Q to quit.`
+        }).show()
         break
     default:
         break
@@ -207,7 +225,7 @@ function getCPULoadAVG(core: number, avgTime = 1000, delay = 500) {
         const avg1 = cpuAverage(core)
   
         const interval = setInterval(() => {
-            GUI.log("CPU Interval: " + i)
+            //GUI.log("CPU Interval: " + i)
   
             if (i >= n) {
                 clearInterval(interval)
@@ -329,6 +347,7 @@ const drawTable = () => {
         )
     })
     Table.setContent(tableData.table)
+    //Table.focus()
 }
 
 const updateTable = (psTable: ProcessDescriptor[], header: string[], maxSizes: number[], spacing: number) => {

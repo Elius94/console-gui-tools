@@ -18,7 +18,10 @@ GUI.on("exit", () => {
 GUI.on("keypressed", (key) => {
     switch (key.name) {
     case "q":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break
@@ -32,7 +35,7 @@ const closeApp = () => {
 
 GUI.refresh()
 
-new Progress({
+const p1 = new Progress({
     id: "htop-mem",
     x: 2,
     y: 1,
@@ -47,3 +50,51 @@ new Progress({
         showMinMax: false,
     }
 })
+
+setInterval(() => {
+    p1.setValue(Math.floor(Math.random() * 100))
+}, 400)
+
+new Progress({
+    id: "interactive",
+    x: 2,
+    y: 3,
+    length: 40,
+    thickness: 3,
+    label: "Interactive Progress (use scroll wheel)",
+    min: 0,
+    max: 100,
+    value: 50,
+    interactive: true,
+    increment: 1,
+    style: {
+        boxed: true,
+        theme: "precision",
+        color: "green",
+        showMinMax: true,
+    }
+})
+
+const p2 = new Progress({
+    id: "vertical",
+    x: 2,
+    y: 6,
+    label: "Vertical Progress",
+    length: 20,
+    min: 0,
+    max: 100,
+    unit: "%",
+    orientation: "vertical",
+    style: {
+        boxed: true,
+        theme: "precision",
+        showMinMax: false,
+        showLabel: true,
+    }
+})
+
+setInterval(() => {
+    p2.setValue(Math.floor(Math.random() * 100))
+}, 400)
+
+

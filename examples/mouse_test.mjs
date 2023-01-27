@@ -19,7 +19,10 @@ GUI.on("exit", () => {
 GUI.on("keypressed", (key) => {
     switch (key.name) {
     case "q":
-        new ConfirmPopup("popupQuit", "Are you sure you want to quit?").show().on("confirm", () => closeApp())
+        new ConfirmPopup({
+            id: "popupQuit", 
+            title: "Are you sure you want to quit?"
+        }).show().on("confirm", () => closeApp())
         break
     default:
         break
@@ -38,7 +41,7 @@ const style1 = {
 
 const btnProps = {
     id: "btnClickMe", 
-    text: "Click Me!", 
+    text: "Click Me! (Ctrl+R)", 
     x: 10, 
     y: 15, 
     style: style1,
