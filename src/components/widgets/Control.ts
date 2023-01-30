@@ -175,7 +175,6 @@ export class Control extends EventEmitter {
     public focus(): Control {
         if (this.visible && !this.focused) {
             this.focused = true
-            this.unManageInput()
             this.manageInput()
             //this.CM.refresh()
         }

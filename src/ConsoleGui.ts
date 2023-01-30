@@ -443,6 +443,9 @@ class ConsoleManager extends EventEmitter {
      * @example CM.setKeyListener('inputPopup', popup.keyListener)
      */
     public setKeyListener(id: string, manageFunction: (_str: string, key: KeyListenerArgs) => void): void {
+        if (this.eventListenersContainer[id] !== undefined) {
+            this.removeKeyListener(id)
+        }
         this.eventListenersContainer[id] = manageFunction
         this.Input.addListener("keypress", this.eventListenersContainer[id])
     }
@@ -466,6 +469,9 @@ class ConsoleManager extends EventEmitter {
      * @example CM.setMouseListener('inputPopup', popup.mouseListener)
      */
     public setMouseListener(id: string, manageFunction: (key: MouseEvent) => void): void {
+        if (this.eventListenersContainer[id] !== undefined) {
+            this.removeMouseListener(id)
+        }
         this.eventListenersContainer[id] = manageFunction
         this.mouse.addListener("mouseevent", this.eventListenersContainer[id])
     }
