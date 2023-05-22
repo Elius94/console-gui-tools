@@ -445,7 +445,7 @@ Result:
 
 ![InPageWidget](https://user-images.githubusercontent.com/14907987/202858694-82ca7f26-2a7a-4210-92da-fbbd40ad10b4.gif)
 
-## Box (since 3.0.0) [New!](docs/Box.md)
+## Box (since 3.0.3) [New!](docs/Box.md)
 The box is a control widget that allows you to create a box with a title and a content. The content is a InPageWidgetBuilder object, so you can add rows to it. It can have a title and can be boxed or not. It can be used to place some texts in a specific position of the screen, without using the layout. It also can be draggable.
 
 ```ts
