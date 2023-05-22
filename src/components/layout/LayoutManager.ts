@@ -32,7 +32,7 @@ export interface LayoutOptions {
     type: "single" | "double" | "triple" | "quad";
     direction?: "horizontal" | "vertical";
     pageTitles?: string[];
-    pageRatio?: [number, number] | [[number, number]];
+    pageRatio?: [number, number] | [[number, number], [number, number]];
 }
 
 /**
