@@ -12,18 +12,18 @@ const modeList = ["random", "linear"]
 
 const clientManager = new EventEmitter()
 
-import { 
-    ConsoleManager, 
-    OptionPopup, 
-    InputPopup, 
-    PageBuilder, 
-    ButtonPopup, 
-    ConfirmPopup, 
-    CustomPopup, 
-    FileSelectorPopup, 
-    Control, 
-    InPageWidgetBuilder, 
-    Button, 
+import {
+    ConsoleManager,
+    OptionPopup,
+    InputPopup,
+    PageBuilder,
+    ButtonPopup,
+    ConfirmPopup,
+    CustomPopup,
+    FileSelectorPopup,
+    Control,
+    InPageWidgetBuilder,
+    Button,
     EOL
 } from "../dist/esm/ConsoleGui.mjs"
 const GUI = new ConsoleManager({
@@ -73,6 +73,7 @@ server.on("error", err => {
 
 let min = 9
 let max = 12
+let text = "Hello world!"
 
 let values = [0, 0, 0, 0, 0, 0]
 
@@ -124,9 +125,9 @@ const defineCustomWidget = () => {
 
     //id: string, visible = false, attributes: PhisicalValues, children: PageBuilder
     const button1 = new Control({
-        id: "btn1", 
-        attributes: { x: 60, y: 1, width: 10, height: 3 }, 
-        children: widget1 
+        id: "btn1",
+        attributes: { x: 60, y: 1, width: 10, height: 3 },
+        children: widget1
     })
     button1.on("relativeMouse", (event) => {
         // The relative mouse event is triggered with the mouse position relative to the widget
@@ -145,9 +146,9 @@ const defineCustomWidget = () => {
 
 const defineButton = () => {
     new Button({
-        id: "btnRun", 
-        text: "Run me!", 
-        x: 48, 
+        id: "btnRun",
+        text: "Run me!",
+        x: 48,
         y: 1,
         style: {
             color: "magentaBright",
@@ -228,10 +229,10 @@ GUI.on("keypressed", (key) => {
         break
     case "m":
         new OptionPopup({
-            id: "popupSelectMode", 
-            title: "Select simulation mode", 
-            options: modeList, 
-            selected: mode 
+            id: "popupSelectMode",
+            title: "Select simulation mode",
+            options: modeList,
+            selected: mode
         }).show().on("confirm", (_mode) => {
             mode = _mode
             GUI.warn(`NEW MODE: ${mode}`)
@@ -240,16 +241,16 @@ GUI.on("keypressed", (key) => {
         break
     case "s":
         new OptionPopup({
-            id: "popupSelectPeriod", 
-            title: "Select simulation period", 
-            options: periodList, 
-            selected: period 
+            id: "popupSelectPeriod",
+            title: "Select simulation period",
+            options: periodList,
+            selected: period
         }).show().on("confirm", (_period) => {
             const msgMultiLine = `Changing period from ${period} to ${_period} ms.${EOL}This will restart the simulator.${EOL}Do you want to continue?`
             new ButtonPopup({
-                id: "popupConfirmPeriod", 
-                title: "Confirm period", 
-                message: msgMultiLine, 
+                id: "popupConfirmPeriod",
+                title: "Confirm period",
+                message: msgMultiLine,
                 buttons: ["Yes", "No", "?"]
             }).show().on("confirm", (answer) => {
                 if (answer === "Yes") {
@@ -264,8 +265,8 @@ GUI.on("keypressed", (key) => {
         break
     case "h":
         new InputPopup({
-            id: "popupTypeMax", 
-            title: "Type max value", 
+            id: "popupTypeMax",
+            title: "Type max value",
             value: max,
             numeric: true
         }).show().on("confirm", (_max) => {
@@ -276,13 +277,24 @@ GUI.on("keypressed", (key) => {
         break
     case "l":
         new InputPopup({
-            id: "popupTypeMin", 
-            title: "Type min value", 
-            value: min, 
+            id: "popupTypeMin",
+            title: "Type min value",
+            value: min,
             numeric: true
         }).show().on("confirm", (_min) => {
             min = _min
             GUI.warn(`NEW MIN VALUE: ${min}`)
+            drawGui()
+        })
+        break
+    case "t":
+        new InputPopup({
+            id: "popupTypeText",
+            title: "Type Text value",
+            value: text
+        }).show().on("confirm", (_text) => {
+            text = _text
+            GUI.warn(`NEW TEXT VALUE: ${text}`)
             drawGui()
         })
         break
@@ -298,23 +310,23 @@ GUI.on("keypressed", (key) => {
             p.addRow({ text: "Mode: ", color: "green" }, { text: `${mode}`, color: "white" })
             p.addRow({ text: "Message period: ", color: "green" }, { text: `${period} ms`, color: "white" })
             new CustomPopup({
-                id: "popupCustom1", 
-                title: "See that values", 
-                content: p, 
+                id: "popupCustom1",
+                title: "See that values",
+                content: p,
                 width: 32
             }).show()
         }
         break
     case "f":
         new FileSelectorPopup({
-            id: "popupFileManager", 
-            title: "File Manager", 
+            id: "popupFileManager",
+            title: "File Manager",
             basePath: "./"
         }).show()
         break
     case "q":
         new ConfirmPopup({
-            id: "popupQuit", 
+            id: "popupQuit",
             title: "Are you sure you want to quit?"
         }).show().on("confirm", () => closeApp())
         break
