@@ -21,7 +21,7 @@ export interface InputPopupConfig {
     id: string,
     title: string,
     value: string | number,
-    numeric: boolean,
+    numeric?: boolean,
     visible?: boolean,
 }
 
@@ -71,14 +71,13 @@ export class InputPopup extends EventEmitter {
         if (!id) throw new Error("InputPopup id is required")
         if (!title) throw new Error("InputPopup title is required")
         if (value === undefined) throw new Error("InputPopup value is required")
-        if (numeric === undefined) throw new Error("InputPopup numeric is required")
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
         this.id = id
         this.title = title
         this.value = value
-        this.numeric = numeric
+        this.numeric = numeric || false
         this.visible = visible
         this.marginTop = 4
         this.offsetX = 0
@@ -197,7 +196,7 @@ export class InputPopup extends EventEmitter {
         const v = this.value
         if (v.toString().length < 20) {
             let tmp = v.toString()
-            tmp += key.name
+            tmp += key.sequence
             this.value = tmp
         }
         switch (key.name) {

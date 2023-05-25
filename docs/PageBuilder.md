@@ -44,8 +44,7 @@ It's a sort of collection of styled rows.</p>
 
 **Example**  
 ```js
-page.addRow({ text: 'Hello World', color: 'white' })
-page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
+page.addRow({ text: 'Hello World', color: 'white' })page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', color: 'white' })
 ```
 <a name="PageBuilder+addSpacer"></a>
 
@@ -60,8 +59,7 @@ page.addRow({ text: 'Hello World', color: 'white' }, { text: 'Hello World', colo
 
 **Example**  
 ```js
-page.addEmptyRow()
-page.addEmptyRow(2)
+page.addEmptyRow()page.addEmptyRow(2)
 ```
 <a name="PageBuilder+getContent"></a>
 
