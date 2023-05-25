@@ -234,13 +234,13 @@ export class InputPopup extends EventEmitter {
             {
                 // no-op for now
             }
-            break;
+            break
         case "tab":
             {
                 // Add two spaces
                 this.value = v.toString() + "  "
             }
-            break;
+            break
         
         default:
             break
