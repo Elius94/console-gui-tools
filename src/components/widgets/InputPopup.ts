@@ -194,7 +194,7 @@ export class InputPopup extends EventEmitter {
             return
         } // Continue only if the result is 0
         const v = this.value
-        if (v.toString().length < 20) {
+        if (v.toString().length < 20 && key.sequence.length === 1) {
             let tmp = v.toString()
             tmp += key.sequence
             this.value = tmp
@@ -230,6 +230,18 @@ export class InputPopup extends EventEmitter {
                 //delete this
             }
             break
+        case "delete":
+            {
+                // no-op for now
+            }
+            break;
+        case "tab":
+            {
+                // Add two spaces
+                this.value = v.toString() + "  "
+            }
+            break;
+        
         default:
             break
         }
