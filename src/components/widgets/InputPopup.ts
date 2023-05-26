@@ -7,7 +7,7 @@ import chalk from "chalk"
 /**
  * @description The configuration for the InputPopup class.
  * @typedef {Object} InputPopupConfig
- * 
+ *
  * @prop {string} id - The id of the popup.
  * @prop {string} title - The title of the popup.
  * @prop {string | number} value - The value of the popup.
@@ -31,21 +31,21 @@ export interface InputPopupConfig {
 /**
  * @class InputPopup
  * @extends EventEmitter
- * @description This class is used to create a popup with a text or numeric input. 
- * 
+ * @description This class is used to create a popup with a text or numeric input.
+ *
  * ![InputPopup](https://user-images.githubusercontent.com/14907987/165752281-e836b862-a54a-48d5-b4e7-954374d6509f.gif)
- * 
- * Emits the following events: 
+ *
+ * Emits the following events:
  * - "confirm" when the user confirm the input
  * - "cancel" when the user cancel the input
  * - "exit" when the user exit the input
  * @param {InputPopupConfig} config - The config of the popup.
- * 
- * @example ```ts 
+ *
+ * @example ```ts
  * const popup = new InputPopup({
- *  id: "popup1", 
- *  title: "Choose the number", 
- *  value: selectedNumber, 
+ *  id: "popup1",
+ *  title: "Choose the number",
+ *  value: selectedNumber,
  *  numeric: true
  * }).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
  * ```
@@ -67,7 +67,7 @@ export class InputPopup extends EventEmitter {
     private offsetY: number
     private absoluteValues: PhisicalValues
     private dragging = false
-    private dragStart: { x: number, y: number } = { x: 0, y: 0 }
+    private dragStart: { x: number; y: number } = { x: 0, y: 0 }
     private focused = false
     private placeholder?: string
 
@@ -106,12 +106,12 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
-     * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} _str - The string of the input.
-     * @param {Object} key - The key object.
-     * @memberof InputPopup
-     */
+   * @description This function is used to make the ConsoleManager handle the key events when the input is numeric and it is showed.
+   * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
+   * @param {string} _str - The string of the input.
+   * @param {Object} key - The key object.
+   * @memberof InputPopup
+   */
     public keyListenerNumeric(_str: string, key: KeyListenerArgs): void {
         const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
         if (checkResult === 1) {
@@ -145,7 +145,10 @@ export class InputPopup extends EventEmitter {
             case "backspace":
                 // If backspace is pressed I remove the last character from the typed value
                 if (this.value.toString().length > 0) {
-                    if (this.value.toString().indexOf(".") === this.value.toString().length - 1) {
+                    if (
+                        this.value.toString().indexOf(".") ===
+              this.value.toString().length - 1
+                    ) {
                         this.value = v.toString()
                     } else if (this.value.toString().indexOf(".") === this.value.toString().length - 2) {
                         this.value = this.value.toString().slice(0, this.value.toString().length - 1)
@@ -189,12 +192,12 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
-     * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
-     * @param {string} _str - The string of the input.
-     * @param {Object} key - The key object.
-     * @memberof InputPopup
-     */
+   * @description This function is used to make the ConsoleManager handle the key events when the input is text and it is showed.
+   * Inside this function are defined all the keys that can be pressed and the actions to do when they are pressed.
+   * @param {string} _str - The string of the input.
+   * @param {Object} key - The key object.
+   * @memberof InputPopup
+   */
     public keyListenerText(_str: string, key: KeyListenerArgs): void {
         const checkResult = this.CM.mouse.isMouseFrame(key, this.parsingMouseFrame)
         if (checkResult === 1) {
@@ -207,7 +210,7 @@ export class InputPopup extends EventEmitter {
         const v = this.value
         switch (key.name) {
         case "backspace":
-            // If backspace is pressed I remove the last character from the typed value
+        // If backspace is pressed I remove the last character from the typed value
             if (v.toString().length > 0) {
                 this.value = v.toString().slice(0, v.toString().length - 1)
             }
@@ -247,7 +250,7 @@ export class InputPopup extends EventEmitter {
                 this.value = v.toString() + "  "
             }
             break
-        
+
         default:
             if (v.toString().length < 20 && key.sequence.length === 1) {
                 let tmp = v.toString()
@@ -260,20 +263,20 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to get the value of the input.
-     * @returns {string | number} The value of the input.
-     * @memberof InputPopup
-     */
+   * @description This function is used to get the value of the input.
+   * @returns {string | number} The value of the input.
+   * @memberof InputPopup
+   */
     public getValue(): string | number {
         return this.value
     }
 
     /**
-     * @description This function is used to change the value of the input. It also refresh the ConsoleManager.
-     * @param {string | number} newValue - The new value of the input.
-     * @memberof InputPopup
-     * @returns {InputPopup} The instance of the InputPopup.
-     */
+   * @description This function is used to change the value of the input. It also refresh the ConsoleManager.
+   * @param {string | number} newValue - The new value of the input.
+   * @memberof InputPopup
+   * @returns {InputPopup} The instance of the InputPopup.
+   */
     public setValue(newValue: string | number): this {
         this.value = newValue
         this.CM.refresh()
@@ -281,10 +284,10 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
-     * @returns {InputPopup} The instance of the InputPopup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to show the popup. It also register the key events and refresh the ConsoleManager.
+   * @returns {InputPopup} The instance of the InputPopup.
+   * @memberof InputPopup
+   */
     public show(): InputPopup {
         if (!this.visible) {
             this.manageInput()
@@ -296,10 +299,10 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to hide the popup. It also unregister the key events and refresh the ConsoleManager.
-     * @returns {InputPopup} The instance of the InputPopup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to hide the popup. It also unregister the key events and refresh the ConsoleManager.
+   * @returns {InputPopup} The instance of the InputPopup.
+   * @memberof InputPopup
+   */
     public hide(): InputPopup {
         if (this.visible) {
             this.unManageInput()
@@ -311,69 +314,79 @@ export class InputPopup extends EventEmitter {
     }
 
     /**
-     * @description This function is used to get the visibility of the popup.
-     * @returns {boolean} The visibility of the popup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to get the visibility of the popup.
+   * @returns {boolean} The visibility of the popup.
+   * @memberof InputPopup
+   */
     public isVisible(): boolean {
         return this.visible
     }
 
-    
     /**
-     * @description This function is used to return the PhisicalValues of the popup (x, y, width, height).
-     * @memberof InputPopup
-     * @private
-     * @returns {InputPopup} The instance of the InputPopup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to return the PhisicalValues of the popup (x, y, width, height).
+   * @memberof InputPopup
+   * @private
+   * @returns {InputPopup} The instance of the InputPopup.
+   * @memberof InputPopup
+   */
     public getPosition(): PhisicalValues {
         return this.absoluteValues
     }
 
     /**
-     * @description This function is used to add the InputPopup key listener callback to te ConsoleManager.
-     * @returns {InputPopup} The instance of the InputPopup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to add the InputPopup key listener callback to te ConsoleManager.
+   * @returns {InputPopup} The instance of the InputPopup.
+   * @memberof InputPopup
+   */
     private manageInput(): InputPopup {
-        // Add a command input listener to change mode
+    // Add a command input listener to change mode
         if (this.numeric) {
             this.CM.setKeyListener(this.id, this.keyListenerNumeric.bind(this))
         } else {
             this.CM.setKeyListener(this.id, this.keyListenerText.bind(this))
         }
-        if (this.CM.mouse) this.CM.setMouseListener(`${this.id}_mouse`, this.mouseListener.bind(this))
+        if (this.CM.mouse)
+            this.CM.setMouseListener(
+                `${this.id}_mouse`,
+                this.mouseListener.bind(this)
+            )
         return this
     }
 
     /**
-     * @description This function is used to remove the InputPopup key listener callback to te ConsoleManager.
-     * @returns {InputPopup} The instance of the InputPopup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to remove the InputPopup key listener callback to te ConsoleManager.
+   * @returns {InputPopup} The instance of the InputPopup.
+   * @memberof InputPopup
+   */
     private unManageInput(): InputPopup {
-        // Add a command input listener to change mode
+    // Add a command input listener to change mode
         if (this.numeric) {
-            this.CM.removeKeyListener(this.id/*, this.keyListenerNumeric.bind(this)*/)
+            this.CM.removeKeyListener(
+                this.id /*, this.keyListenerNumeric.bind(this)*/
+            )
         } else {
-            this.CM.removeKeyListener(this.id/*, this.keyListenerText.bind(this)*/)
+            this.CM.removeKeyListener(this.id /*, this.keyListenerText.bind(this)*/)
         }
         if (this.CM.mouse) this.CM.removeMouseListener(`${this.id}_mouse`)
         return this
     }
 
     /**
-     * @description This function is used to manage the mouse events on the OptionPopup.
-     * @param {MouseEvent} event - The string of the input.
-     * @memberof OptionPopup
-     */
+   * @description This function is used to manage the mouse events on the OptionPopup.
+   * @param {MouseEvent} event - The string of the input.
+   * @memberof OptionPopup
+   */
     private mouseListener = (event: MouseEvent) => {
         const x = event.data.x
         const y = event.data.y
 
         //this.CM.log(event.name)
-        if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + this.absoluteValues.height) {
+        if (
+            x > this.absoluteValues.x &&
+      x < this.absoluteValues.x + this.absoluteValues.width &&
+      y > this.absoluteValues.y &&
+      y < this.absoluteValues.y + this.absoluteValues.height
+        ) {
             // The mouse is inside the popup
             //this.CM.log("Mouse inside popup")
             if (event.name === "MOUSE_WHEEL_DOWN") {
@@ -395,45 +408,71 @@ export class InputPopup extends EventEmitter {
         } else {
             this.focused = false
         }
-        if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === false && this.focused) {
+        if (
+            event.name === "MOUSE_DRAG" &&
+      event.data.left === true &&
+      this.dragging === false &&
+      this.focused
+        ) {
             // check if the mouse is on the header of the popup (first three lines)
-            if (x > this.absoluteValues.x && x < this.absoluteValues.x + this.absoluteValues.width && y > this.absoluteValues.y && y < this.absoluteValues.y + 3/* 3 = header height */) {
+            if (
+                x > this.absoluteValues.x &&
+        x < this.absoluteValues.x + this.absoluteValues.width &&
+        y > this.absoluteValues.y &&
+        y < this.absoluteValues.y + 3 /* 3 = header height */
+            ) {
                 this.dragging = true
                 this.dragStart = { x: x, y: y }
             }
-        } else if (event.name === "MOUSE_DRAG" && event.data.left === true && this.dragging === true) {
-            if ((y - this.dragStart.y) + this.absoluteValues.y < 0) {
+        } else if (
+            event.name === "MOUSE_DRAG" &&
+      event.data.left === true &&
+      this.dragging === true
+        ) {
+            if (y - this.dragStart.y + this.absoluteValues.y < 0) {
                 return // prevent the popup to go out of the top of the screen
             }
-            if ((x - this.dragStart.x) + this.absoluteValues.x < 0) {
+            if (x - this.dragStart.x + this.absoluteValues.x < 0) {
                 return // prevent the popup to go out of the left of the screen
             }
             this.offsetX += x - this.dragStart.x
             this.offsetY += y - this.dragStart.y
             this.dragStart = { x: x, y: y }
             this.CM.refresh()
-        } else if (event.name === "MOUSE_LEFT_BUTTON_RELEASED" && this.dragging === true) {
+        } else if (
+            event.name === "MOUSE_LEFT_BUTTON_RELEASED" &&
+      this.dragging === true
+        ) {
             this.dragging = false
             this.CM.refresh()
         }
     }
 
     /**
-     * @description This function is used to draw the InputPopup to the screen in the middle.
-     * @returns {InputPopup} The instance of the InputPopup.
-     * @memberof InputPopup
-     */
+   * @description This function is used to draw the InputPopup to the screen in the middle.
+   * @returns {InputPopup} The instance of the InputPopup.
+   * @memberof InputPopup
+   */
     public draw(): InputPopup {
         const offset = 2
-        const windowWidth = this.title.length > this.value.toString().length ? this.title.length + (2 * offset) : this.value.toString().length + (2 * offset) + 1
+        const windowWidth =
+      this.title.length > this.value.toString().length
+          ? this.title.length + 2 * offset
+          : this.value.toString().length + 2 * offset + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
         let header = boxChars["normal"].topLeft
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
         header += `${boxChars["normal"].topRight}${EOL}`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title}${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical}${EOL}`
-        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(windowWidth)}${boxChars["normal"].right}${EOL}`
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${
+            this.title
+        }${" ".repeat(windowWidth - halfWidth - this.title.length)}${
+            boxChars["normal"].vertical
+        }${EOL}`
+        header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(
+            windowWidth
+        )}${boxChars["normal"].right}${EOL}`
 
         let footer = boxChars["normal"].bottomLeft
         for (let i = 0; i < windowWidth; i++) {
@@ -454,9 +493,12 @@ export class InputPopup extends EventEmitter {
 
         const windowDesign = `${header}${content}${footer}`
         const windowDesignLines = windowDesign.split(EOL)
-        const centerScreen = Math.round((this.CM.Screen.width / 2) - (windowWidth / 2))
+        const centerScreen = Math.round(this.CM.Screen.width / 2 - windowWidth / 2)
         windowDesign.split(EOL).forEach((line, index) => {
-            this.CM.Screen.cursorTo(centerScreen + this.offsetX, this.marginTop + index + this.offsetY)
+            this.CM.Screen.cursorTo(
+                centerScreen + this.offsetX,
+                this.marginTop + index + this.offsetY
+            )
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         this.absoluteValues = {
