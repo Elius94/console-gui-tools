@@ -194,11 +194,6 @@ export class InputPopup extends EventEmitter {
             return
         } // Continue only if the result is 0
         const v = this.value
-        if (v.toString().length < 20 && key.sequence.length === 1) {
-            let tmp = v.toString()
-            tmp += key.sequence
-            this.value = tmp
-        }
         switch (key.name) {
         case "backspace":
             // If backspace is pressed I remove the last character from the typed value
@@ -243,6 +238,11 @@ export class InputPopup extends EventEmitter {
             break
         
         default:
+            if (v.toString().length < 20 && key.sequence.length === 1) {
+                let tmp = v.toString()
+                tmp += key.sequence
+                this.value = tmp
+            }
             break
         }
         this.CM.refresh()
