@@ -52,6 +52,8 @@ export class InputPopup extends EventEmitter {
     readonly id: string
     title: string
     value: string | number
+    // Position of the cursor. 0-indexed (0 = before all the text)
+    cursorPos: number
     private numeric: boolean
     private visible: boolean
     private marginTop: number
@@ -77,6 +79,7 @@ export class InputPopup extends EventEmitter {
         this.id = id
         this.title = title
         this.value = value
+        this.cursorPos = 0
         this.numeric = numeric || false
         this.visible = visible
         this.marginTop = 4
