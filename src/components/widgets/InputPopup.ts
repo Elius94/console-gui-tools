@@ -144,7 +144,10 @@ export class InputPopup extends EventEmitter {
                         this.value = v.toString()
                     } else if (this.value.toString().indexOf(".") === this.value.toString().length - 2) {
                         this.value = this.value.toString().slice(0, this.value.toString().length - 1)
-                    } else {
+                    } else if (this.value.toString().indexOf("-") === 0 && this.value.toString().length === 2) {
+                        this.value = 0
+                    }
+                    else {
                         this.value = Number(v.toString().slice(0, v.toString().length - 1))
                     }
                 }
