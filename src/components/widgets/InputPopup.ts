@@ -2,6 +2,7 @@ import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues } from "../Utils.js"
+import chalk from "chalk"
 
 /**
  * @description The configuration for the InputPopup class.
@@ -12,6 +13,7 @@ import { boxChars, PhisicalValues } from "../Utils.js"
  * @prop {string | number} value - The value of the popup.
  * @prop {boolean} numeric - If the input is numeric.
  * @prop {boolean} [visible] - If the popup is visible.
+ * @prop {string} [placeholder] - Optional placeholder to show if empty
  *
  * @export
  * @interface InputPopupConfig
@@ -23,6 +25,7 @@ export interface InputPopupConfig {
     value: string | number,
     numeric?: boolean,
     visible?: boolean,
+    placeholder?: string
 }
 
 /**
@@ -66,6 +69,7 @@ export class InputPopup extends EventEmitter {
     private dragging = false
     private dragStart: { x: number, y: number } = { x: 0, y: 0 }
     private focused = false
+    private placeholder?: string
 
     public constructor(config: InputPopupConfig) {
         if (!config) throw new Error("InputPopup config is required")
@@ -91,6 +95,7 @@ export class InputPopup extends EventEmitter {
             width: 0,
             height: 0,
         }
+        this.placeholder = config.placeholder
         if (this.CM.popupCollection[this.id]) {
             this.CM.unregisterPopup(this)
             const message = `InputPopup ${this.id} already exists.`
@@ -438,7 +443,14 @@ export class InputPopup extends EventEmitter {
 
         let content = ""
         // Draw an input field
-        content += `${boxChars["normal"].vertical}${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical}${EOL}`
+        if(this.value.toString().length === 0 && this.placeholder?.length)
+            content += `${boxChars["normal"].vertical}${"> "}█${chalk.dim.gray(
+                `${this.placeholder}`
+            )}${" ".repeat(windowWidth - this.value.toString().length - 3)}${
+                boxChars["normal"].vertical
+            }${EOL}`
+        else
+            content += `${boxChars["normal"].vertical}${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical}${EOL}`
 
         const windowDesign = `${header}${content}${footer}`
         const windowDesignLines = windowDesign.split(EOL)
