@@ -20,12 +20,12 @@ import chalk from "chalk"
  */
 // @type definition
 export interface InputPopupConfig {
-    id: string,
-    title: string,
-    value: string | number,
-    numeric?: boolean,
-    visible?: boolean,
-    placeholder?: string
+  id: string;
+  title: string;
+  value: string | number;
+  numeric?: boolean;
+  visible?: boolean;
+  placeholder?: string;
 }
 
 /**
@@ -150,13 +150,22 @@ export class InputPopup extends EventEmitter {
               this.value.toString().length - 1
                     ) {
                         this.value = v.toString()
-                    } else if (this.value.toString().indexOf(".") === this.value.toString().length - 2) {
-                        this.value = this.value.toString().slice(0, this.value.toString().length - 1)
-                    } else if (this.value.toString().indexOf("-") === 0 && this.value.toString().length === 2) {
+                    } else if (
+                        this.value.toString().indexOf(".") ===
+              this.value.toString().length - 2
+                    ) {
+                        this.value = this.value
+                            .toString()
+                            .slice(0, this.value.toString().length - 1)
+                    } else if (
+                        this.value.toString().indexOf("-") === 0 &&
+              this.value.toString().length === 2
+                    ) {
                         this.value = 0
-                    }
-                    else {
-                        this.value = Number(v.toString().slice(0, v.toString().length - 1))
+                    } else {
+                        this.value = Number(
+                            v.toString().slice(0, v.toString().length - 1)
+                        )
                     }
                 }
                 break
@@ -482,14 +491,18 @@ export class InputPopup extends EventEmitter {
 
         let content = ""
         // Draw an input field
-        if(this.value.toString().length === 0 && this.placeholder?.length)
-            content += `${boxChars["normal"].vertical}${"> "}█${chalk.dim.gray(
+        if (this.value.toString().length === 0 && this.placeholder?.length)
+            content += `${boxChars["normal"].vertical}${"> "}${chalk.dim.gray(
                 `${this.placeholder}`
-            )}${" ".repeat(windowWidth - this.value.toString().length - 3)}${
+            )}${" ".repeat(windowWidth - this.placeholder.length - 2)}${
                 boxChars["normal"].vertical
             }${EOL}`
         else
-            content += `${boxChars["normal"].vertical}${"> "}${this.value}█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical}${EOL}`
+            content += `${boxChars["normal"].vertical}${"> "}${
+                this.value
+            }█${" ".repeat(windowWidth - this.value.toString().length - 3)}${
+                boxChars["normal"].vertical
+            }${EOL}`
 
         const windowDesign = `${header}${content}${footer}`
         const windowDesignLines = windowDesign.split(EOL)
