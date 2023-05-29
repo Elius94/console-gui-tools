@@ -20,12 +20,12 @@ import chalk from "chalk"
  */
 // @type definition
 export interface InputPopupConfig {
-  id: string;
-  title: string;
-  value: string | number;
-  numeric?: boolean;
-  visible?: boolean;
-  placeholder?: string;
+    id: string;
+    title: string;
+    value: string | number;
+    numeric?: boolean;
+    visible?: boolean;
+    placeholder?: string;
 }
 
 /**
@@ -147,19 +147,19 @@ export class InputPopup extends EventEmitter {
                 if (this.value.toString().length > 0) {
                     if (
                         this.value.toString().indexOf(".") ===
-              this.value.toString().length - 1
+                            this.value.toString().length - 1
                     ) {
                         this.value = v.toString()
                     } else if (
                         this.value.toString().indexOf(".") ===
-              this.value.toString().length - 2
+                            this.value.toString().length - 2
                     ) {
                         this.value = this.value
                             .toString()
                             .slice(0, this.value.toString().length - 1)
                     } else if (
                         this.value.toString().indexOf("-") === 0 &&
-              this.value.toString().length === 2
+                            this.value.toString().length === 2
                     ) {
                         this.value = 0
                     } else {
@@ -219,7 +219,7 @@ export class InputPopup extends EventEmitter {
         const v = this.value
         switch (key.name) {
         case "backspace":
-        // If backspace is pressed I remove the last character from the typed value
+            // If backspace is pressed I remove the last character from the typed value
             if (v.toString().length > 0) {
                 this.value = v.toString().slice(0, v.toString().length - 1)
             }
@@ -348,7 +348,7 @@ export class InputPopup extends EventEmitter {
    * @memberof InputPopup
    */
     private manageInput(): InputPopup {
-    // Add a command input listener to change mode
+        // Add a command input listener to change mode
         if (this.numeric) {
             this.CM.setKeyListener(this.id, this.keyListenerNumeric.bind(this))
         } else {
@@ -368,7 +368,7 @@ export class InputPopup extends EventEmitter {
    * @memberof InputPopup
    */
     private unManageInput(): InputPopup {
-    // Add a command input listener to change mode
+        // Add a command input listener to change mode
         if (this.numeric) {
             this.CM.removeKeyListener(
                 this.id /*, this.keyListenerNumeric.bind(this)*/
@@ -390,12 +390,10 @@ export class InputPopup extends EventEmitter {
         const y = event.data.y
 
         //this.CM.log(event.name)
-        if (
-            x > this.absoluteValues.x &&
-      x < this.absoluteValues.x + this.absoluteValues.width &&
-      y > this.absoluteValues.y &&
-      y < this.absoluteValues.y + this.absoluteValues.height
-        ) {
+        if (x > this.absoluteValues.x &&
+            x < this.absoluteValues.x + this.absoluteValues.width &&
+            y > this.absoluteValues.y &&
+            y < this.absoluteValues.y + this.absoluteValues.height) {
             // The mouse is inside the popup
             //this.CM.log("Mouse inside popup")
             if (event.name === "MOUSE_WHEEL_DOWN") {
@@ -419,25 +417,21 @@ export class InputPopup extends EventEmitter {
         }
         if (
             event.name === "MOUSE_DRAG" &&
-      event.data.left === true &&
-      this.dragging === false &&
-      this.focused
+            event.data.left === true &&
+            this.dragging === false &&
+            this.focused
         ) {
             // check if the mouse is on the header of the popup (first three lines)
-            if (
-                x > this.absoluteValues.x &&
-        x < this.absoluteValues.x + this.absoluteValues.width &&
-        y > this.absoluteValues.y &&
-        y < this.absoluteValues.y + 3 /* 3 = header height */
-            ) {
+            if (x > this.absoluteValues.x &&
+                x < this.absoluteValues.x + this.absoluteValues.width &&
+                y > this.absoluteValues.y &&
+                y < this.absoluteValues.y + 3 /* 3 = header height */) {
                 this.dragging = true
                 this.dragStart = { x: x, y: y }
             }
-        } else if (
-            event.name === "MOUSE_DRAG" &&
-      event.data.left === true &&
-      this.dragging === true
-        ) {
+        } else if (event.name === "MOUSE_DRAG" &&
+            event.data.left === true &&
+            this.dragging === true) {
             if (y - this.dragStart.y + this.absoluteValues.y < 0) {
                 return // prevent the popup to go out of the top of the screen
             }
@@ -450,7 +444,7 @@ export class InputPopup extends EventEmitter {
             this.CM.refresh()
         } else if (
             event.name === "MOUSE_LEFT_BUTTON_RELEASED" &&
-      this.dragging === true
+            this.dragging === true
         ) {
             this.dragging = false
             this.CM.refresh()
@@ -465,19 +459,17 @@ export class InputPopup extends EventEmitter {
     public draw(): InputPopup {
         const offset = 2
         const windowWidth =
-      this.title.length > this.value.toString().length
-          ? this.title.length + 2 * offset
-          : this.value.toString().length + 2 * offset + 1
+            this.title.length > this.value.toString().length
+                ? this.title.length + 2 * offset
+                : this.value.toString().length + 2 * offset + 1
         const halfWidth = Math.round((windowWidth - this.title.length) / 2)
         let header = boxChars["normal"].topLeft
         for (let i = 0; i < windowWidth; i++) {
             header += boxChars["normal"].horizontal
         }
         header += `${boxChars["normal"].topRight}${EOL}`
-        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${
-            this.title
-        }${" ".repeat(windowWidth - halfWidth - this.title.length)}${
-            boxChars["normal"].vertical
+        header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title
+        }${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical
         }${EOL}`
         header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(
             windowWidth
@@ -494,14 +486,11 @@ export class InputPopup extends EventEmitter {
         if (this.value.toString().length === 0 && this.placeholder?.length)
             content += `${boxChars["normal"].vertical}${"> "}${chalk.dim.gray(
                 `${this.placeholder}`
-            )}${" ".repeat(windowWidth - this.placeholder.length - 2)}${
-                boxChars["normal"].vertical
+            )}${" ".repeat(windowWidth - this.placeholder.length - 2)}${boxChars["normal"].vertical
             }${EOL}`
         else
-            content += `${boxChars["normal"].vertical}${"> "}${
-                this.value
-            }█${" ".repeat(windowWidth - this.value.toString().length - 3)}${
-                boxChars["normal"].vertical
+            content += `${boxChars["normal"].vertical}${"> "}${this.value
+            }█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical
             }${EOL}`
 
         const windowDesign = `${header}${content}${footer}`
