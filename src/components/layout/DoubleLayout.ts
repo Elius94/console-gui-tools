@@ -269,7 +269,7 @@ export class DoubleLayout {
         if (
             unformattedLine.filter(
                 (e, i) =>
-                    e.length >
+                    visibleLength(e) >
           (typeof this.realWidth === "number"
               ? this.realWidth
               : this.realWidth[i]) -
@@ -281,7 +281,7 @@ export class DoubleLayout {
           typeof this.realWidth === "number"
               ? this.realWidth
               : this.realWidth[i]
-                if (e.length > width - bsize) {
+                if (visibleLength(e) > width - bsize) {
                     // Need to truncate
                     const offset = 2
                     if (dir === "vertical") {
@@ -292,19 +292,19 @@ export class DoubleLayout {
                   ? JSON.parse(JSON.stringify(line))
                   : JSON.parse(JSON.stringify(secondLine))
                     }
-                    let diff = e.length - width + 1
+                    let diff = visibleLength(e) - width + 1
 
                     // remove truncated text
                     for (let j = newLine[i].length - 1; j >= 0; j--) {
-                        if (newLine[i][j].text.length > diff + offset) {
+                        if (visibleLength(newLine[i][j].text) > diff + offset) {
                             newLine[i][j].text = truncate(
                                 newLine[i][j].text,
-                                newLine[i][j].text.length - diff - offset,
+                                visibleLength(newLine[i][j].text) - diff - offset,
                                 false
                             )
                             break
                         } else {
-                            diff -= newLine[i][j].text.length
+                            diff -= visibleLength(newLine[i][j].text)
                             newLine[i].splice(j, 1)
                         }
                     }
@@ -330,7 +330,7 @@ export class DoubleLayout {
               visibleLength(unformattedLine[0]) -
               bsize
                     )}`,
-                    style: { color: "" },
+                    style: { },
                 })
             }
             if (this.options.boxed)
@@ -371,10 +371,10 @@ export class DoubleLayout {
                     style: { color: this.options.boxColor, bold: this.boxBold },
                 })
             ret.push(...newLine[1])
-            if (unformattedLine[1].length <= width[1] - bsize) {
+            if (visibleLength(unformattedLine[1]) <= width[1] - bsize) {
                 ret.push({
                     text: `${" ".repeat(
-                        width[1] - unformattedLine[1].length - (bsize > 0 ? 1 : 0) 
+                        width[1] - visibleLength(unformattedLine[1]) - (bsize > 0 ? 1 : 0) 
                     )}`,
                     style: { color: "" },
                 })
@@ -415,7 +415,7 @@ export class DoubleLayout {
                         text: `${boxChars["normal"].topLeft}${
                             boxChars["normal"].horizontal
                         }${trimmedTitle[0]}${boxChars["normal"].horizontal.repeat(
-                            this.CM.Screen.width - trimmedTitle[0].length - 3
+                            this.CM.Screen.width - visibleLength(trimmedTitle[0]) - 3
                         )}${boxChars["normal"].topRight}`,
                         style: {
                             color: this.selected === 0 ? this.options.boxColor : "white",
@@ -443,7 +443,7 @@ export class DoubleLayout {
                         text: `${boxChars["normal"].left}${boxChars["normal"].horizontal}${
                             trimmedTitle[1]
                         }${boxChars["normal"].horizontal.repeat(
-                            this.CM.Screen.width - trimmedTitle[1].length - 3
+                            this.CM.Screen.width - visibleLength(trimmedTitle[1]) - 3
                         )}${boxChars["normal"].right}`,
                         style: { color: this.options.boxColor, bold: this.boxBold },
                     })
@@ -522,7 +522,7 @@ export class DoubleLayout {
                             text: `${boxChars["normal"].topLeft}${
                                 boxChars["normal"].horizontal
                             }${trimmedTitle[0]}${boxChars["normal"].horizontal.repeat(
-                                this.realWidth[0] - trimmedTitle[0].length - 3
+                                this.realWidth[0] - visibleLength(trimmedTitle[0]) - 3
                             )}${boxChars["normal"].top}`,
                             style: {
                                 color: this.selected === 0 ? this.options.boxColor : "white",
@@ -533,7 +533,7 @@ export class DoubleLayout {
                             text: `${boxChars["normal"].horizontal}${
                                 trimmedTitle[1]
                             }${boxChars["normal"].horizontal.repeat(
-                                this.realWidth[1] - trimmedTitle[1].length - 2
+                                this.realWidth[1] - visibleLength(trimmedTitle[1]) - 2
                             )}${boxChars["normal"].topRight}`,
                             style: {
                                 color: this.selected === 1 ? this.options.boxColor : "white",
@@ -601,7 +601,7 @@ export class DoubleLayout {
                 if (this.options.showTitle) {
                     this.CM.Screen.write({
                         text: `${trimmedTitle[0]}${" ".repeat(
-                            this.realWidth[0] - trimmedTitle[0].length
+                            this.realWidth[0] - visibleLength(trimmedTitle[0])
                         )}${trimmedTitle[1]}`,
                         style: {
                             color: this.selected === 0 ? this.options.boxColor : "white",

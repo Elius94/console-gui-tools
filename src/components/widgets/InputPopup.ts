@@ -1,7 +1,7 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
-import { boxChars, PhisicalValues } from "../Utils.js"
+import { boxChars, PhisicalValues, visibleLength } from "../Utils.js"
 import chalk from "chalk"
 
 /**
@@ -261,7 +261,7 @@ export class InputPopup extends EventEmitter {
             break
 
         default:
-            if (v.toString().length < 20 && key.sequence.length === 1) {
+            if (visibleLength(v.toString()) < 20 && key.sequence.length === 1) {
                 let tmp = v.toString()
                 tmp += key.sequence
                 this.value = tmp

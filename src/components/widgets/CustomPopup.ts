@@ -2,7 +2,7 @@ import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import PageBuilder from "../PageBuilder.js"
-import { boxChars, PhisicalValues, StyledElement, truncate } from "../Utils.js"
+import { boxChars, PhisicalValues, StyledElement, truncate, visibleLength } from "../Utils.js"
 
 /**
  * @description The configuration for the CustomPopup class.
@@ -270,17 +270,17 @@ export class CustomPopup extends EventEmitter {
         line.forEach((element: { text: string }) => {
             unformattedLine += element.text
         })
-        if (unformattedLine.length > width - 2) { // Need to truncate
+        if (visibleLength(unformattedLine) > width - 2) { // Need to truncate
             const offset = 2
             newLine = JSON.parse(JSON.stringify(line)) // Shallow copy because I don't want to modify the values but not the original
-            let diff = unformattedLine.length - width
+            let diff = visibleLength(unformattedLine) - width
             // remove truncated text
             for (let i = newLine.length - 1; i >= 0; i--) {
-                if (newLine[i].text.length > diff + offset) {
-                    newLine[i].text = truncate(newLine[i].text, (newLine[i].text.length - diff) - offset, true)
+                if (visibleLength(newLine[i].text) > diff + offset) {
+                    newLine[i].text = truncate(newLine[i].text, (visibleLength(newLine[i].text) - diff) - offset, true)
                     break
                 } else {
-                    diff -= newLine[i].text.length
+                    diff -= visibleLength(newLine[i].text)
                     newLine.splice(i, 1)
                 }
             }
@@ -291,8 +291,8 @@ export class CustomPopup extends EventEmitter {
             })
         }
         newLine.unshift({ text: boxChars["normal"].vertical, style: { color: "white" } })
-        if (unformattedLine.length <= width) {
-            newLine.push({ text: `${" ".repeat((width - unformattedLine.length))}`, style: { color: "" } })
+        if (visibleLength(unformattedLine) <= width) {
+            newLine.push({ text: `${" ".repeat((width - visibleLength(unformattedLine)))}`, style: { color: "" } })
         }
         newLine.push({ text: boxChars["normal"].vertical, style: { color: "white" } })
         this.CM.Screen.write(...newLine)

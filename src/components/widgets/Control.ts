@@ -1,7 +1,7 @@
 import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs, InPageWidgetBuilder } from "../../ConsoleGui.js"
 import { MouseEvent, RelativeMouseEvent } from "../MouseManager.js"
-import { PhisicalValues, StyledElement, truncate } from "../Utils.js"
+import { PhisicalValues, StyledElement, truncate, visibleLength } from "../Utils.js"
 
 /**
  * @typedef {Object} ControlConfig
@@ -355,27 +355,27 @@ export class Control extends EventEmitter {
             unformattedLine += element.text
         })
 
-        if (unformattedLine.length > this.absoluteValues.width) {
+        if (visibleLength(unformattedLine) > this.absoluteValues.width) {
             const offset = 2
             newLine = [...JSON.parse(JSON.stringify(line))] // Shallow copy because I just want to modify the values but not the original
 
-            let diff = unformattedLine.length - this.CM.Screen.width + 1
+            let diff = visibleLength(unformattedLine) - this.CM.Screen.width + 1
 
             // remove truncated text
             for (let j = newLine.length - 1; j >= 0; j--) {
-                if (newLine[j].text.length > diff + offset) {
-                    newLine[j].text = truncate(newLine[j].text, (newLine[j].text.length - diff) - offset, true)
+                if (visibleLength(newLine[j].text) > diff + offset) {
+                    newLine[j].text = truncate(newLine[j].text, (visibleLength(newLine[j].text) - diff) - offset, true)
                     break
                 } else {
-                    diff -= newLine[j].text.length
+                    diff -= visibleLength(newLine[j].text)
                     newLine.splice(j, 1)
                 }
             }
             // Update unformatted line
             unformattedLine = newLine.map((element: { text: string; }) => element.text).join("")
         }
-        if (unformattedLine.length <= this.absoluteValues.width) {
-            newLine.push({ text: `${" ".repeat(this.absoluteValues.width - unformattedLine.length)}`, style: { color: "" } })
+        if (visibleLength(unformattedLine) <= this.absoluteValues.width) {
+            newLine.push({ text: `${" ".repeat(this.absoluteValues.width - visibleLength(unformattedLine))}`, style: { color: "" } })
         }
         this.CM.Screen.write(...newLine)
     }

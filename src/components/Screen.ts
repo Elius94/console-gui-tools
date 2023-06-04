@@ -1,6 +1,6 @@
 import { EventEmitter } from "events"
 import chalk, { BackgroundColorName, ForegroundColorName } from "chalk"
-import { StyledElement, StyleObject } from "./Utils.js"
+import { StyledElement, StyleObject, visibleLength } from "./Utils.js"
 chalk.level = 3
 
 /**
@@ -81,7 +81,7 @@ export class Screen extends EventEmitter {
                 const arg = args[i]
                 if (arg.text !== undefined) {
                     const txt = arg.text.toString()
-                    const style: StyleIndexObject = { ...arg.style, index: [row.length, row.length + txt.length] }
+                    const style: StyleIndexObject = { ...arg.style, index: [visibleLength(row), visibleLength(row) + visibleLength(txt)] }
                     newStyleIndex.push(style)
                     row += txt
                 }
@@ -90,7 +90,7 @@ export class Screen extends EventEmitter {
 
             // Now recalculate the styleIndex for the current row mixing the old one with the new one
             // Create a new styleIndex merging the old one with the new one
-            const mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, row.length)
+            const mergedStyleIndex = this.mergeStyles(newStyleIndex, currentStyleIndex, this.cursor.x, visibleLength(row))
 
             this.buffer[this.cursor.y].styleIndex = mergedStyleIndex
             this.buffer[this.cursor.y].text = this.replaceAt(this.buffer[this.cursor.y].text, this.cursor.x, row)

@@ -179,7 +179,7 @@ export function truncate(
     n: number,
     useWordBoundary: boolean
 ): string {
-    if (str.length <= n) {
+    if (visibleLength(str) <= n) {
         return str
     }
     const subString = str.substring(0, n - 1) // the original check
@@ -261,7 +261,7 @@ export function visibleLength(input: string): number {
     // eslint-disable-next-line no-control-regex
     const regex = new RegExp(
         /* eslint-disable-next-line no-control-regex */
-        "\u0000-\u0008\u000B-\u0019\u001b\u009b\u00ad\u200b\u2028\u2029\ufeff\ufe00-\ufe0f",
+        "[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-PRZcf-nqry=><]",
         "g"
     )
     // Array.from is used to correctly count emojis
