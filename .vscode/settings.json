@@ -3,5 +3,5 @@
         "source.fixAll.eslint": true
     },
     "eslint.validate": ["javascript"],
-    "files.eol": "\r\n"
+    "files.eol": "\n"
 }
