@@ -57,6 +57,9 @@ export class InputPopup extends EventEmitter {
     value: string | number
     // Position of the cursor. 0-indexed (0 = before all the text)
     cursorPos: number
+    flashLoop = setInterval(() => {
+        this.draw(); this.CM.refresh()
+    }, 500)
     private numeric: boolean
     private visible: boolean
     private marginTop: number
@@ -171,26 +174,17 @@ export class InputPopup extends EventEmitter {
                 break
             case "return":
                 {
-                    this.emit("confirm", Number(this.value))
-                    this.CM.unregisterPopup(this)
-                    this.hide()
-                    //delete this
+                    this.confirmDel()
                 }
                 break
             case "escape":
                 {
-                    this.emit("cancel")
-                    this.CM.unregisterPopup(this)
-                    this.hide()
-                    //delete this
+                    this.delete()
                 }
                 break
             case "q":
                 {
-                    this.CM.emit("exit")
-                    this.CM.unregisterPopup(this)
-                    this.hide()
-                    //delete this
+                    this.delete()
                 }
                 break
             default:
@@ -226,26 +220,17 @@ export class InputPopup extends EventEmitter {
             break
         case "return":
             {
-                this.emit("confirm", this.value)
-                this.CM.unregisterPopup(this)
-                this.hide()
-                //delete this
+                this.confirmDel()
             }
             break
         case "escape":
             {
-                this.emit("cancel")
-                this.CM.unregisterPopup(this)
-                this.hide()
-                //delete this
+                this.delete()
             }
             break
         case "q":
             {
-                this.CM.emit("exit")
-                this.CM.unregisterPopup(this)
-                this.hide()
-                //delete this
+                this.delete()
             }
             break
         case "delete":
@@ -483,15 +468,15 @@ export class InputPopup extends EventEmitter {
 
         let content = ""
         // Draw an input field
-        if (this.value.toString().length === 0 && this.placeholder?.length)
-            content += `${boxChars["normal"].vertical}${"> "}${chalk.dim.gray(
-                `${this.placeholder}`
-            )}${" ".repeat(windowWidth - this.placeholder.length - 2)}${boxChars["normal"].vertical
-            }${EOL}`
-        else
-            content += `${boxChars["normal"].vertical}${"> "}${this.value
-            }█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical
-            }${EOL}`
+        // if (this.value.toString().length === 0 && this.placeholder?.length)
+        //     content += `${boxChars["normal"].vertical}${"> "}${chalk.gray(
+        //         this.placeholder
+        //     )}${" ".repeat(windowWidth - this.placeholder.length - 2)}${boxChars["normal"].vertical
+        //     }${EOL}`
+        // else
+        content += `${boxChars["normal"].vertical}${"> "}${this.value
+        }█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical
+        }${EOL}`
 
         const windowDesign = `${header}${content}${footer}`
         const windowDesignLines = windowDesign.split(EOL)
@@ -501,6 +486,14 @@ export class InputPopup extends EventEmitter {
                 centerScreen + this.offsetX,
                 this.marginTop + index + this.offsetY
             )
+
+            if(index === 3 && this.placeholder?.length && this.value.toString().length === 0) {
+                const isOddSecond = Math.round(Date.now() / 100) % 2
+                return this.CM.Screen.write({ text: `${boxChars["normal"].vertical}${"> "}${isOddSecond ? "█" : " "}${chalk.gray(
+                    this.placeholder
+                )}${" ".repeat(windowWidth - this.placeholder.length - 3)}${boxChars["normal"].vertical
+                }${EOL}`, style: { color: "white" } })
+            }
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
         this.absoluteValues = {
@@ -510,6 +503,17 @@ export class InputPopup extends EventEmitter {
             height: windowDesignLines.length,
         }
         return this
+    }
+
+    confirmDel() {
+        this.emit("confirm", Number(this.value))
+        this.delete()
+    }
+
+    delete() {
+        this.CM.unregisterPopup(this)
+        this.hide()
+        clearInterval(this.flashLoop)
     }
 }
 
