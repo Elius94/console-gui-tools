@@ -487,12 +487,22 @@ export class InputPopup extends EventEmitter {
                 this.marginTop + index + this.offsetY
             )
 
-            if(index === 3 && this.placeholder?.length && this.value.toString().length === 0) {
+            if (index === 3 && this.placeholder?.length && this.value.toString().length === 0) {
                 const isOddSecond = Math.round(Date.now() / 100) % 2
-                return this.CM.Screen.write({ text: `${boxChars["normal"].vertical}${"> "}${isOddSecond ? "█" : " "}${chalk.gray(
-                    this.placeholder
-                )}${" ".repeat(windowWidth - this.placeholder.length - 3)}${boxChars["normal"].vertical
-                }${EOL}`, style: { color: "white" } })
+                return this.CM.Screen.write({
+                    text: `${boxChars["normal"].vertical}${"> "}${isOddSecond ? "█" : " "}${chalk.gray(
+                        this.placeholder
+                    )}${" ".repeat(windowWidth - this.placeholder.length - 3)}${boxChars["normal"].vertical
+                    }${EOL}`, style: { color: "white" }
+                })
+            } else if (index === 3) {
+                const isOddSecond = Math.round(Date.now() / 100) % 2
+                // write value and then the cursor (█)
+                return this.CM.Screen.write({
+                    text: `${boxChars["normal"].vertical}${"> "}${this.value
+                    }${isOddSecond ? "█" : " "}${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical
+                    }${EOL}`, style: { color: "white" }
+                })
             }
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
