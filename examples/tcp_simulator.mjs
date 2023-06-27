@@ -268,6 +268,7 @@ GUI.on("keypressed", (key) => {
             id: "popupTypeMax",
             title: "Type max value",
             value: max,
+            placeholder: "100",
             numeric: true
         }).show().on("confirm", (_max) => {
             max = _max
