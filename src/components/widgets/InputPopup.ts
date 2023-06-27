@@ -33,7 +33,7 @@ export interface InputPopupConfig {
  * @extends EventEmitter
  * @description This class is used to create a popup with a text or numeric input.
  *
- * ![InputPopup](https://user-images.githubusercontent.com/14907987/165752281-e836b862-a54a-48d5-b4e7-954374d6509f.gif)
+ * ![InputPopup](https://github.com/Elius94/console-gui-tools/assets/14907987/eecac72f-9ccc-444b-a0e3-2b7e277fdeea)
  *
  * Emits the following events:
  * - "confirm" when the user confirm the input
@@ -56,7 +56,9 @@ export class InputPopup extends EventEmitter {
     title: string
     value: string | number
     // Position of the cursor. 0-indexed (0 = before all the text)
+    /** @var {number} cursorPos - Since v3.1.0 a blinking cursor has been added to InputPopup (thanks @Compositr) */
     cursorPos: number
+    /** @var {setInterval} flashLoop - Since v3.1.0 a blinking cursor has been added to InputPopup (thanks @Compositr) */
     flashLoop = setInterval(() => {
         this.draw(); this.CM.refresh()
     }, 500)

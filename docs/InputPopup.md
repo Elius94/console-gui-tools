@@ -8,6 +8,10 @@
 ## Members
 
 <dl>
+<dt><a href="#cursorPos">cursorPos</a> : <code>number</code></dt>
+<dd><p>Since v3.1.0 a blinking cursor has been added to InputPopup (thanks @Compositr)</p></dd>
+<dt><a href="#flashLoop">flashLoop</a> : <code>setInterval</code></dt>
+<dd><p>Since v3.1.0 a blinking cursor has been added to InputPopup (thanks @Compositr)</p></dd>
 <dt><a href="#x">x</a> : <code>number</code></dt>
 <dd><p>The x offset of the popup to be drown. If 0 it will be placed on the center</p></dd>
 <dt><a href="#y">y</a> : <code>number</code></dt>
@@ -43,6 +47,7 @@
 | value | <code>string</code> \| <code>number</code> | <p>The value of the popup.</p> |
 | numeric | <code>boolean</code> | <p>If the input is numeric.</p> |
 | [visible] | <code>boolean</code> | <p>If the popup is visible.</p> |
+| [placeholder] | <code>string</code> | <p>Optional placeholder to show if empty</p> |
 
 <a name="InputPopup"></a>
 
@@ -67,7 +72,7 @@
 
 ### new InputPopup(config)
 <p>This class is used to create a popup with a text or numeric input.</p>
-<p><img src="https://user-images.githubusercontent.com/14907987/165752281-e836b862-a54a-48d5-b4e7-954374d6509f.gif" alt="InputPopup"></p>
+<p><img src="https://github.com/Elius94/console-gui-tools/assets/14907987/eecac72f-9ccc-444b-a0e3-2b7e277fdeea" alt="InputPopup"></p>
 <p>Emits the following events:</p>
 <ul>
 <li>&quot;confirm&quot; when the user confirm the input</li>
@@ -81,7 +86,7 @@
 | config | [<code>InputPopupConfig</code>](#InputPopupConfig) | <p>The config of the popup.</p> |
 
 **Example**  
-```ts const popup = new InputPopup({ id: "popup1",  title: "Choose the number",  value: selectedNumber,  numeric: true}).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm```
+```tsconst popup = new InputPopup({ id: "popup1", title: "Choose the number", value: selectedNumber, numeric: true}).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm```
 <a name="InputPopup+keyListenerNumeric"></a>
 
 ### inputPopup.keyListenerNumeric(_str, key)
@@ -169,6 +174,18 @@ Inside this function are defined all the keys that can be pressed and the action
 
 **Kind**: instance method of [<code>InputPopup</code>](#InputPopup)  
 **Returns**: [<code>InputPopup</code>](#InputPopup) - <p>The instance of the InputPopup.</p>  
+<a name="cursorPos"></a>
+
+## cursorPos : <code>number</code>
+<p>Since v3.1.0 a blinking cursor has been added to InputPopup (thanks @Compositr)</p>
+
+**Kind**: global variable  
+<a name="flashLoop"></a>
+
+## flashLoop : <code>setInterval</code>
+<p>Since v3.1.0 a blinking cursor has been added to InputPopup (thanks @Compositr)</p>
+
+**Kind**: global variable  
 <a name="x"></a>
 
 ## x : <code>number</code>

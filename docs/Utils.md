@@ -19,6 +19,8 @@
 <dd><p>This function is used to convert a styled element to a simplified styled element.</p></dd>
 <dt><a href="#simplifiedStyledToStyled">simplifiedStyledToStyled(simplifiedStyled)</a> ⇒ <code>*</code></dt>
 <dd><p>This function is used to convert a simplified styled element to a styled element.</p></dd>
+<dt><a href="#visibleLength">visibleLength(input)</a> ⇒ <code>number</code></dt>
+<dd><p>Count true visible length of a string</p></dd>
 </dl>
 
 ## Typedefs
@@ -170,6 +172,18 @@ const simplifiedStyledElement = styledToSimplifiedStyled({ text: "Hello world", 
 ```js
 const styledElement = simplifiedStyledToStyled({ text: "Hello world", color: "red", bold: true })// returns { text: "Hello world", style: { color: "red", bold: true } }
 ```
+<a name="visibleLength"></a>
+
+## visibleLength(input) ⇒ <code>number</code>
+<p>Count true visible length of a string</p>
+
+**Kind**: global function  
+**Author**: Vitalik Gordon (xpl)  
+
+| Param | Type |
+| --- | --- |
+| input | <code>string</code> | 
+
 <a name="RGB"></a>
 
 ## RGB : <code>string</code>

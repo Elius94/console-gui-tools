@@ -574,7 +574,8 @@ new InputPopup({
     id: "popupTypeMax", 
     title: "Type max value", 
     value: max, 
-    numeric: true 
+    numeric: true
+    placeholder: "Type a number" // since v3.1.0
 }).show().on("confirm", (_max) => {
     max = _max
     GUI.warn(`NEW MAX VALUE: ${max}`)
@@ -582,16 +583,17 @@ new InputPopup({
 })
 ```
 
-### Class InputPopup:
+### Class InputPopup (updated in v3.1.0):
 constructor(id, title, value, isNumeric)
  - id: string
  - title: string
  - value: string | number
  - isNumeric: boolean
+ - placeholder: string (since v3.1.0)
 
 You can use it for example to set a numeric threshold:
 
-![Animation](https://user-images.githubusercontent.com/14907987/162480554-3e29513b-13d1-4d3f-bd16-09cba30db358.gif)
+![Animation](https://github.com/Elius94/console-gui-tools/assets/14907987/eecac72f-9ccc-444b-a0e3-2b7e277fdeea)
 
 If you set isNumeric to true, only numbers are allowed.
 All class of components will be destroyed when the popup is closed. The event listeners are removed from the store. Then the garbage collector will clean the memory.
