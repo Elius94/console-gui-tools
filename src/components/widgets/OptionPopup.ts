@@ -76,7 +76,7 @@ export class OptionPopup extends EventEmitter {
         if (!id) throw new Error("OptionPopup id is required")
         if (!title) throw new Error("OptionPopup title is required")
         if (!options) throw new Error("OptionPopup options is required")
-        if (!selected) throw new Error("OptionPopup selected is required")
+        if (selected === undefined || selected === null) throw new Error("OptionPopup selected is required")
         super()
         /** @const {ConsoleManager} CM the instance of ConsoleManager (singleton) */
         this.CM = new ConsoleManager()
