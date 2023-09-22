@@ -80,6 +80,7 @@ const layoutOptions = {
     direction: 'vertical', // Set to 'horizontal' to enable horizontal layout (only for "double" layout)
     boxColor: 'yellow', // The color of the box
     boxStyle: 'bold', // The style of the box (bold)
+    fitHeight: true, // Set to false to disable the auto height fit [default: false] (since v3.2.0 - **NEW!**)
 }
 ```
 
@@ -383,6 +384,7 @@ In the "layoutOptions" provided to the ConsoleManager, we can set the layout:
  - direction: Set to 'horizontal' to enable horizontal layout (only for "double" layout)
  - boxColor: The color of the box (default: 'yellow')
  - boxStyle: The style of the box (default: 'bold')
+ - fitHeight: Set to false to disable the auto height fit [default: false] (since v3.2.0 - **NEW!**)
 
  To draw multiple pages, we need to use the setPage or setPages methods:
 

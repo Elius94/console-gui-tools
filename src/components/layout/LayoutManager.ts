@@ -18,6 +18,7 @@ import SingleLayout, { SingleLayoutOptions } from "./SingleLayout.js"
  * @prop {"horizontal" | "vertical"} [direction] - The direction of the layout.
  * @prop {string[]} [pageTitles] - The title of the first page.
  * @prop {number[]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ * @prop {boolean} [fitHeight] - If the height of the pages should be the same.
  *
  * @export
  * @interface LayoutOptions
@@ -33,6 +34,7 @@ export interface LayoutOptions {
     direction?: "horizontal" | "vertical";
     pageTitles?: string[];
     pageRatio?: [number, number] | [[number, number], [number, number]];
+    fitHeight?: boolean;
 }
 
 /**
@@ -79,6 +81,7 @@ export class LayoutManager {
                     boxColor: this.options.boxColor,
                     boxStyle: this.options.boxStyle,
                     pageTitle: this.pageTitles ? this.pageTitles[0] : "",
+                    fitHeight: this.options.fitHeight,
                 } as SingleLayoutOptions
                 this.layout = new SingleLayout(this.pages[0], this.optionsRelative)
                 break
@@ -93,6 +96,7 @@ export class LayoutManager {
                     page1Title: this.pageTitles ? this.pageTitles[0] : "",
                     page2Title: this.pageTitles ? this.pageTitles[1] : "",
                     pageRatio: this.options.pageRatio,
+                    fitHeight: this.options.fitHeight,
                 } as DoubleLayoutOptions
                 this.layout = new DoubleLayout(this.pages[0], this.pages[1], this.optionsRelative as DoubleLayoutOptions)
                 break
@@ -112,6 +116,7 @@ export class LayoutManager {
                     page3Title: this.pageTitles ? this.pageTitles[2] : "",
                     page4Title: this.pageTitles ? this.pageTitles[3] : "",
                     pageRatio: this.options.pageRatio,
+                    fitHeight: this.options.fitHeight,
                 } as QuadLayoutOptions
                 this.layout = new QuadLayout(this.pages[0], this.pages[1], this.pages[2], this.pages[3], this.optionsRelative as QuadLayoutOptions)
                 break
