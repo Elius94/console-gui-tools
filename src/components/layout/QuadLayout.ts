@@ -15,6 +15,7 @@ import { boxChars, HEX, RGB, StyledElement, truncate } from "../Utils.js"
  * @prop {string} [page3Title] - The title of the third page.
  * @prop {string} [page4Title] - The title of the fourth page.
  * @prop {number[]} [pageRatio] - The ratio of the pages.
+ * @prop {boolean} [fitHeight] - If the height of the pages should be the same.
  *
  * @export
  * @interface DoubleLayoutOptions
@@ -31,6 +32,7 @@ export interface QuadLayoutOptions {
     page3Title?: string;
     page4Title?: string;
     pageRatio?: [[number, number], [number, number]];
+    fitHeight?: boolean;
 }
 
 /**
@@ -358,12 +360,17 @@ export class QuadLayout {
                 truncate(this.page4Title, this.realWidth[1][1] - 3, false)
             ]
         ]
-        const maxPageHeight = Math.max(
+        let maxPageHeight = Math.max(
             this.page1.getViewedPageHeight(),
             this.page2.getViewedPageHeight(),
             this.page3.getViewedPageHeight(),
             this.page4.getViewedPageHeight()
         )
+
+        if (this.options.fitHeight) {
+            const decorationHeight = this.options.boxed || this.options.showTitle ? 4 : 0
+            maxPageHeight = (this.CM.Screen.height - decorationHeight) / 2
+        }
 
         const p = [
             this.page1.getContent(),

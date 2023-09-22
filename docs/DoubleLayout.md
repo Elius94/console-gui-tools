@@ -42,6 +42,7 @@
 | [page1Title] | <code>string</code> | <p>The title of the first page.</p> |
 | [page2Title] | <code>string</code> | <p>The title of the second page.</p> |
 | [pageRatio] | <code>Array.&lt;number&gt;</code> | <p>The ratio of the pages. (in horizontal direction)</p> |
+| [fitHeight] | <code>boolean</code> | <p>If the height of the pages should be the same.</p> |
 
 <a name="DoubleLayout"></a>
 

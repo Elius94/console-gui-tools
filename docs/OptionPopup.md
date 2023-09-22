@@ -84,7 +84,14 @@
 | visible | <code>boolean</code> | <p>If the popup is visible. Default is false (make it appears using show()).</p> |
 
 **Example**  
-```tsconst popup = new OptionPopup({ id:"popup1",  title: "Choose the option",  options,  selected}).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm```
+```ts
+const popup = new OptionPopup({
+ id:"popup1", 
+ title: "Choose the option", 
+ options, 
+ selected
+}).show().on("confirm", (option) => { console.log(option) }) // show the popup and wait for the user to confirm
+```
 <a name="OptionPopup+keyListener"></a>
 
 ### optionPopup.keyListener(str, key)

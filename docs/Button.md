@@ -98,7 +98,8 @@
 | config | [<code>ButtonConfig</code>](#ButtonConfig) | <p>The configuration object</p> |
 
 **Example**  
-```jsnew Button({
+```js
+new Button({
         id: "btnRun", 
         text: "Run me!", 
         x: 21, 
@@ -113,4 +114,5 @@
             GUI.log("Button clicked!")
         },
         draggable: true,
-    })```
+    })
+```

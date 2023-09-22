@@ -36,6 +36,7 @@
 | [boxColor] | <code>ForegroundColorName</code> \| <code>HEX</code> \| <code>RGB</code> \| <code>&quot;&quot;</code> | <p>The color of the box taken from the chalk library.</p> |
 | [boxStyle] | <code>&quot;bold&quot;</code> | <p>If the border of the box should be bold.</p> |
 | [pageTitle] | <code>string</code> | <p>The title of the first page.</p> |
+| [fitHeight] | <code>boolean</code> | <p>If the height of the layout should be the same as the height of the screen.</p> |
 
 <a name="SingleLayout"></a>
 

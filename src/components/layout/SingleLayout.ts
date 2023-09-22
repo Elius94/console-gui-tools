@@ -10,6 +10,7 @@ import { boxChars, HEX, RGB, StyledElement, truncate } from "../Utils.js"
  * @prop {ForegroundColorName | HEX | RGB | ""} [boxColor] - The color of the box taken from the chalk library.
  * @prop {"bold"} [boxStyle] - If the border of the box should be bold.
  * @prop {string} [pageTitle] - The title of the first page.
+ * @prop {boolean} [fitHeight] - If the height of the layout should be the same as the height of the screen.
  *
  * @export
  * @interface SingleLayoutOptions
@@ -21,6 +22,7 @@ export interface SingleLayoutOptions {
     boxColor?: ForegroundColorName | HEX | RGB | ""; // add color list from chalk
     boxStyle?: "bold";
     pageTitle?: string;
+    fitHeight?: boolean;
 }
 
 /**
@@ -134,17 +136,29 @@ export class SingleLayout {
             } else {
                 this.CM.Screen.write({ text: `${boxChars["normal"].topLeft}${boxChars["normal"].horizontal}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 3)}${boxChars["normal"].topRight}`, style: { color: this.options.boxColor, bold: this.boxBold } })
             }
-            this.page.getContent().forEach((line: StyledElement[]) => {
-                this.drawLine(line)
-            })
+            if (this.options.fitHeight) {
+                for (let i = 0; i < this.CM.Screen.height - 2; i++) {
+                    this.drawLine(this.page.getContent()[i] || [{ text: "", style: { color: "" } }])
+                }
+            } else {
+                this.page.getContent().forEach((line: StyledElement[]) => {
+                    this.drawLine(line)
+                })
+            }
             this.CM.Screen.write({ text: `${boxChars["normal"].bottomLeft}${boxChars["normal"].horizontal.repeat(this.CM.Screen.width - 2)}${boxChars["normal"].bottomRight}`, style: { color: this.options.boxColor, bold: this.boxBold } })
         } else { // Draw pages without borders
             if (this.options.showTitle) {
                 this.CM.Screen.write({ text: `${trimmedTitle}`, style: { color: this.options.boxColor, bold: this.boxBold } })
             }
-            this.page.getContent().forEach((line: StyledElement[]) => {
-                this.drawLine(line)
-            })
+            if (this.options.fitHeight) {
+                for (let i = 0; i < this.CM.Screen.height - 2; i++) {
+                    this.drawLine(this.page.getContent()[i] || [{ text: "", style: { color: "" } }])
+                }
+            } else {
+                this.page.getContent().forEach((line: StyledElement[]) => {
+                    this.drawLine(line)
+                })
+            }
         }
     }
 }

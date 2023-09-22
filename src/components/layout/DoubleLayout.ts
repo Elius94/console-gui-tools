@@ -21,6 +21,7 @@ import {
  * @prop {string} [page1Title] - The title of the first page.
  * @prop {string} [page2Title] - The title of the second page.
  * @prop {number[]} [pageRatio] - The ratio of the pages. (in horizontal direction)
+ * @prop {boolean} [fitHeight] - If the height of the pages should be the same.
  *
  * @export
  * @interface DoubleLayoutOptions
@@ -36,6 +37,7 @@ export interface DoubleLayoutOptions {
   page1Title?: string;
   page2Title?: string;
   pageRatio?: [number, number];
+  fitHeight?: boolean;
 }
 
 /**
@@ -408,6 +410,26 @@ export class DoubleLayout {
                 truncate(this.page1Title, this.realWidth[0] - 4, false),
                 truncate(this.page2Title, this.realWidth[1] - 4, false),
             ]
+
+            const pageHeights = [
+                this.page1.getViewedPageHeight(),
+                this.page2.getViewedPageHeight(),
+            ]
+
+            if (this.options.fitHeight) {
+                const decorationHeight = this.options.boxed || this.options.showTitle ? 2 : 0
+                const halfHeight = (this.CM.Screen.height - decorationHeight) / 2 - 1
+                if (Math.max(...pageHeights) > halfHeight) {
+                    // Change pageHeights to fit the screen
+                    const ratio = halfHeight / Math.max(...pageHeights)
+                    pageHeights[0] = Math.round(pageHeights[0] * ratio)
+                    pageHeights[1] = Math.round(pageHeights[1] * ratio)
+                } else {
+                    pageHeights[0] = halfHeight
+                    pageHeights[1] = halfHeight
+                }
+            }
+
             if (this.options.boxed) {
                 // Draw pages with borders
                 if (this.options.showTitle) {
@@ -435,9 +457,9 @@ export class DoubleLayout {
                         },
                     })
                 }
-                this.page1.getContent().forEach((line: StyledElement[]) => {
-                    this.drawLine(line, undefined, 0)
-                })
+                for (let i = 0; i < pageHeights[0]; i++) {
+                    this.drawLine(this.page1.getContent()[i] || [{ text: "", style: { color: "" } }], undefined, 0)
+                }
                 if (this.options.showTitle) {
                     this.CM.Screen.write({
                         text: `${boxChars["normal"].left}${boxChars["normal"].horizontal}${
@@ -457,9 +479,9 @@ export class DoubleLayout {
                         style: { color: this.options.boxColor, bold: this.boxBold },
                     })
                 }
-                this.page2.getContent().forEach((line: StyledElement[]) => {
-                    this.drawLine(line, undefined, 1)
-                })
+                for (let i = 0; i < pageHeights[1]; i++) {
+                    this.drawLine(this.page2.getContent()[i] || [{ text: "", style: { color: "" } }], undefined, 1)
+                }
                 this.CM.Screen.write({
                     text: `${boxChars["normal"].bottomLeft}${boxChars[
                         "normal"
@@ -482,9 +504,9 @@ export class DoubleLayout {
                         },
                     })
                 }
-                this.page1.getContent().forEach((line: StyledElement[]) => {
-                    this.drawLine(line, undefined, 0)
-                })
+                for (let i = 0; i < pageHeights[0]; i++) {
+                    this.drawLine(this.page1.getContent()[i] || [{ text: "", style: { color: "" } }], undefined, 0)
+                }
                 if (this.options.showTitle) {
                     this.CM.Screen.write({
                         text: `${trimmedTitle[1]}`,
@@ -494,9 +516,9 @@ export class DoubleLayout {
                         },
                     })
                 }
-                this.page2.getContent().forEach((line: StyledElement[]) => {
-                    this.drawLine(line, undefined, 1)
-                })
+                for (let i = 0; i < pageHeights[1]; i++) {
+                    this.drawLine(this.page2.getContent()[i] || [{ text: "", style: { color: "" } }], undefined, 1)
+                }
             }
         } else {
             // Draw horizontally
@@ -508,10 +530,16 @@ export class DoubleLayout {
                 truncate(this.page1Title, this.realWidth[0] - 4, false),
                 truncate(this.page2Title, this.realWidth[1] - 3, false),
             ]
-            const maxPageHeight = Math.max(
+            let maxPageHeight = Math.max(
                 this.page1.getViewedPageHeight(),
                 this.page2.getViewedPageHeight()
             )
+            
+            if (this.options.fitHeight) {
+                const decorationHeight = this.options.boxed || this.options.showTitle ? 2 : 0
+                maxPageHeight = this.CM.Screen.height - decorationHeight
+            }
+
             const p1 = this.page1.getContent()
             const p2 = this.page2.getContent()
             if (this.options.boxed) {

@@ -40,6 +40,7 @@
 | [direction] | <code>&quot;horizontal&quot;</code> \| <code>&quot;vertical&quot;</code> | <p>The direction of the layout.</p> |
 | [pageTitles] | <code>Array.&lt;string&gt;</code> | <p>The title of the first page.</p> |
 | [pageRatio] | <code>Array.&lt;number&gt;</code> | <p>The ratio of the pages. (in horizontal direction)</p> |
+| [fitHeight] | <code>boolean</code> | <p>If the height of the pages should be the same.</p> |
 
 <a name="LayoutManager"></a>
 

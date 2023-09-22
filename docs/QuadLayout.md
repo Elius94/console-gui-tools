@@ -47,6 +47,7 @@
 | [page3Title] | <code>string</code> | <p>The title of the third page.</p> |
 | [page4Title] | <code>string</code> | <p>The title of the fourth page.</p> |
 | [pageRatio] | <code>Array.&lt;number&gt;</code> | <p>The ratio of the pages.</p> |
+| [fitHeight] | <code>boolean</code> | <p>If the height of the pages should be the same.</p> |
 
 <a name="QuadLayout"></a>
 
