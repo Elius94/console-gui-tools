@@ -29,7 +29,7 @@ export interface LayoutOptions {
     boxed?: boolean;
     boxColor?: ForegroundColorName | HEX | RGB | ""; // add color list from chalk
     boxStyle?: "bold";
-    changeFocusKey: string;
+    changeFocusKey?: string;
     type: "single" | "double" | "triple" | "quad";
     direction?: "horizontal" | "vertical";
     pageTitles?: string[];
