@@ -32,7 +32,7 @@ export interface DoubleLayoutOptions {
   boxed?: boolean;
   boxColor?: ForegroundColorName | HEX | RGB | ""; // add color list from chalk
   boxStyle?: "bold";
-  changeFocusKey: string;
+  changeFocusKey?: string;
   direction?: "horizontal" | "vertical";
   page1Title?: string;
   page2Title?: string;
