@@ -91,7 +91,7 @@ export class LayoutManager {
                     boxed: this.options.boxed,
                     boxColor: this.options.boxColor,
                     boxStyle: this.options.boxStyle,
-                    changeFocusKey: this.options.changeFocusKey,
+                    changeFocusKey: this.options.changeFocusKey || "",
                     direction: this.options.direction,
                     page1Title: this.pageTitles ? this.pageTitles[0] : "",
                     page2Title: this.pageTitles ? this.pageTitles[1] : "",
@@ -109,7 +109,7 @@ export class LayoutManager {
                     boxed: this.options.boxed,
                     boxColor: this.options.boxColor,
                     boxStyle: this.options.boxStyle,
-                    changeFocusKey: this.options.changeFocusKey,
+                    changeFocusKey: this.options.changeFocusKey || "",
                     direction: this.options.direction,
                     page1Title: this.pageTitles ? this.pageTitles[0] : "",
                     page2Title: this.pageTitles ? this.pageTitles[1] : "",
@@ -161,7 +161,7 @@ export class LayoutManager {
      * @param {number} index the index of the page
      * @memberof LayoutManager
      */
-    public setPage(page: PageBuilder, index: number): void { 
+    public setPage(page: PageBuilder, index: number): void {
         this.pages[index] = page
         if (this.isSingleLayout(this.layout)) {
             this.layout.setPage(page)
@@ -177,7 +177,7 @@ export class LayoutManager {
      * @memberof LayoutManager
      * @example layout.setTitle("Page Title", 1)
      */
-    public setTitle(title: string, index: number): void { 
+    public setTitle(title: string, index: number): void {
         this.pageTitles[index] = title
         if (this.isSingleLayout(this.layout)) {
             this.layout.setTitle(title)
@@ -213,9 +213,9 @@ export class LayoutManager {
      * @param {0 | 1 | 2 | 3} selected 0 for page1, 1 for page2
      * @memberof LayoutManager
      */
-    public setSelected(selected: 0 | 1 | 2 | 3): void { 
+    public setSelected(selected: 0 | 1 | 2 | 3): void {
         if (!this.isSingleLayout(this.layout)) {
-            this.layout.setSelected(selected as 0 | 1) 
+            this.layout.setSelected(selected as 0 | 1)
         }
     }
 

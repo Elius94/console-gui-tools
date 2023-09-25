@@ -26,7 +26,7 @@ export interface QuadLayoutOptions {
     boxed?: boolean;
     boxColor?: ForegroundColorName | HEX | RGB | ""; // add color list from chalk
     boxStyle?: "bold";
-    changeFocusKey: string;
+    changeFocusKey?: string;
     page1Title?: string;
     page2Title?: string;
     page3Title?: string;
