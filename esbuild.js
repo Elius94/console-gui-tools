@@ -15,8 +15,8 @@ const pkg = JSON.parse(fs.readFileSync("./package.json"))
 const watch = process.argv.includes("--watch")
 const dev = process.argv.includes("--dev") || process.env.NODE_ENV === "development"
 
-const nodeMajor = 14 // process.versions.node.split(".")[0]
-const nodeMinor = 17 // process.versions.node.split(".")[1]
+const nodeMajor = 18 // process.versions.node.split(".")[0]
+const nodeMinor = 18 // process.versions.node.split(".")[1]
 
 if (nodeMajor < 14 || (nodeMajor === 14 && nodeMinor < 17)) {
     console.error("\u001b[31mNode 14.17 or higher is required to run this project!\u001b[37m")

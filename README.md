@@ -12,7 +12,7 @@ It's in embryonic phase, any suggestion will be constructive :D
 ## Requirements
 
 #### Node.js
-Version: >= 14.17
+Version: >= ~~14.17~~ 18.18.0 (since 3.2.2)
 
 #### OS
 It works well in all os with a terminal that supports styling, colors and other nice features. I've tested it on Linux: Ubuntu LTS, Arch, and Windows 10 and 11 and Mac OS.
