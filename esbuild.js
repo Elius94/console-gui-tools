@@ -23,7 +23,7 @@ if (nodeMajor < 14 || (nodeMajor === 14 && nodeMinor < 17)) {
     process.exit(1)
 }
 
-let target = ["node14.17", "es2020"]
+let target = ["node18.18", "es2020"]
 if (nodeMajor === 14 && nodeMinor >= 17) {
     target = [`node${nodeMajor}.${nodeMinor}`, "es2020"]
 } else if ((nodeMajor === 15 && nodeMinor >= 14) || (nodeMajor >= 16 && nodeMajor < 17)) {
