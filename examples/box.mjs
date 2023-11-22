@@ -1,7 +1,7 @@
 import { ConsoleManager,ConfirmPopup, Box, InPageWidgetBuilder } from "../dist/esm/ConsoleGui.mjs"
 
 const opt = {
-    title: "Progress Bar Test",
+    title: "Box Test",
     layoutOptions: {
         type: "single"
     },
