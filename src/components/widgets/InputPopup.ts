@@ -518,7 +518,7 @@ export class InputPopup extends EventEmitter {
     }
 
     confirmDel() {
-        this.emit("confirm", Number(this.value))
+        this.emit("confirm", this.numeric ? Number(this.value) : this.value)
         this.delete()
     }
 
