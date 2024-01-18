@@ -2,7 +2,6 @@ import { EventEmitter } from "events"
 import { ConsoleManager, KeyListenerArgs, EOL } from "../../ConsoleGui.js"
 import { MouseEvent } from "../MouseManager.js"
 import { boxChars, PhisicalValues, visibleLength } from "../Utils.js"
-import chalk from "chalk"
 
 /**
  * @description The configuration for the InputPopup class.
@@ -14,6 +13,7 @@ import chalk from "chalk"
  * @prop {boolean} numeric - If the input is numeric.
  * @prop {boolean} [visible] - If the popup is visible.
  * @prop {string} [placeholder] - Optional placeholder to show if empty
+ * @prop {number} [maxLen] - Optional max length of the input (default 20). Set to 0 for no limit (not recommended). Since v3.4.0
  *
  * @export
  * @interface InputPopupConfig
@@ -26,6 +26,7 @@ export interface InputPopupConfig {
     numeric?: boolean;
     visible?: boolean;
     placeholder?: string;
+    maxLen?: number;
 }
 
 /**
@@ -75,6 +76,7 @@ export class InputPopup extends EventEmitter {
     private dragStart: { x: number; y: number } = { x: 0, y: 0 }
     private focused = false
     private placeholder?: string
+    private maxLen: number
 
     public constructor(config: InputPopupConfig) {
         if (!config) throw new Error("InputPopup config is required")
@@ -101,6 +103,7 @@ export class InputPopup extends EventEmitter {
             height: 0,
         }
         this.placeholder = config.placeholder
+        this.maxLen = config.maxLen || 20
         if (this.CM.popupCollection[this.id]) {
             this.CM.unregisterPopup(this)
             const message = `InputPopup ${this.id} already exists.`
@@ -131,7 +134,7 @@ export class InputPopup extends EventEmitter {
             v = 0
         }
         if (!Number.isNaN(Number(key.name))) {
-            if (v.toString().length < 20) {
+            if (v.toString().length < this.maxLen || this.maxLen === 0) { // if maxLen is 0 there is no limit
                 let tmp = this.value.toString()
                 tmp += key.name
                 this.value = Number(tmp)
@@ -147,50 +150,50 @@ export class InputPopup extends EventEmitter {
             }
         } else {
             switch (key.name) {
-            case "backspace":
-                // If backspace is pressed I remove the last character from the typed value
-                if (this.value.toString().length > 0) {
-                    if (
-                        this.value.toString().indexOf(".") ===
+                case "backspace":
+                    // If backspace is pressed I remove the last character from the typed value
+                    if (this.value.toString().length > 0) {
+                        if (
+                            this.value.toString().indexOf(".") ===
                             this.value.toString().length - 1
-                    ) {
-                        this.value = v.toString()
-                    } else if (
-                        this.value.toString().indexOf(".") ===
+                        ) {
+                            this.value = v.toString()
+                        } else if (
+                            this.value.toString().indexOf(".") ===
                             this.value.toString().length - 2
-                    ) {
-                        this.value = this.value
-                            .toString()
-                            .slice(0, this.value.toString().length - 1)
-                    } else if (
-                        this.value.toString().indexOf("-") === 0 &&
+                        ) {
+                            this.value = this.value
+                                .toString()
+                                .slice(0, this.value.toString().length - 1)
+                        } else if (
+                            this.value.toString().indexOf("-") === 0 &&
                             this.value.toString().length === 2
-                    ) {
-                        this.value = 0
-                    } else {
-                        this.value = Number(
-                            v.toString().slice(0, v.toString().length - 1)
-                        )
+                        ) {
+                            this.value = 0
+                        } else {
+                            this.value = Number(
+                                v.toString().slice(0, v.toString().length - 1)
+                            )
+                        }
                     }
-                }
-                break
-            case "return":
-                {
-                    this.confirmDel()
-                }
-                break
-            case "escape":
-                {
-                    this.delete()
-                }
-                break
-            case "q":
-                {
-                    this.delete()
-                }
-                break
-            default:
-                break
+                    break
+                case "return":
+                    {
+                        this.confirmDel()
+                    }
+                    break
+                case "escape":
+                    {
+                        this.delete()
+                    }
+                    break
+                case "q":
+                    {
+                        this.delete()
+                    }
+                    break
+                default:
+                    break
             }
         }
         this.CM.refresh()
@@ -214,46 +217,46 @@ export class InputPopup extends EventEmitter {
         } // Continue only if the result is 0
         const v = this.value
         switch (key.name) {
-        case "backspace":
-            // If backspace is pressed I remove the last character from the typed value
-            if (v.toString().length > 0) {
-                this.value = v.toString().slice(0, v.toString().length - 1)
-            }
-            break
-        case "return":
-            {
-                this.confirmDel()
-            }
-            break
-        case "escape":
-            {
-                this.delete()
-            }
-            break
-        case "q":
-            {
-                this.delete()
-            }
-            break
-        case "delete":
-            {
-                // no-op for now
-            }
-            break
-        case "tab":
-            {
-                // Add two spaces
-                this.value = v.toString() + "  "
-            }
-            break
+            case "backspace":
+                // If backspace is pressed I remove the last character from the typed value
+                if (v.toString().length > 0) {
+                    this.value = v.toString().slice(0, v.toString().length - 1)
+                }
+                break
+            case "return":
+                {
+                    this.confirmDel()
+                }
+                break
+            case "escape":
+                {
+                    this.delete()
+                }
+                break
+            case "q":
+                {
+                    this.delete()
+                }
+                break
+            case "delete":
+                {
+                    // no-op for now
+                }
+                break
+            case "tab":
+                {
+                    // Add two spaces
+                    this.value = v.toString() + "  "
+                }
+                break
 
-        default:
-            if (visibleLength(v.toString()) < 20 && key.sequence.length === 1) {
-                let tmp = v.toString()
-                tmp += key.sequence
-                this.value = tmp
-            }
-            break
+            default:
+                if ((visibleLength(v.toString()) < this.maxLen || this.maxLen === 0) && key.sequence.length === 1) {
+                    let tmp = v.toString()
+                    tmp += key.sequence
+                    this.value = tmp
+                }
+                break
         }
         this.CM.refresh()
     }
@@ -456,8 +459,8 @@ export class InputPopup extends EventEmitter {
         }
         header += `${boxChars["normal"].topRight}${EOL}`
         header += `${boxChars["normal"].vertical}${" ".repeat(halfWidth)}${this.title
-        }${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical
-        }${EOL}`
+            }${" ".repeat(windowWidth - halfWidth - this.title.length)}${boxChars["normal"].vertical
+            }${EOL}`
         header += `${boxChars["normal"].left}${boxChars["normal"].horizontal.repeat(
             windowWidth
         )}${boxChars["normal"].right}${EOL}`
@@ -468,19 +471,7 @@ export class InputPopup extends EventEmitter {
         }
         footer += `${boxChars["normal"].bottomRight}${EOL}`
 
-        let content = ""
-        // Draw an input field
-        // if (this.value.toString().length === 0 && this.placeholder?.length)
-        //     content += `${boxChars["normal"].vertical}${"> "}${chalk.gray(
-        //         this.placeholder
-        //     )}${" ".repeat(windowWidth - this.placeholder.length - 2)}${boxChars["normal"].vertical
-        //     }${EOL}`
-        // else
-        content += `${boxChars["normal"].vertical}${"> "}${this.value
-        }█${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical
-        }${EOL}`
-
-        const windowDesign = `${header}${content}${footer}`
+        const windowDesign = `${header}${footer}`
         const windowDesignLines = windowDesign.split(EOL)
         const centerScreen = Math.round(this.CM.Screen.width / 2 - windowWidth / 2)
         windowDesign.split(EOL).forEach((line, index) => {
@@ -488,23 +479,30 @@ export class InputPopup extends EventEmitter {
                 centerScreen + this.offsetX,
                 this.marginTop + index + this.offsetY
             )
-
-            if (index === 3 && this.placeholder?.length && this.value.toString().length === 0) {
+            
+            if (index === 3) {
                 const isOddSecond = Math.round(Date.now() / 100) % 2
-                return this.CM.Screen.write({
-                    text: `${boxChars["normal"].vertical}${"> "}${isOddSecond ? "█" : " "}${chalk.gray(
-                        this.placeholder
-                    )}${" ".repeat(windowWidth - this.placeholder.length - 3)}${boxChars["normal"].vertical
-                    }${EOL}`, style: { color: "white" }
-                })
-            } else if (index === 3) {
-                const isOddSecond = Math.round(Date.now() / 100) % 2
-                // write value and then the cursor (█)
-                return this.CM.Screen.write({
-                    text: `${boxChars["normal"].vertical}${"> "}${this.value
-                    }${isOddSecond ? "█" : " "}${" ".repeat(windowWidth - this.value.toString().length - 3)}${boxChars["normal"].vertical
-                    }${EOL}`, style: { color: "white" }
-                })
+                if (this.placeholder && this.placeholder.length && this.value.toString().length === 0) {
+                    const totalLength = 2 + this.placeholder.length + 1; // 2 for "> ", 1 for cursor
+                    this.CM.Screen.write(
+                        { text: boxChars["normal"].vertical, style: { color: "white" } },
+                        { text: "> ", style: { color: "cyan" } },
+                        { text: isOddSecond ? "█" : " ", style: { color: "white" } },
+                        { text: this.placeholder, style: { color: "gray" } },
+                        { text: `${" ".repeat(windowWidth - totalLength)}${boxChars["normal"].vertical}`, style: { color: "white" } })
+                } else {
+                    const totalLength = 2 + this.value.toString().length + 1; // 2 for "> ", 1 for cursor
+                    this.CM.Screen.write(
+                        { text: boxChars["normal"].vertical, style: { color: "white" } },
+                        { text: "> ", style: { color: "cyan" } },
+                        { text: this.value.toString(), style: { color: "white" } },
+                        { text: isOddSecond ? "█" : " ", style: { color: "white" } },
+                        { text: `${" ".repeat(windowWidth - totalLength)}${boxChars["normal"].vertical}`, style: { color: "white" } })
+                }
+                this.CM.Screen.cursorTo(
+                    centerScreen + this.offsetX,
+                    this.marginTop + index + 1 + this.offsetY
+                )
             }
             this.CM.Screen.write({ text: line, style: { color: "white" } })
         })
