@@ -30,6 +30,7 @@ GUI.on("keypressed", (key) => {
             id: "popupInput",
             title: "Enter a number:",
             value: nValue,
+            maxLen: 3,
             numeric: true
         }).show().on("confirm", (value) => {
             console.log(`You entered: ${value}`)
@@ -41,6 +42,7 @@ GUI.on("keypressed", (key) => {
         new InputPopup({
             id: "popupInput",
             title: "Enter a string:",
+            placeholder: "Write here...",
             value: sValue,
             numeric: false
         }).show().on("confirm", (value) => {
