@@ -576,7 +576,8 @@ new InputPopup({
     id: "popupTypeMax", 
     title: "Type max value", 
     value: max, 
-    numeric: true
+    numeric: true,
+    maxLen: 5,
     placeholder: "Type a number" // since v3.1.0
 }).show().on("confirm", (_max) => {
     max = _max
@@ -585,12 +586,13 @@ new InputPopup({
 })
 ```
 
-### Class InputPopup (updated in v3.1.0):
+### Class InputPopup (updated in v3.4.0):
 constructor(id, title, value, isNumeric)
  - id: string
  - title: string
  - value: string | number
  - isNumeric: boolean
+ - maxLen: number (since v3.4.0)
  - placeholder: string (since v3.1.0)
 
 You can use it for example to set a numeric threshold:
