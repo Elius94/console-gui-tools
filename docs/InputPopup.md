@@ -48,6 +48,7 @@
 | numeric | <code>boolean</code> | <p>If the input is numeric.</p> |
 | [visible] | <code>boolean</code> | <p>If the popup is visible.</p> |
 | [placeholder] | <code>string</code> | <p>Optional placeholder to show if empty</p> |
+| [maxLen] | <code>number</code> | <p>Optional max length of the input (default 20). Set to 0 for no limit (not recommended). Since v3.4.0</p> |
 
 <a name="InputPopup"></a>
 
@@ -86,7 +87,14 @@
 | config | [<code>InputPopupConfig</code>](#InputPopupConfig) | <p>The config of the popup.</p> |
 
 **Example**  
-```tsconst popup = new InputPopup({ id: "popup1", title: "Choose the number", value: selectedNumber, numeric: true}).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm```
+```ts
+const popup = new InputPopup({
+ id: "popup1",
+ title: "Choose the number",
+ value: selectedNumber,
+ numeric: true
+}).show().on("confirm", (value) => { console.log(value) }) // show the popup and wait for the user to confirm
+```
 <a name="InputPopup+keyListenerNumeric"></a>
 
 ### inputPopup.keyListenerNumeric(_str, key)
