@@ -181,12 +181,15 @@ class ConsoleManager extends EventEmitter {
             this.updateLayout()
             this.addGenericListeners()
 
+            // Create a Interface from STDIN so this interface can be close later otherwise the Process hangs
+            this.inputInterface = readline.createInterface ({ input: process.stdin, escapeCodeTimeout: 50 })
             // I use readline to manage the keypress event
-            readline.emitKeypressEvents(this.Input)
+            readline.emitKeypressEvents(this.Input, this.inputInterface)
             this.Input.setRawMode(true) // With this I only get the key value
         }
         return ConsoleManager.instance
     }
+    private inputInterface : readline.Interface | undefined
 
     /**
      * @description This method is used to change the layout options.
@@ -388,6 +391,7 @@ class ConsoleManager extends EventEmitter {
             }
 
             if (key.ctrl && key.name === "c") {
+                this.inputInterface?.close()
                 this.emit("exit")
             } else {
                 if (Object.keys(this.popupCollection).length === 0) {
