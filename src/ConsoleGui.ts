@@ -98,6 +98,7 @@ class ConsoleManager extends EventEmitter {
     layoutOptions!: LayoutOptions
     layout!: LayoutManager
     changeLayoutKey!: string
+    maxListeners = 128
     private changeLayoutkeys!: string[]
     applicationTitle!: string
     private showLogKey!: string
@@ -111,6 +112,7 @@ class ConsoleManager extends EventEmitter {
         super()
         this.Terminal = process.stdout
         this.Input = process.stdin
+        this.Input.setMaxListeners(this.maxListeners)
         if (!ConsoleManager.instance) {
             ConsoleManager.instance = this
 
@@ -124,6 +126,7 @@ class ConsoleManager extends EventEmitter {
             })
 
             this.mouse = new MouseManager(this.Terminal, this.Input)
+            this.mouse.setMaxListeners(this.maxListeners)
             this.popupCollection = {}
             this.controlsCollection = {}
             this.eventListenersContainer = {}
