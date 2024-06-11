@@ -8,6 +8,7 @@
     "type": "module",
     "exports": {
         ".": {
+            "types": "./dist/types/ConsoleGui.d.ts",
             "require": "./dist/cjs/ConsoleGui.cjs",
             "import": "./dist/esm/ConsoleGui.mjs"
         }
